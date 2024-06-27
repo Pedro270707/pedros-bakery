@@ -17,6 +17,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -33,9 +34,10 @@ import net.pedroricardo.block.helpers.CakeLayer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
-public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements BlockEntityProvider {
+public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements BlockEntityProvider, MultipartBlock {
     public static final MapCodec<PBCandleCakeBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec<? super CandleBlock>)Registries.BLOCK.getCodec().fieldOf("candle")).forGetter(block -> block.candle), CandleCakeBlock.createSettingsCodec()).apply(instance, (block, settings) -> new PBCandleCakeBlock((CandleBlock) block, settings)));
     private final CandleBlock candle;
     private static final Map<CandleBlock, PBCandleCakeBlock> CANDLES_TO_CANDLE_CAKES = Maps.newHashMap();
@@ -59,11 +61,7 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
 
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        PBCakeBlockEntity blockEntity = (PBCakeBlockEntity) world.getBlockEntity(pos);
-        if (blockEntity == null) {
-            return super.getOutlineShape(state, world, pos, context);
-        }
-        return VoxelShapes.union(blockEntity.toShape(state.get(Properties.HORIZONTAL_FACING)), Block.createCuboidShape(7.0f, blockEntity.getHeight(), 7.0f, 9.0f, blockEntity.getHeight() + 6.0f, 9.0f));
+        return VoxelShapes.combineAndSimplify(this.getFullShape(state, world, pos, context), VoxelShapes.fullCube(), BooleanBiFunction.AND);
     }
 
     @Override
@@ -128,5 +126,21 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
     @Override
     protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
+    }
+
+    @Override
+    public VoxelShape getFullShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        if (!(world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake)) {
+            return VoxelShapes.fullCube();
+        }
+        return VoxelShapes.union(cake.toShape(state.get(Properties.HORIZONTAL_FACING)), Block.createCuboidShape(7.0f, cake.getHeight(), 7.0f, 9.0f, cake.getHeight() + 6.0f, 9.0f));
+    }
+
+    @Override
+    public List<BlockPos> getParts(WorldView world, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
+            return cake.getParts();
+        }
+        return List.of();
     }
 }

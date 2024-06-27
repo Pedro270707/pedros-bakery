@@ -30,6 +30,10 @@ public class PBBlockEntities {
             PBBlocks.RED_CANDLE_CAKE,
             PBBlocks.BLACK_CANDLE_CAKE), "cake");
 
+    public static final BlockEntityType<? extends PBCakePartBlockEntity> CAKE_PART = register(BlockEntityType.Builder.create(
+            PBCakePartBlockEntity::new,
+            PBBlocks.CAKE_PART), "cake_part");
+
     public static final BlockEntityType<? extends BeaterBlockEntity> BEATER = register(BlockEntityType.Builder.create(
             BeaterBlockEntity::new,
             PBBlocks.BEATER), "beater");

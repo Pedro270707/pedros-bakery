@@ -24,6 +24,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -41,14 +42,15 @@ import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.helpers.CakeTop;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
+import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PBCakeBlock extends BlockWithEntity {
-    public static final int MAX_CAKE_HEIGHT = 16;
+public class PBCakeBlock extends BlockWithEntity implements MultipartBlock {
+    public static final int MAX_CAKE_HEIGHT = 128;
     public static final int BITE_SIZE = 2;
     public static final int TICKS_UNTIL_BAKED = 2000;
     public static final MapCodec<PBCakeBlock> CODEC = createCodec(PBCakeBlock::new);
@@ -65,10 +67,23 @@ public class PBCakeBlock extends BlockWithEntity {
 
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return VoxelShapes.combineAndSimplify(this.getFullShape(state, world, pos, context), VoxelShapes.fullCube(), BooleanBiFunction.AND);
+    }
+
+    @Override
+    public VoxelShape getFullShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         if (!(world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake)) {
             return Blocks.CAKE.getDefaultState().getOutlineShape(world, pos, context);
         }
         return cake.toShape(state.get(Properties.HORIZONTAL_FACING));
+    }
+
+    @Override
+    public List<BlockPos> getParts(WorldView world, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
+            return cake.getParts();
+        }
+        return List.of();
     }
 
     @Override
@@ -128,7 +143,7 @@ public class PBCakeBlock extends BlockWithEntity {
         }
         if (player.isSneaking()) {
             changeState(world, pos, state);
-            List<CakeLayer> layers = new ArrayList<>();
+            List<CakeLayer> layers = Lists.newArrayList();
             while (cake.getLayers().size() > layerIndex) {
                 layers.add(cake.getLayers().remove(layerIndex));
             }
@@ -272,8 +287,8 @@ public class PBCakeBlock extends BlockWithEntity {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         world.setBlockState(pos, candleState);
         if (blockEntity instanceof PBCakeBlockEntity cake) {
-            world.addBlockEntity(cake);
             cake.setCachedState(candleState);
+            world.addBlockEntity(cake);
         }
     }
 
@@ -283,6 +298,11 @@ public class PBCakeBlock extends BlockWithEntity {
             return this.of(cake, cake.getLayers());
         }
         return of(Collections.singletonList(CakeLayer.getDefault()));
+    }
+
+    @Override
+    protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+        super.onBlockAdded(state, world, pos, oldState, notify);
     }
 
     @Override

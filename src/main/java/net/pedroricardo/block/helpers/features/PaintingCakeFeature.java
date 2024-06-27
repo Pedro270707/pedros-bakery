@@ -20,7 +20,7 @@ import net.pedroricardo.block.helpers.CakeFeature;
 import net.pedroricardo.block.helpers.CakeLayer;
 import org.apache.commons.compress.utils.Lists;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class PaintingCakeFeature extends CakeFeature {
@@ -33,7 +33,7 @@ public class PaintingCakeFeature extends CakeFeature {
             PaintingEntity.VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, variant).ifSuccess(element -> compound.copyFrom((NbtCompound) element));
             this.saveData(layer, compound);
         }, () -> {
-            ArrayList<RegistryEntry<PaintingVariant>> list = Lists.newArrayList();
+            List<RegistryEntry<PaintingVariant>> list = Lists.newArrayList();
             world.getRegistryManager().get(RegistryKeys.PAINTING_VARIANT).iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
             if (list.isEmpty()) {
                 return;
