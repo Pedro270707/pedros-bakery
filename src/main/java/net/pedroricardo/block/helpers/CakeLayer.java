@@ -41,11 +41,6 @@ public class CakeLayer extends CakeBatter implements Cloneable {
     private static final CakeLayer DEFAULT = new CakeLayer(0, 8, 0, 14, CakeFlavors.VANILLA, Optional.empty(), Map.of());
     private static final CakeLayer EMPTY = new CakeLayer(0, 0, 0, 0, CakeFlavors.VANILLA, Optional.empty(), Map.of());
 
-    private static final Codec<Map.Entry<CakeFeature, NbtCompound>> FEATURE_TO_NBT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CakeFeatures.REGISTRY.getCodec().fieldOf("id").orElse(CakeFeatures.GLINT).forGetter(Map.Entry::getKey),
-            NbtCompound.CODEC.fieldOf("data").orElse(new NbtCompound()).forGetter(Map.Entry::getValue)
-    ).apply(instance, Map::entry));
-
     public static final Codec<CakeLayer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeLayer::getBakeTime),
                     Codec.FLOAT.fieldOf("height").orElse(8.0f).forGetter(CakeLayer::getHeight),

@@ -202,12 +202,12 @@ public class PBCakeBlock extends BlockWithEntity {
             if (feature.canBeApplied(stack, clickedLayer, world, pos, state, cake)) {
                 clickedLayer.addFeature(feature);
                 feature.onPlaced(stack, clickedLayer, world, pos, state, cake);
-                stack.decrementUnlessCreative(1, player);
-                PBHelpers.updateListeners(cake);
                 appliedFeature = true;
             }
         }
         if (appliedFeature) {
+            stack.decrementUnlessCreative(1, player);
+            PBHelpers.updateListeners(cake);
             return ItemActionResult.SUCCESS;
         }
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
