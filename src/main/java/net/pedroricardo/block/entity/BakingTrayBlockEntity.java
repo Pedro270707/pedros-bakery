@@ -1,0 +1,141 @@
+package net.pedroricardo.block.entity;
+
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
+import net.pedroricardo.PBHelpers;
+import net.pedroricardo.PBSounds;
+import net.pedroricardo.block.PBBlocks;
+import net.pedroricardo.block.PBCakeBlock;
+import net.pedroricardo.block.helpers.CakeBatter;
+import net.pedroricardo.block.tags.PBTags;
+import net.pedroricardo.item.PBComponentTypes;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+public class BakingTrayBlockEntity extends BlockEntity {
+    public static final int DEFAULT_SIZE = 8;
+    public static final int DEFAULT_HEIGHT = 8;
+    private int size = DEFAULT_SIZE;
+    private int height = DEFAULT_HEIGHT;
+    private CakeBatter cakeBatter = CakeBatter.getEmpty();
+
+    public BakingTrayBlockEntity(BlockPos pos, BlockState state) {
+        super(PBBlockEntities.BAKING_TRAY, pos, state);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        return this.createNbt(registryLookup);
+    }
+
+    @Override
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
+        nbt.putInt("size", this.size);
+        nbt.putInt("height", this.height);
+        nbt.put("layer", this.getCakeBatter().toNbt(new NbtCompound()));
+    }
+
+    @Override
+    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
+        if (nbt.contains("size", NbtElement.INT_TYPE)) {
+            this.size = nbt.getInt("size");
+        }
+        if (nbt.contains("height", NbtElement.INT_TYPE)) {
+            this.height = nbt.getInt("height");
+        }
+        if (nbt.contains("layer", NbtElement.COMPOUND_TYPE)) {
+            this.cakeBatter = CakeBatter.fromNbt(nbt.getCompound("layer"));
+        }
+    }
+
+    public static void tick(World world, BlockPos pos, BlockState state, BakingTrayBlockEntity blockEntity) {
+        if (world.getBlockState(pos.down()).isIn(PBTags.Blocks.BAKES_CAKE) && !blockEntity.getCakeBatter().isEmpty()) {
+            blockEntity.getCakeBatter().bakeTick(world, pos, state);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
+            PBHelpers.updateListeners(blockEntity);
+            if (blockEntity.getCakeBatter().getBakeTime() == PBCakeBlock.TICKS_UNTIL_BAKED) {
+                world.playSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.BAKING_TRAY_DONE, SoundCategory.BLOCKS, 1.25f, 1.0f, true);
+            }
+        }
+    }
+
+    @Override
+    protected void addComponents(ComponentMap.Builder componentMapBuilder) {
+        super.addComponents(componentMapBuilder);
+        componentMapBuilder.add(PBComponentTypes.BATTER, this.getCakeBatter());
+        componentMapBuilder.add(PBComponentTypes.SIZE, this.getSize());
+        componentMapBuilder.add(PBComponentTypes.HEIGHT, this.getHeight());
+    }
+
+    @Override
+    protected void readComponents(ComponentsAccess components) {
+        super.readComponents(components);
+        this.cakeBatter = components.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty());
+        this.size = components.getOrDefault(PBComponentTypes.SIZE, DEFAULT_SIZE);
+        this.height = components.getOrDefault(PBComponentTypes.HEIGHT, DEFAULT_HEIGHT);
+    }
+
+    @Override
+    public void removeFromCopiedStackNbt(NbtCompound nbt) {
+        super.removeFromCopiedStackNbt(nbt);
+        nbt.remove("layer");
+        nbt.remove("size");
+        nbt.remove("height");
+    }
+
+    public CakeBatter getCakeBatter() {
+        return this.cakeBatter;
+    }
+
+    public void setCakeBatter(@NotNull CakeBatter cakeBatter) {
+        this.cakeBatter = cakeBatter;
+        if (this.cakeBatter.getHeight() > this.getHeight()) {
+            this.cakeBatter.setHeight(this.getHeight());
+        }
+        this.markDirty();
+    }
+
+    public ItemStack toStack() {
+        ItemStack stack = new ItemStack(PBBlocks.BAKING_TRAY.asItem());
+        stack.set(PBComponentTypes.BATTER, this.getCakeBatter());
+        stack.set(PBComponentTypes.SIZE, this.getSize());
+        stack.set(PBComponentTypes.HEIGHT, this.getHeight());
+        return stack;
+    }
+
+    public int getSize() {
+        return this.size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
+    }
+}

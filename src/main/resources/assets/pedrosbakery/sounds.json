@@ -1,0 +1,8 @@
+{
+  "block.baking_tray.done": {
+    "sounds": [
+      "note/bell"
+    ],
+    "subtitle": "subtitles.block.pedrosbakery.baking_tray.done"
+  }
+}

@@ -1,0 +1,41 @@
+{
+	"schemaVersion": 1,
+	"id": "pedrosbakery",
+	"version": "${version}",
+	"name": "Pedro's Bakery",
+	"description": "Cake bakery at its finest (maybe)",
+	"authors": [
+		"Pedro Ricardo"
+	],
+	"contact": {
+		"homepage": "https://pedroricardo.net/",
+		"sources": "https://github.com/Pedro270707/pedros-bakery"
+	},
+	"license": "MIT",
+	"icon": "assets/pedrosbakery/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+          "net.pedroricardo.PedrosBakery"
+		],
+		"client": [
+          "net.pedroricardo.PedrosBakeryClient"
+		]
+	},
+	"mixins": [
+		"pedrosbakery.mixins.json",
+		{
+			"config": "pedrosbakery.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": "~1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "g": {
+      "item": "minecraft:glass"
+    },
+    "w": {
+      "item": "minecraft:white_stained_glass"
+    }
+  },
+  "pattern": [
+    "ggg",
+    "g g",
+    "www"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pedrosbakery:cake_stand"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "pedrosbakery:item/frosting_bottle_overlay",
+    "layer1": "pedrosbakery:item/frosting_bottle"
+  }
+}

@@ -1,0 +1,97 @@
+package net.pedroricardo.item.recipes;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.SpecialCraftingRecipe;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.input.CraftingRecipeInput;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.world.World;
+import net.pedroricardo.block.PBBlocks;
+import net.pedroricardo.block.entity.BakingTrayBlockEntity;
+import net.pedroricardo.block.helpers.CakeBatter;
+import net.pedroricardo.item.BakingTrayItem;
+import net.pedroricardo.item.PBComponentTypes;
+
+import java.util.OptionalInt;
+
+public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
+    public BakingTrayIncreaseRecipe(CraftingRecipeCategory category) {
+        super(category);
+    }
+
+    @Override
+    public boolean matches(CraftingRecipeInput inventory, World world) {
+        if (!this.fits(inventory.getWidth(), inventory.getHeight())) {
+            return false;
+        }
+        OptionalInt trayIndex = OptionalInt.empty();
+        boolean hasIronIngots = false;
+        for (int i = 0; i < inventory.getSize(); i++) {
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (stack.isOf(Items.AIR)) continue;
+            if (stack.isOf(Items.IRON_INGOT)) {
+                hasIronIngots = true;
+                continue;
+            }
+            if (stack.isOf(PBBlocks.BAKING_TRAY.asItem())) {
+                if (trayIndex.isPresent()) return false;
+                else {
+                    trayIndex = OptionalInt.of(i);
+                }
+            }
+        }
+        if (!hasIronIngots || trayIndex.isEmpty()) return false;
+        int trayIndexInt = trayIndex.getAsInt();
+        ItemStack trayStack = inventory.getStackInSlot(trayIndexInt).copy();
+        if (!trayStack.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty()).isEmpty()) return false;
+        for (int i = 0; i < inventory.getSize(); i++) {
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (stack.isOf(Items.IRON_INGOT)) {
+                if (i < (trayIndexInt - trayIndexInt % inventory.getWidth()) || i > trayIndexInt - trayIndexInt % inventory.getWidth() + 2) {
+                    trayStack.set(PBComponentTypes.HEIGHT, trayStack.getOrDefault(PBComponentTypes.HEIGHT, BakingTrayBlockEntity.DEFAULT_HEIGHT) + 2);
+                } else {
+                    trayStack.set(PBComponentTypes.SIZE, trayStack.getOrDefault(PBComponentTypes.SIZE, BakingTrayBlockEntity.DEFAULT_SIZE) + 2);
+                }
+            }
+        }
+        return trayStack.getOrDefault(PBComponentTypes.HEIGHT, BakingTrayBlockEntity.DEFAULT_HEIGHT) <= 16 && trayStack.getOrDefault(PBComponentTypes.SIZE, BakingTrayBlockEntity.DEFAULT_SIZE) <= 16;
+    }
+
+    @Override
+    public ItemStack craft(CraftingRecipeInput inventory, RegistryWrapper.WrapperLookup lookup) {
+        ItemStack trayStack = ItemStack.EMPTY;
+        int trayIndex = 0;
+        for (int i = 0; i < inventory.getSize(); i++) {
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (stack.isOf(PBBlocks.BAKING_TRAY.asItem())) {
+                trayStack = stack.copy();
+                trayIndex = i;
+                break;
+            }
+        }
+        BakingTrayBlockEntity blockEntity = ((BakingTrayItem) PBBlocks.BAKING_TRAY.asItem()).asBlockEntity(trayStack);
+        for (int i = 0; i < inventory.getSize(); i++) {
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (stack.isOf(Items.IRON_INGOT)) {
+                if (i < (trayIndex - trayIndex % inventory.getWidth()) || i > trayIndex - trayIndex % inventory.getWidth() + 2) {
+                    blockEntity.setHeight(Math.min(blockEntity.getHeight() + 2, 16));
+                } else {
+                    blockEntity.setSize(Math.min(blockEntity.getSize() + 2, 16));
+                }
+            }
+        }
+        return blockEntity.toStack();
+    }
+
+    @Override
+    public boolean fits(int width, int height) {
+        return true;
+    }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return PBRecipeSerializers.BAKING_TRAY_INCREASE;
+    }
+}

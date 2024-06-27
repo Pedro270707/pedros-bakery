@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "net.pedroricardo.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "DebugCodecMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}

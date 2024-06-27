@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "pedrosbakery:batter",
+                "pedrosbakery:size",
+                "pedrosbakery:height"
+              ],
+              "source": "block_entity"
+            }
+          ],
+          "name": "pedrosbakery:baking_tray"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "pedrosbakery:baking_tray"
+}
