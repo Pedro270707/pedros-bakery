@@ -186,7 +186,7 @@ public class CakeLayer extends CakeBatter implements Cloneable {
     public CakeLayer clone() {
         try {
             CakeLayer clone = (CakeLayer) super.clone();
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            clone.setFeatures(Maps.newHashMap(Maps.transformValues(this.getFeatureMap(), NbtCompound::copy)));
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
