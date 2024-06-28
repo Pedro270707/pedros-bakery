@@ -41,11 +41,11 @@ public class CakeBatter {
     public static final PacketCodec<RegistryByteBuf, CakeBatter> PACKET_CODEC = PacketCodec.tuple(PacketCodecs.VAR_INT, CakeBatter::getBakeTime, PacketCodecs.FLOAT, CakeBatter::getHeight, PacketCodecs.registryValue(CakeFlavors.REGISTRY_KEY), CakeBatter::getFlavor, CakeBatter::new);
 
     public static CakeBatter getDefault() {
-        return DEFAULT;
+        return DEFAULT.copy();
     }
 
     public static CakeBatter getEmpty() {
-        return EMPTY;
+        return EMPTY.copy();
     }
 
     public NbtCompound toNbt(NbtCompound nbt) {
@@ -103,6 +103,10 @@ public class CakeBatter {
         if (o == null || getClass() != o.getClass()) return false;
         CakeBatter that = (CakeBatter) o;
         return this.bakeTime == that.bakeTime && this.height == that.height && Objects.equals(this.flavor, that.flavor);
+    }
+
+    public CakeBatter copy() {
+        return new CakeBatter(this.getBakeTime(), this.getHeight(), this.getFlavor());
     }
 
     @Override

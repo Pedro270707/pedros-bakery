@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CakeLayer extends CakeBatter implements Cloneable {
+public class CakeLayer extends CakeBatter {
     private float bites;
     private float size;
     private Optional<CakeTop> top;
@@ -52,11 +52,11 @@ public class CakeLayer extends CakeBatter implements Cloneable {
             .apply(instance, CakeLayer::new));
 
     public static CakeLayer getDefault() {
-        return DEFAULT.clone();
+        return DEFAULT.copy();
     }
 
     public static CakeLayer getEmpty() {
-        return EMPTY.clone();
+        return EMPTY.copy();
     }
 
     public NbtCompound toNbt(NbtCompound nbt) {
@@ -177,14 +177,7 @@ public class CakeLayer extends CakeBatter implements Cloneable {
         return Objects.hash(super.hashCode(), this.bites, this.size, this.top);
     }
 
-    @Override
-    public CakeLayer clone() {
-        try {
-            CakeLayer clone = (CakeLayer) super.clone();
-            clone.setFeatures(Maps.newHashMap(Maps.transformValues(this.getFeatureMap(), NbtCompound::copy)));
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
+    public CakeLayer copy() {
+        return new CakeLayer(this.getBakeTime(), this.getHeight(), this.getBites(), this.getSize(), this.getFlavor(), this.getTop(), Maps.newHashMap(Maps.transformValues(this.getFeatureMap(), NbtCompound::copy)));
     }
 }
