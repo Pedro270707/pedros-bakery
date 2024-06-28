@@ -163,7 +163,10 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
         if (world.getBlockEntity(pos) == null) return Optional.empty();
         try {
             C parent = ((E) world.getBlockEntity(pos)).getParent();
-            return Optional.ofNullable(function.apply(parent));
+            if (parent != null) {
+                return Optional.ofNullable(function.apply(parent));
+            }
+            return Optional.empty();
         } catch (ClassCastException ignored) {
             return Optional.empty();
         }
@@ -173,7 +176,9 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
         if (world.getBlockEntity(pos) == null) return;
         try {
             C parent = ((E) world.getBlockEntity(pos)).getParent();
-            function.accept(parent);
+            if (parent != null) {
+                function.accept(parent);
+            }
         } catch (ClassCastException ignored) {
         }
     }
