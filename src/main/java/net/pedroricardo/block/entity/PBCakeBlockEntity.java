@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class PBCakeBlockEntity extends BlockEntity {
+public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEntity {
     private List<CakeLayer> layers = Lists.newArrayList();
     private List<BlockPos> parts = Lists.newArrayList();
 
@@ -76,36 +76,14 @@ public class PBCakeBlockEntity extends BlockEntity {
         blockEntity.getLayers().removeIf(CakeLayer::isEmpty);
         blockEntity.markDirty();
         if (blockEntity.getLayers().isEmpty()) {
+            blockEntity.removeAllParts(world);
             world.removeBlock(pos, false);
             world.emitGameEvent(null, GameEvent.BLOCK_DESTROY, pos);
             PBHelpers.updateListeners(world, pos, state, blockEntity);
         } else {
             blockEntity.getLayers().forEach(layer -> layer.tick(world, pos, state, blockEntity));
         }
-        // TODO: do this only when cake changes
-        VoxelShape shape = state.getBlock() instanceof MultipartBlock ? ((MultipartBlock)state.getBlock()).getFullShape(state, world, pos, ShapeContext.absent()) : blockEntity.toShape(state.getOrEmpty(Properties.HORIZONTAL_FACING).orElse(Direction.NORTH));
-        if (shape.isEmpty()) return;
-        Box box = shape.getBoundingBox().offset(pos);
-        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
-        blockEntity.parts.clear();
-        for (int x = (int)box.minX; x < box.maxX; x++) {
-            for (int y = (int)box.minY; y < box.maxY; y++) {
-                for (int z = (int)box.minZ; z < box.maxZ; z++) {
-                    BlockPos pos1 = new BlockPos(x, y, z);
-                    if (!world.isInBuildLimit(pos1) || VoxelShapes.combineAndSimplify(shape, VoxelShapes.fullCube().offset(pos1.getX() - pos.getX(), pos1.getY() - pos.getY(), pos1.getZ() - pos.getZ()), BooleanBiFunction.AND).isEmpty()) continue;
-                    BlockState state1 = world.getBlockState(pos1);
-                    if ((state1.isOf(PBBlocks.CAKE_PART) || state1.isReplaceable()) && !state1.isSolidBlock(world, pos1) && !pos1.equals(pos)) {
-                        if (!state1.isOf(PBBlocks.CAKE_PART)) {
-                            BlockState partState = PBBlocks.CAKE_PART.getDefaultState();
-                            PBCakePartBlockEntity partBlockEntity = new PBCakePartBlockEntity(pos1, partState, pos);
-                            world.setBlockState(pos1, partState);
-                            world.addBlockEntity(partBlockEntity);
-                        }
-                        blockEntity.parts.add(pos1);
-                    }
-                }
-            }
-        }
+        blockEntity.updateParts(world, pos, state);
     }
 
     public List<CakeLayer> getLayers() {
@@ -113,7 +91,32 @@ public class PBCakeBlockEntity extends BlockEntity {
     }
 
     public List<BlockPos> getParts() {
-        return this.parts.stream().map(BlockPos::toImmutable).toList();
+        return this.parts;
+    }
+
+    @Override
+    public void updateParts(World world, BlockPos pos, BlockState state) {
+        VoxelShape shape = state.getBlock() instanceof MultipartBlock ? ((MultipartBlock)state.getBlock()).getFullShape(state, world, pos, ShapeContext.absent()) : this.toShape(state.getOrEmpty(Properties.HORIZONTAL_FACING).orElse(Direction.NORTH));
+        if (shape.isEmpty()) return;
+        Box box = shape.getBoundingBox().offset(pos);
+        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
+        this.removeAllParts(world);
+        for (int x = (int)box.minX; x < box.maxX; x++) {
+            for (int y = (int)box.minY; y < box.maxY; y++) {
+                for (int z = (int)box.minZ; z < box.maxZ; z++) {
+                    BlockPos pos1 = new BlockPos(x, y, z);
+                    if (!world.isInBuildLimit(pos1) || VoxelShapes.combineAndSimplify(shape, VoxelShapes.fullCube().offset(pos1.getX() - pos.getX(), pos1.getY() - pos.getY(), pos1.getZ() - pos.getZ()), BooleanBiFunction.AND).isEmpty()) continue;
+                    BlockState state1 = world.getBlockState(pos1);
+                    if (state1.isReplaceable() && !state1.isSolidBlock(world, pos1) && !pos1.equals(pos)) {
+                        BlockState partState = PBBlocks.CAKE_PART.getDefaultState();
+                        PBCakeBlockEntityPart partBlockEntity = new PBCakeBlockEntityPart(pos1, partState, pos);
+                        world.setBlockState(pos1, partState);
+                        world.addBlockEntity(partBlockEntity);
+                        this.getParts().add(pos1);
+                    }
+                }
+            }
+        }
     }
 
     public float getHeight() {

@@ -2,35 +2,25 @@ package net.pedroricardo.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.pedroricardo.block.PBCakePartBlock;
+import net.pedroricardo.PBHelpers;
+import net.pedroricardo.block.MultipartBlockPart;
 import org.jetbrains.annotations.Nullable;
 
-public class PBCakePartBlockEntity extends BlockEntity {
+public abstract class MultipartBlockEntityPart extends BlockEntity {
     @Nullable
     private BlockPos parentPos;
 
-    public PBCakePartBlockEntity(BlockPos pos, BlockState state) {
-        super(PBBlockEntities.CAKE_PART, pos, state);
-    }
-
-    public PBCakePartBlockEntity(BlockPos pos, BlockState state, BlockPos parentPos) {
-        this(pos, state);
+    public MultipartBlockEntityPart(BlockEntityType<?> type, BlockPos pos, BlockState state, @Nullable BlockPos parentPos) {
+        super(type, pos, state);
         this.parentPos = parentPos;
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return this.createNbt(registryLookup);
     }
 
     @Override
@@ -48,13 +38,15 @@ public class PBCakePartBlockEntity extends BlockEntity {
         }
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, PBCakePartBlockEntity blockEntity) {
+    public static void tick(World world, BlockPos pos, BlockState state, MultipartBlockEntityPart blockEntity) {
         if (state.getOutlineShape(world, pos).isEmpty()) {
-            world.setBlockState(pos, state.with(PBCakePartBlock.DELEGATE, false));
+            world.setBlockState(pos, state.with(MultipartBlockPart.DELEGATE, false));
             world.removeBlock(pos, false);
-        } else if (blockEntity.parentPos == null || !(world.getBlockEntity(blockEntity.parentPos) instanceof PBCakeBlockEntity) || blockEntity.getCachedState().getOutlineShape(world, pos).isEmpty()) {
-            world.setBlockState(pos, state.with(PBCakePartBlock.DELEGATE, false));
+            PBHelpers.updateListeners(blockEntity);
+        } else if (!(state.getBlock() instanceof MultipartBlockPart<?> part) || !part.stillValid(world, pos)) {
+            world.setBlockState(pos, state.with(MultipartBlockPart.DELEGATE, false));
             world.breakBlock(pos, false);
+            PBHelpers.updateListeners(blockEntity);
         }
     }
 
@@ -62,6 +54,13 @@ public class PBCakePartBlockEntity extends BlockEntity {
     public void setStackNbt(ItemStack stack, RegistryWrapper.WrapperLookup registries) {
         if (this.getParent() != null) {
             this.getParent().setStackNbt(stack, registries);
+        }
+    }
+
+    @Override
+    public void removeFromCopiedStackNbt(NbtCompound nbt) {
+        if (this.getParent() != null) {
+            this.getParent().removeFromCopiedStackNbt(nbt);
         }
     }
 
@@ -83,11 +82,5 @@ public class PBCakePartBlockEntity extends BlockEntity {
             return null;
         }
         return cake;
-    }
-
-    @Nullable
-    @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
     }
 }

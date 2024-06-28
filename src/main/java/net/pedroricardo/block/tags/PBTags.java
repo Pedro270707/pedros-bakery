@@ -14,6 +14,8 @@ import net.pedroricardo.block.helpers.CakeFlavors;
 public class PBTags {
     public static class Blocks {
         public static final TagKey<Block> BAKES_CAKE = of(RegistryKeys.BLOCK, "bakes_cake");
+        public static final TagKey<Block> CAKES = of(RegistryKeys.BLOCK, "cakes");
+        public static final TagKey<Block> CANDLE_CAKES = of(RegistryKeys.BLOCK, "candle_cakes");
     }
 
     public static class Items {

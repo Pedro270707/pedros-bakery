@@ -1,6 +1,6 @@
 {
-  "replace": false,
   "values": [
+    "pedrosbakery:cake",
     "#pedrosbakery:candle_cakes"
   ]
 }
