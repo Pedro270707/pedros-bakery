@@ -13,15 +13,11 @@ public interface MultipartBlockEntity {
     /**
      * Removes all current parts (if any) and places new parts in the world.
      * Call this in your ticker method.
-     * @param world
-     * @param pos
-     * @param state
      */
     void updateParts(World world, BlockPos pos, BlockState state);
 
     /**
      * Silently removes all the parts (without delegation or particles).
-     * @param world
      */
     default void removeAllParts(World world) {
         for (BlockPos pos : this.getParts()) {

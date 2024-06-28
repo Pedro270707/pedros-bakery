@@ -20,11 +20,6 @@ public interface MultipartBlock {
      * alongside calling the super method afterward.
      * <p>
      * Remember to update listeners with {@link net.minecraft.block.Block#NOTIFY_ALL_AND_REDRAW} at the end of the method.
-     * @param state
-     * @param world
-     * @param pos
-     * @param newState
-     * @param moved
      */
     default void removePartsWhenReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         for (BlockPos partPos : this.getParts(world, pos)) {
