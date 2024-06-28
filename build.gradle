@@ -23,6 +23,7 @@ loom {
 		}
 	}
 
+	accessWidenerPath = file("src/main/resources/pedrosbakery.accesswidener")
 }
 
 dependencies {

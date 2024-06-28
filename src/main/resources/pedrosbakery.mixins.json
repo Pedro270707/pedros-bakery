@@ -3,7 +3,8 @@
   "package": "net.pedroricardo.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "HijackItemUsageContext"
+    "HijackItemUsageContext",
+    "ReadComponentsAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

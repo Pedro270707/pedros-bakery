@@ -24,8 +24,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.block.MultipartBlock;
+import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.helpers.CakeLayer;
+import net.pedroricardo.block.multipart.MultipartBlockEntity;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 

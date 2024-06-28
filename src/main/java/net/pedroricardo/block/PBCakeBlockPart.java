@@ -13,10 +13,13 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.pedroricardo.block.entity.PBBlockEntities;
+import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.entity.PBCakeBlockEntityPart;
+import net.pedroricardo.block.multipart.MultipartBlock;
+import net.pedroricardo.block.multipart.MultipartBlockPart;
 import org.jetbrains.annotations.Nullable;
 
-public class PBCakeBlockPart extends MultipartBlockPart<PBCakeBlockEntityPart> {
+public class PBCakeBlockPart extends MultipartBlockPart<PBCakeBlockEntity, PBCakeBlockEntityPart> {
     public static final MapCodec<PBCakeBlockPart> CODEC = createCodec(PBCakeBlockPart::new);
 
     protected PBCakeBlockPart(Settings settings) {
@@ -33,7 +36,7 @@ public class PBCakeBlockPart extends MultipartBlockPart<PBCakeBlockEntityPart> {
     }
 
     @Override
-    protected MapCodec<? extends MultipartBlockPart<PBCakeBlockEntityPart>> getCodec() {
+    protected MapCodec<? extends MultipartBlockPart<PBCakeBlockEntity, PBCakeBlockEntityPart>> getCodec() {
         return CODEC;
     }
 

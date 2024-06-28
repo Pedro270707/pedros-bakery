@@ -1,4 +1,4 @@
-package net.pedroricardo.block.entity;
+package net.pedroricardo.block.multipart;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -11,10 +11,10 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pedroricardo.PBHelpers;
-import net.pedroricardo.block.MultipartBlockPart;
+import net.pedroricardo.mixin.ReadComponentsAccessor;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class MultipartBlockEntityPart extends BlockEntity {
+public abstract class MultipartBlockEntityPart<T extends BlockEntity & MultipartBlockEntity> extends BlockEntity {
     @Nullable
     private BlockPos parentPos;
 
@@ -38,12 +38,12 @@ public abstract class MultipartBlockEntityPart extends BlockEntity {
         }
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, MultipartBlockEntityPart blockEntity) {
+    public static void tick(World world, BlockPos pos, BlockState state, MultipartBlockEntityPart<?> blockEntity) {
         if (state.getOutlineShape(world, pos).isEmpty()) {
             world.setBlockState(pos, state.with(MultipartBlockPart.DELEGATE, false));
             world.removeBlock(pos, false);
             PBHelpers.updateListeners(blockEntity);
-        } else if (!(state.getBlock() instanceof MultipartBlockPart<?> part) || !part.stillValid(world, pos)) {
+        } else if (!(state.getBlock() instanceof MultipartBlockPart<?, ?> part) || !part.stillValid(world, pos)) {
             world.setBlockState(pos, state.with(MultipartBlockPart.DELEGATE, false));
             world.breakBlock(pos, false);
             PBHelpers.updateListeners(blockEntity);
@@ -67,7 +67,7 @@ public abstract class MultipartBlockEntityPart extends BlockEntity {
     @Override
     protected void readComponents(ComponentsAccess components) {
         if (this.getParent() != null) {
-            this.getParent().readComponents(components);
+            ((ReadComponentsAccessor) this.getParent()).invokeReadComponents(components);
         }
     }
 
@@ -77,10 +77,13 @@ public abstract class MultipartBlockEntityPart extends BlockEntity {
     }
 
     @Nullable
-    public PBCakeBlockEntity getParent() {
-        if (this.parentPos == null || !this.hasWorld() || !(this.getWorld().getBlockEntity(this.parentPos) instanceof PBCakeBlockEntity cake)) {
+    public T getParent() {
+        if (this.parentPos == null || !this.hasWorld()) return null;
+        try {
+            T blockEntity = (T) this.getWorld().getBlockEntity(this.parentPos);
+            return blockEntity;
+        } catch (ClassCastException ignored) {
             return null;
         }
-        return cake;
     }
 }

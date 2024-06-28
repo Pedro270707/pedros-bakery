@@ -1,4 +1,4 @@
-package net.pedroricardo.block;
+package net.pedroricardo.block.multipart;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -23,7 +23,7 @@ public interface MultipartBlock {
      */
     default void removePartsWhenReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         for (BlockPos partPos : this.getParts(world, pos)) {
-            if (world.getBlockState(partPos).getBlock() instanceof MultipartBlockPart<?> && world.getBlockState(partPos).contains(MultipartBlockPart.DELEGATE)) {
+            if (world.getBlockState(partPos).getBlock() instanceof MultipartBlockPart<?, ?> && world.getBlockState(partPos).contains(MultipartBlockPart.DELEGATE)) {
                 world.setBlockState(partPos, world.getBlockState(partPos).with(MultipartBlockPart.DELEGATE, false));
             }
             if (moved) {

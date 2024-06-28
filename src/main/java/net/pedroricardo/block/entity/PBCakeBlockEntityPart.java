@@ -7,9 +7,10 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
+import net.pedroricardo.block.multipart.MultipartBlockEntityPart;
 import org.jetbrains.annotations.Nullable;
 
-public class PBCakeBlockEntityPart extends MultipartBlockEntityPart {
+public class PBCakeBlockEntityPart extends MultipartBlockEntityPart<PBCakeBlockEntity> {
     public PBCakeBlockEntityPart(BlockPos pos, BlockState state) {
         this(pos, state, null);
     }

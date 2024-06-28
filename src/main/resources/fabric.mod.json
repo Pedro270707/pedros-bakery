@@ -35,7 +35,5 @@
 		"java": ">=21",
 		"fabric-api": "*"
 	},
-	"suggests": {
-		"another-mod": "*"
-	}
+	"accessWidener": "pedrosbakery.accesswidener"
 }
