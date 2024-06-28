@@ -29,9 +29,7 @@ public class PaintingCakeFeature extends CakeFeature {
         if (world.isClient()) return;
         NbtComponent nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
         nbt.get(world.getRegistryManager().getOps(NbtOps.INSTANCE), PaintingEntity.VARIANT_MAP_CODEC).result().ifPresentOrElse(variant -> {
-            NbtCompound compound = new NbtCompound();
-            PaintingEntity.VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, variant).ifSuccess(element -> compound.copyFrom((NbtCompound) element));
-            this.saveData(layer, compound);
+            this.saveData(layer, (NbtCompound) PaintingEntity.VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, variant).result().orElse(new NbtCompound()));
         }, () -> {
             List<RegistryEntry<PaintingVariant>> list = Lists.newArrayList();
             world.getRegistryManager().get(RegistryKeys.PAINTING_VARIANT).iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
@@ -42,9 +40,7 @@ public class PaintingCakeFeature extends CakeFeature {
             if (optional.isEmpty()) {
                 return;
             }
-            NbtCompound compound = new NbtCompound();
-            PaintingEntity.VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, optional.get()).ifSuccess(element -> compound.copyFrom((NbtCompound) element));
-            this.saveData(layer, compound);
+            this.saveData(layer, (NbtCompound) PaintingEntity.VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, optional.get()).result().orElse(new NbtCompound()));
         });
     }
 
@@ -58,9 +54,6 @@ public class PaintingCakeFeature extends CakeFeature {
     }
 
     public RegistryEntry<PaintingVariant> getPainting(CakeLayer layer, DynamicRegistryManager registry) {
-        if (registry == null) {
-            return PaintingEntity.VARIANT_ENTRY_CODEC.parse(NbtOps.INSTANCE, this.getData(layer)).result().orElse(null);
-        }
-        return PaintingEntity.VARIANT_ENTRY_CODEC.parse(NbtOps.INSTANCE, this.getData(layer)).result().orElse(registry.get(RegistryKeys.PAINTING_VARIANT).getDefaultEntry().orElseThrow());
+        return PaintingEntity.VARIANT_ENTRY_CODEC.parse(NbtOps.INSTANCE, this.getData(layer)).result().orElse(registry == null ? null : registry.get(RegistryKeys.PAINTING_VARIANT).getDefaultEntry().orElseThrow());
     }
 }

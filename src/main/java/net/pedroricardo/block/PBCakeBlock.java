@@ -45,12 +45,11 @@ import net.pedroricardo.item.PBItems;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class PBCakeBlock extends BlockWithEntity implements MultipartBlock {
-    public static final int MAX_CAKE_HEIGHT = 128;
+    public static final int MAX_CAKE_HEIGHT = 256;
     public static final int BITE_SIZE = 2;
     public static final int TICKS_UNTIL_BAKED = 2000;
     public static final MapCodec<PBCakeBlock> CODEC = createCodec(PBCakeBlock::new);
@@ -298,6 +297,14 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock {
             return this.of(cake, cake.getLayers());
         }
         return of(Collections.singletonList(CakeLayer.getDefault()));
+    }
+
+    @Override
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        for (BlockPos partPos : this.getParts(world, pos)) {
+            world.breakBlock(partPos, false);
+        }
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     @Override

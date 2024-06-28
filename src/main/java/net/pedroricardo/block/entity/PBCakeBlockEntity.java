@@ -30,7 +30,6 @@ import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PBCakeBlockEntity extends BlockEntity {
     private List<CakeLayer> layers = Lists.newArrayList();
@@ -75,6 +74,7 @@ public class PBCakeBlockEntity extends BlockEntity {
 
     public static void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         blockEntity.getLayers().removeIf(CakeLayer::isEmpty);
+        blockEntity.markDirty();
         if (blockEntity.getLayers().isEmpty()) {
             world.removeBlock(pos, false);
             world.emitGameEvent(null, GameEvent.BLOCK_DESTROY, pos);
@@ -82,6 +82,7 @@ public class PBCakeBlockEntity extends BlockEntity {
         } else {
             blockEntity.getLayers().forEach(layer -> layer.tick(world, pos, state, blockEntity));
         }
+        // TODO: do this only when cake changes
         VoxelShape shape = state.getBlock() instanceof MultipartBlock ? ((MultipartBlock)state.getBlock()).getFullShape(state, world, pos, ShapeContext.absent()) : blockEntity.toShape(state.getOrEmpty(Properties.HORIZONTAL_FACING).orElse(Direction.NORTH));
         if (shape.isEmpty()) return;
         Box box = shape.getBoundingBox().offset(pos);
@@ -93,7 +94,7 @@ public class PBCakeBlockEntity extends BlockEntity {
                     BlockPos pos1 = new BlockPos(x, y, z);
                     if (!world.isInBuildLimit(pos1) || VoxelShapes.combineAndSimplify(shape, VoxelShapes.fullCube().offset(pos1.getX() - pos.getX(), pos1.getY() - pos.getY(), pos1.getZ() - pos.getZ()), BooleanBiFunction.AND).isEmpty()) continue;
                     BlockState state1 = world.getBlockState(pos1);
-                    if ((state1.isReplaceable() && !state1.isSolidBlock(world, pos1)) && !pos1.equals(pos)) {
+                    if ((state1.isOf(PBBlocks.CAKE_PART) || state1.isReplaceable()) && !state1.isSolidBlock(world, pos1) && !pos1.equals(pos)) {
                         if (!state1.isOf(PBBlocks.CAKE_PART)) {
                             BlockState partState = PBBlocks.CAKE_PART.getDefaultState();
                             PBCakePartBlockEntity partBlockEntity = new PBCakePartBlockEntity(pos1, partState, pos);
