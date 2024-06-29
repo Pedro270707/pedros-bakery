@@ -13,7 +13,6 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -23,7 +22,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
-import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.helpers.CakeLayer;
 import net.pedroricardo.block.multipart.MultipartBlockEntity;
@@ -97,7 +95,8 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
 
     @Override
     public void updateParts(World world, BlockPos pos, BlockState state) {
-        VoxelShape shape = state.getBlock() instanceof MultipartBlock ? ((MultipartBlock)state.getBlock()).getFullShape(state, world, pos, ShapeContext.absent()) : this.toShape(state.getOrEmpty(Properties.HORIZONTAL_FACING).orElse(Direction.NORTH));
+        if (!(state.getBlock() instanceof MultipartBlock<?, ?, ?> block)) return;
+        VoxelShape shape = block.getFullShape(state, world, pos, ShapeContext.absent());
         if (shape.isEmpty()) return;
         Box box = shape.getBoundingBox().offset(pos);
         box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
@@ -105,15 +104,11 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
         for (int x = (int)box.minX; x < box.maxX; x++) {
             for (int y = (int)box.minY; y < box.maxY; y++) {
                 for (int z = (int)box.minZ; z < box.maxZ; z++) {
-                    BlockPos pos1 = new BlockPos(x, y, z);
-                    if (!world.isInBuildLimit(pos1) || VoxelShapes.combineAndSimplify(shape, VoxelShapes.fullCube().offset(pos1.getX() - pos.getX(), pos1.getY() - pos.getY(), pos1.getZ() - pos.getZ()), BooleanBiFunction.AND).isEmpty()) continue;
-                    BlockState state1 = world.getBlockState(pos1);
-                    if (state1.isReplaceable() && !state1.isSolidBlock(world, pos1) && !pos1.equals(pos)) {
-                        BlockState partState = PBBlocks.CAKE_PART.getDefaultState();
-                        PBCakeBlockEntityPart partBlockEntity = new PBCakeBlockEntityPart(pos1, partState, pos);
-                        world.setBlockState(pos1, partState);
-                        world.addBlockEntity(partBlockEntity);
-                        this.getParts().add(pos1);
+                    BlockPos partPos = new BlockPos(x, y, z);
+                    if (!world.isInBuildLimit(partPos) || VoxelShapes.combineAndSimplify(shape, VoxelShapes.fullCube().offset(partPos.getX() - pos.getX(), partPos.getY() - pos.getY(), partPos.getZ() - pos.getZ()), BooleanBiFunction.AND).isEmpty()) continue;
+                    BlockState partState = world.getBlockState(partPos);
+                    if (partState.isReplaceable() && !partState.isSolidBlock(world, partPos) && !partPos.equals(pos)) {
+                        this.createPart(world, block, partPos, pos);
                     }
                 }
             }

@@ -35,12 +35,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
+import net.pedroricardo.block.entity.PBCakeBlockEntityPart;
 import net.pedroricardo.block.helpers.CakeFeature;
 import net.pedroricardo.block.helpers.CakeLayer;
 import net.pedroricardo.block.entity.PBBlockEntities;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.helpers.CakeTop;
 import net.pedroricardo.block.multipart.MultipartBlock;
+import net.pedroricardo.block.multipart.MultipartBlockPart;
+import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import org.apache.commons.compress.utils.Lists;
@@ -49,7 +52,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-public class PBCakeBlock extends BlockWithEntity implements MultipartBlock {
+public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCakeBlockEntity, PBCakeBlockEntityPart, PBCakeBlockPart> {
     public static final int MAX_CAKE_HEIGHT = 256;
     public static final int BITE_SIZE = 2;
     public static final int TICKS_UNTIL_BAKED = 2000;
@@ -84,6 +87,28 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock {
             return cake.getParts();
         }
         return List.of();
+    }
+
+    @Override
+    public void removePartsWhenReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        for (BlockPos partPos : this.getParts(world, pos)) {
+            if (!(world.getBlockState(partPos).getBlock() instanceof MultipartBlockPart<?, ?>) || !world.getBlockState(partPos).contains(MultipartBlockPart.DELEGATE)) {
+                return;
+            }
+            world.setBlockState(partPos, world.getBlockState(partPos).with(MultipartBlockPart.DELEGATE, false));
+            if (moved) {
+                world.removeBlock(partPos, true);
+            } else if (newState.isIn(PBTags.Blocks.CAKES)) {
+                world.removeBlock(partPos, false);
+            } else {
+                world.breakBlock(partPos, false);
+            }
+        }
+    }
+
+    @Override
+    public PBCakeBlockPart getPart() {
+        return (PBCakeBlockPart) PBBlocks.CAKE_PART;
     }
 
     @Override
@@ -161,6 +186,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock {
         changeState(world, pos, state);
         cake.getLayers().get(layerIndex).bite(world, pos, state, player, cake);
         if (cake.getLayers().size() == 1 && cake.getLayers().get(layerIndex).isEmpty()) {
+            cake.removeAllParts(world);
             world.removeBlock(pos, false);
             world.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);
         }
@@ -304,7 +330,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock {
     protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         removePartsWhenReplaced(state, world, pos, newState, moved);
         super.onStateReplaced(state, world, pos, newState, moved);
-        world.updateListeners(pos, state, newState, Block.NOTIFY_ALL_AND_REDRAW);
+        world.updateListeners(pos, state, newState, Block.NOTIFY_ALL_AND_REDRAW | (moved ? Block.MOVED : 0));
     }
 
     @Override

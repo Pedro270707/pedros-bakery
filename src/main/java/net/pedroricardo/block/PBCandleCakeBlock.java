@@ -30,15 +30,18 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.pedroricardo.block.entity.PBBlockEntities;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
+import net.pedroricardo.block.entity.PBCakeBlockEntityPart;
 import net.pedroricardo.block.helpers.CakeLayer;
 import net.pedroricardo.block.multipart.MultipartBlock;
+import net.pedroricardo.block.multipart.MultipartBlockPart;
+import net.pedroricardo.block.tags.PBTags;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements BlockEntityProvider, MultipartBlock {
+public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements BlockEntityProvider, MultipartBlock<PBCakeBlockEntity, PBCakeBlockEntityPart, PBCakeBlockPart> {
     public static final MapCodec<PBCandleCakeBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec<? super CandleBlock>)Registries.BLOCK.getCodec().fieldOf("candle")).forGetter(block -> block.candle), CandleCakeBlock.createSettingsCodec()).apply(instance, (block, settings) -> new PBCandleCakeBlock((CandleBlock) block, settings)));
     private final CandleBlock candle;
     private static final Map<CandleBlock, PBCandleCakeBlock> CANDLES_TO_CANDLE_CAKES = Maps.newHashMap();
@@ -150,5 +153,27 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
             return cake.getParts();
         }
         return List.of();
+    }
+
+    @Override
+    public void removePartsWhenReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        for (BlockPos partPos : this.getParts(world, pos)) {
+            if (!(world.getBlockState(partPos).getBlock() instanceof MultipartBlockPart<?, ?>) || !world.getBlockState(partPos).contains(MultipartBlockPart.DELEGATE)) {
+                return;
+            }
+            world.setBlockState(partPos, world.getBlockState(partPos).with(MultipartBlockPart.DELEGATE, false));
+            if (moved) {
+                world.removeBlock(partPos, true);
+            } else if (newState.isIn(PBTags.Blocks.CAKES)) {
+                world.removeBlock(partPos, false);
+            } else {
+                world.breakBlock(partPos, false);
+            }
+        }
+    }
+
+    @Override
+    public PBCakeBlockPart getPart() {
+        return (PBCakeBlockPart) PBBlocks.CAKE_PART;
     }
 }

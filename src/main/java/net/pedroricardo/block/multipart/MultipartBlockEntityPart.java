@@ -78,7 +78,7 @@ public abstract class MultipartBlockEntityPart<T extends BlockEntity & Multipart
 
     @Nullable
     public T getParent() {
-        if (this.parentPos == null || !this.hasWorld()) return null;
+        if (this.getParentPos() == null || !this.hasWorld()) return null;
         try {
             T blockEntity = (T) this.getWorld().getBlockEntity(this.parentPos);
             return blockEntity;

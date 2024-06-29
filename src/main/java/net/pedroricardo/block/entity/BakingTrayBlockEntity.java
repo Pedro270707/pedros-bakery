@@ -1,6 +1,7 @@
 package net.pedroricardo.block.entity;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.item.ItemStack;
@@ -11,7 +12,11 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
@@ -19,17 +24,23 @@ import net.pedroricardo.PBSounds;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.PBCakeBlock;
 import net.pedroricardo.block.helpers.CakeBatter;
+import net.pedroricardo.block.multipart.MultipartBlock;
+import net.pedroricardo.block.multipart.MultipartBlockEntity;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
+import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class BakingTrayBlockEntity extends BlockEntity {
+import java.util.List;
+
+public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlockEntity {
     public static final int DEFAULT_SIZE = 8;
     public static final int DEFAULT_HEIGHT = 8;
     private int size = DEFAULT_SIZE;
     private int height = DEFAULT_HEIGHT;
     private CakeBatter cakeBatter = CakeBatter.getEmpty();
+    private List<BlockPos> parts = Lists.newArrayList();
 
     public BakingTrayBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.BAKING_TRAY, pos, state);
@@ -70,6 +81,9 @@ public class BakingTrayBlockEntity extends BlockEntity {
             if (blockEntity.getCakeBatter().getBakeTime() == PBCakeBlock.TICKS_UNTIL_BAKED) {
                 world.playSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.BAKING_TRAY_DONE, SoundCategory.BLOCKS, 1.25f, 1.0f, true);
             }
+        }
+        if (!world.isClient()) {
+            blockEntity.updateParts(world, pos, state);
         }
     }
 
@@ -137,5 +151,32 @@ public class BakingTrayBlockEntity extends BlockEntity {
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public List<BlockPos> getParts() {
+        return this.parts;
+    }
+
+    @Override
+    public void updateParts(World world, BlockPos pos, BlockState state) {
+        if (!(state.getBlock() instanceof MultipartBlock<?, ?, ?> block)) return;
+        VoxelShape shape = block.getFullShape(state, world, pos, ShapeContext.absent());
+        if (shape.isEmpty()) return;
+        Box box = shape.getBoundingBox().offset(pos);
+        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
+        this.removeAllParts(world);
+        for (int x = (int)box.minX; x < box.maxX; x++) {
+            for (int y = (int)box.minY; y < box.maxY; y++) {
+                for (int z = (int)box.minZ; z < box.maxZ; z++) {
+                    BlockPos partPos = new BlockPos(x, y, z);
+                    if (!world.isInBuildLimit(partPos) || VoxelShapes.combineAndSimplify(shape, VoxelShapes.fullCube().offset(partPos.getX() - pos.getX(), partPos.getY() - pos.getY(), partPos.getZ() - pos.getZ()), BooleanBiFunction.AND).isEmpty()) continue;
+                    BlockState partState = world.getBlockState(partPos);
+                    if (partState.isReplaceable() && !partState.isSolidBlock(world, partPos) && !partPos.equals(pos)) {
+                        this.createPart(world, block, partPos, pos);
+                    }
+                }
+            }
+        }
     }
 }

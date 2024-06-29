@@ -42,6 +42,10 @@ public class PBBlockEntities {
             BakingTrayBlockEntity::new,
             PBBlocks.BAKING_TRAY), "baking_tray");
 
+    public static final BlockEntityType<? extends BakingTrayBlockEntityPart> BAKING_TRAY_PART = register(BlockEntityType.Builder.create(
+            BakingTrayBlockEntityPart::new,
+            PBBlocks.BAKING_TRAY_PART), "baking_tray_part");
+
     public static final BlockEntityType<? extends CakeStandBlockEntity> CAKE_STAND = register(BlockEntityType.Builder.create(
             CakeStandBlockEntity::new,
             PBBlocks.CAKE_STAND), "cake_stand");

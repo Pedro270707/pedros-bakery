@@ -27,4 +27,12 @@ public interface MultipartBlockEntity {
         }
         this.getParts().clear();
     }
+
+    default void createPart(World world, MultipartBlock<?, ?, ?> block, BlockPos pos, BlockPos parentPos) {
+        BlockState state = block.getPart().getDefaultState();
+        MultipartBlockEntityPart<?> blockEntity = block.getPart().createBlockEntity(pos, state, parentPos);
+        world.setBlockState(pos, state);
+        world.addBlockEntity(blockEntity);
+        this.getParts().add(pos);
+    }
 }
