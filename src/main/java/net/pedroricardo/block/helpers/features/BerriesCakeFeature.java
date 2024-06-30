@@ -1,9 +1,7 @@
 package net.pedroricardo.block.helpers.features;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.MushroomPlantBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;

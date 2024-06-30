@@ -2,11 +2,12 @@ package net.pedroricardo.render;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -15,9 +16,9 @@ import net.minecraft.util.math.RotationAxis;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.PBCakeBlock;
 import net.pedroricardo.block.PBCandleCakeBlock;
+import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.helpers.CakeFeature;
 import net.pedroricardo.block.helpers.CakeLayer;
-import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.registry.CakeFeatureRenderer;
 import net.pedroricardo.registry.CakeFeatureRendererRegistry;
 

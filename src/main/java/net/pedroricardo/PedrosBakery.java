@@ -1,11 +1,12 @@
 package net.pedroricardo;
 
 import net.fabricmc.api.ModInitializer;
-
 import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
 import net.minecraft.item.Items;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.block.helpers.*;
+import net.pedroricardo.block.helpers.CakeFeatures;
+import net.pedroricardo.block.helpers.CakeFlavors;
+import net.pedroricardo.block.helpers.CakeTops;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import net.pedroricardo.item.recipes.PBRecipeSerializers;

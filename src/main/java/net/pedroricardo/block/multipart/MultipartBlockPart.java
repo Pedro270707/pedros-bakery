@@ -20,7 +20,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
 import net.pedroricardo.PBHelpers;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.BiConsumer;
