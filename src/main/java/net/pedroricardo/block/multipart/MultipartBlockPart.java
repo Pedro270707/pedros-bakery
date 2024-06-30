@@ -9,9 +9,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -26,7 +23,6 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -57,7 +53,7 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
         if (state.getOrEmpty(DELEGATE).orElse(false)) {
-            this.parentConsumer(world, pos, blockEntity -> world.getBlockState(blockEntity.getPos()).getBlock().onSteppedOn(world, blockEntity.getPos(), blockEntity.getCachedState(), entity));
+            this.parentConsumer(world.getBlockEntity(pos), blockEntity -> world.getBlockState(blockEntity.getPos()).getBlock().onSteppedOn(world, blockEntity.getPos(), blockEntity.getCachedState(), entity));
         }
         super.onSteppedOn(world, pos, state, entity);
     }
@@ -65,7 +61,7 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
     @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
         if (state.getOrEmpty(DELEGATE).orElse(false)) {
-            this.parentConsumer(world, pos, blockEntity -> world.getBlockState(blockEntity.getPos()).getBlock().onLandedUpon(world, blockEntity.getCachedState(), blockEntity.getPos(), entity, fallDistance));
+            this.parentConsumer(world.getBlockEntity(pos), blockEntity -> world.getBlockState(blockEntity.getPos()).getBlock().onLandedUpon(world, blockEntity.getCachedState(), blockEntity.getPos(), entity, fallDistance));
         }
         super.onLandedUpon(world, state, pos, entity, fallDistance);
     }
@@ -73,7 +69,7 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
     @Override
     protected void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
         if (state.getOrEmpty(DELEGATE).orElse(false)) {
-            this.parentConsumer(world, hit.getBlockPos(), blockEntity -> world.getBlockState(blockEntity.getPos()).onProjectileHit(world, blockEntity.getCachedState(), hit, projectile));
+            this.parentConsumer(world.getBlockEntity(hit.getBlockPos()), blockEntity -> world.getBlockState(blockEntity.getPos()).onProjectileHit(world, blockEntity.getCachedState(), hit, projectile));
         }
         super.onProjectileHit(world, state, hit, projectile);
     }
@@ -81,7 +77,7 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
     @Override
     protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
         if (state.getOrEmpty(DELEGATE).orElse(false)) {
-            this.parentConsumer(world, pos, blockEntity -> world.getBlockState(blockEntity.getPos()).onExploded(world, blockEntity.getPos(), explosion, stackMerger));
+            this.parentConsumer(world.getBlockEntity(pos), blockEntity -> world.getBlockState(blockEntity.getPos()).onExploded(world, blockEntity.getPos(), explosion, stackMerger));
         }
         super.onExploded(state, world, pos, explosion, stackMerger);
     }
@@ -89,45 +85,67 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
     @Override
     protected boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
         if (state.getOrEmpty(DELEGATE).orElse(false)) {
-            this.parentConsumer(world, pos, blockEntity -> world.getBlockState(blockEntity.getPos()).onSyncedBlockEvent(world, blockEntity.getPos(), type, data));
+            this.parentConsumer(world.getBlockEntity(pos), blockEntity -> world.getBlockState(blockEntity.getPos()).onSyncedBlockEvent(world, blockEntity.getPos(), type, data));
         }
         return super.onSyncedBlockEvent(state, world, pos, type, data);
     }
 
     @Override
-    public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
+    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity partBlockEntity, ItemStack tool) {
         if (state.getOrEmpty(DELEGATE).orElse(false)) {
-            this.parentConsumer(world, pos, blockEntity -> world.getBlockState(blockEntity.getPos()).getBlock().onBroken(world, blockEntity.getPos(), blockEntity.getCachedState()));
+            this.parentConsumer(partBlockEntity, blockEntity -> {
+//                System.out.println("Breaking " + blockEntity.getPos());
+//                world.breakBlock(blockEntity.getPos(), true, player, Block.NOTIFY_ALL_AND_REDRAW);
+            });
         }
+        super.afterBreak(world, player, pos, state, partBlockEntity, tool);
+    }
+
+    @Override
+    public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
+//        if (state.getOrEmpty(DELEGATE).orElse(false)) {
+//            this.parentConsumer(world.getBlockEntity(pos), blockEntity -> {
+//                world.getBlockState(blockEntity.getPos()).getBlock().onBroken(world, blockEntity.getPos(), blockEntity.getCachedState());
+//            });
+//        }
         super.onBroken(world, pos, state);
     }
 
     @Override
     protected void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-        if (state.getOrEmpty(DELEGATE).orElse(false)) {
-            this.parentConsumer(world, pos, blockEntity -> world.getBlockState(blockEntity.getPos()).onBlockBreakStart(world, blockEntity.getPos(), player));
-        }
+//        if (state.getOrEmpty(DELEGATE).orElse(false)) {
+//            this.parentConsumer(world, pos, blockEntity -> world.getBlockState(blockEntity.getPos()).onBlockBreakStart(world, blockEntity.getPos(), player));
+//        }
         super.onBlockBreakStart(state, world, pos, player);
     }
 
     @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        BlockState onBreakSuper = super.onBreak(world, pos, state, player);
-        return !state.getOrEmpty(DELEGATE).orElse(false) ? onBreakSuper : this.parentFunction(world.getBlockEntity(pos), blockEntity -> blockEntity.getCachedState().getBlock().onBreak(world, blockEntity.getPos(), state, player)).orElse(state);
+        if (state.getOrEmpty(DELEGATE).orElse(false)) {
+            this.parentConsumer(world.getBlockEntity(pos), blockEntity -> {
+                world.breakBlock(blockEntity.getPos(), player.canHarvest(blockEntity.getCachedState()), player);
+            });
+        }
+        return super.onBreak(world, pos, state, player);
+    }
+
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, @Nullable BlockEntity partBlockEntity, boolean moved) {
+//        if (newState.getOrEmpty(DELEGATE).orElse(state.getOrEmpty(DELEGATE).orElse(false))) {
+//            this.parentConsumer(partBlockEntity, blockEntity -> {
+//                world.breakBlock(blockEntity.getPos(), false);
+//            });
+//        }
     }
 
     @Override
     protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (newState.getOrEmpty(DELEGATE).orElse(state.getOrEmpty(DELEGATE).orElse(false))) {
-            this.parentConsumer(world, pos, blockEntity -> world.getBlockState(blockEntity.getPos()).onStateReplaced(world, blockEntity.getPos(), newState, moved));
-        }
         super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     @Override
     protected void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
         if (state.getOrEmpty(DELEGATE).orElse(state.getOrEmpty(DELEGATE).orElse(false))) {
-            this.parentConsumer(world, pos, blockEntity -> world.getBlockState(blockEntity.getPos()).onStacksDropped(world, blockEntity.getPos(), tool, dropExperience));
+            this.parentConsumer(world.getBlockEntity(pos), blockEntity -> world.getBlockState(blockEntity.getPos()).onStacksDropped(world, blockEntity.getPos(), tool, dropExperience));
         }
         super.onStacksDropped(state, world, pos, tool, dropExperience);
     }
@@ -151,7 +169,7 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
     @Override
     protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (state.getOrEmpty(DELEGATE).orElse(false)) {
-            this.parentConsumer(world, pos, blockEntity -> world.getBlockState(blockEntity.getPos()).onEntityCollision(world, blockEntity.getPos(), entity));
+            this.parentConsumer(world.getBlockEntity(pos), blockEntity -> world.getBlockState(blockEntity.getPos()).onEntityCollision(world, blockEntity.getPos(), entity));
         } else {
             super.onEntityCollision(state, world, pos, entity);
         }
@@ -172,12 +190,12 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
         }
     }
 
-    private void parentConsumer(WorldView world, BlockPos pos, Consumer<C> function) {
-        if (world.getBlockEntity(pos) == null) {
+    private void parentConsumer(BlockEntity blockEntity, Consumer<C> function) {
+        if (blockEntity == null) {
             return;
         }
         try {
-            C parent = ((E) world.getBlockEntity(pos)).getParent();
+            C parent = ((E) blockEntity).getParent();
             if (parent != null) {
                 function.accept(parent);
             }

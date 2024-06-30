@@ -5,8 +5,7 @@
   "mixins": [
     "HijackItemUsageContext",
     "ReadComponentsAccessor",
-    "ServerPlayerControllerMixin",
-    "WorldMixin"
+    "WorldChunkMixin"
   ],
   "injectors": {
     "defaultRequire": 1
