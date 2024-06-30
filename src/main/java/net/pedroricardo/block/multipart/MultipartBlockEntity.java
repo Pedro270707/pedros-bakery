@@ -1,6 +1,7 @@
 package net.pedroricardo.block.multipart;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -27,6 +28,7 @@ public interface MultipartBlockEntity {
             world.removeBlock(pos, false);
         }
         this.getParts().clear();
+        ((BlockEntity)this).markDirty();
     }
 
     default void createPart(World world, MultipartBlock<?, ?, ?> block, BlockPos pos, BlockPos parentPos) {

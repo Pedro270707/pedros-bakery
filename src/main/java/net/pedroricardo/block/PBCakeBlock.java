@@ -195,6 +195,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
 
             List<CakeLayer> cakeLayers = stackList.stream().map(element -> element.getType() == NbtElement.COMPOUND_TYPE ? CakeLayer.fromNbt((NbtCompound) element) : CakeLayer.getEmpty()).toList();
             if (tryAddLayers(cake, cakeLayers)) {
+                PBHelpers.updateListeners(cake);
                 stack.decrementUnlessCreative(1, player);
                 return ItemActionResult.SUCCESS;
             }

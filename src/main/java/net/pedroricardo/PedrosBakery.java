@@ -31,56 +31,49 @@ public class PedrosBakery implements ModInitializer {
 		PBRecipeSerializers.init();
 
 		DefaultItemComponentEvents.MODIFY.register((ctx) -> {
-			ctx.modify(Items.ENCHANTED_GOLDEN_APPLE, builder -> {
-				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GLINT));
-			});
+			ctx.modify(Items.ENCHANTED_GOLDEN_APPLE, builder ->
+				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GLINT))
+			);
 
-			ctx.modify(Items.NETHER_STAR, builder -> {
-				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GLINT));
-			});
+			ctx.modify(Items.NETHER_STAR, builder ->
+				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GLINT))
+			);
 
-			ctx.modify(Items.SOUL_SOIL, builder -> {
-				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.SOULS));
-			});
+			ctx.modify(Items.SOUL_SOIL, builder ->
+				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.SOULS))
+			);
 
-			ctx.modify(Items.SOUL_SAND, builder -> {
-				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.SOULS));
-			});
+			ctx.modify(Items.SOUL_SAND, builder ->
+				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.SOULS))
+			);
 
-			ctx.modify(Items.SWEET_BERRIES, builder -> {
-				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.SWEET_BERRIES));
-			});
+			ctx.modify(Items.SWEET_BERRIES, builder ->
+				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.SWEET_BERRIES))
+			);
 
-			ctx.modify(Items.RED_MUSHROOM, builder -> {
-				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.RED_MUSHROOM));
-			});
+			ctx.modify(Items.RED_MUSHROOM, builder ->
+				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.RED_MUSHROOM))
+			);
 
-			ctx.modify(Items.BROWN_MUSHROOM, builder -> {
-				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.BROWN_MUSHROOM));
-			});
+			ctx.modify(Items.BROWN_MUSHROOM, builder ->
+				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.BROWN_MUSHROOM))
+			);
 
-			ctx.modify(Items.GLOW_BERRIES, builder -> {
-				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GLOW_BERRIES));
-			});
+			ctx.modify(Items.GLOW_BERRIES, builder ->
+				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GLOW_BERRIES))
+			);
 
-			ctx.modify(Items.ENDER_EYE, builder -> {
-				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.END_DUST));
-			});
+			ctx.modify(Items.ENDER_EYE, builder ->
+				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.END_DUST))
+			);
 
-			ctx.modify(Items.HONEY_BOTTLE, builder -> {
-				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.HONEY));
-			});
+			ctx.modify(Items.HONEY_BOTTLE, builder ->
+				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.HONEY))
+			);
 
-			ctx.modify(Items.PAINTING, builder -> {
-				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.PAINTING));
-			});
+			ctx.modify(Items.PAINTING, builder ->
+				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.PAINTING))
+			);
 		});
-
-//		CakeLayer layer = CakeLayer.getDefault();
-//		NbtCompound nbt = new NbtCompound();
-//		nbt.putString("data_text", "Hello world!");
-//		layer.addFeature(CakeFeatures.BROWN_MUSHROOM, nbt);
-//		ItemStack stack = PBCakeBlock.of(Collections.singletonList(layer));
-//		System.out.println(stack.getComponents());
 	}
 }

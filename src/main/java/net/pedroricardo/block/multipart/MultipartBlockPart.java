@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -16,11 +17,14 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
 import net.pedroricardo.PBHelpers;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -46,22 +50,6 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(DELEGATE);
-    }
-
-    @Override
-    public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-        if (state.getOrEmpty(DELEGATE).orElse(false)) {
-            this.parentConsumer(world.getBlockEntity(pos), blockEntity -> world.getBlockState(blockEntity.getPos()).getBlock().onSteppedOn(world, blockEntity.getPos(), blockEntity.getCachedState(), entity));
-        }
-        super.onSteppedOn(world, pos, state, entity);
-    }
-
-    @Override
-    public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
-        if (state.getOrEmpty(DELEGATE).orElse(false)) {
-            this.parentConsumer(world.getBlockEntity(pos), blockEntity -> world.getBlockState(blockEntity.getPos()).getBlock().onLandedUpon(world, blockEntity.getCachedState(), blockEntity.getPos(), entity, fallDistance));
-        }
-        super.onLandedUpon(world, state, pos, entity, fallDistance);
     }
 
     @Override
@@ -93,6 +81,7 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
         if (state.getOrEmpty(DELEGATE).orElse(false)) {
             this.parentConsumer(world.getBlockEntity(pos), blockEntity -> {
                 world.breakBlock(blockEntity.getPos(), player.canHarvest(blockEntity.getCachedState()), player);
+                blockEntity.getCachedState().getBlock().afterBreak(world, player, blockEntity.getPos(), blockEntity.getCachedState(), blockEntity, player.getMainHandStack());
                 PBHelpers.updateListeners(blockEntity);
             });
         }
