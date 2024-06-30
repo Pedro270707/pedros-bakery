@@ -4,8 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "HijackItemUsageContext",
-    "ReadComponentsAccessor",
-    "WorldChunkMixin"
+    "ReadComponentsAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

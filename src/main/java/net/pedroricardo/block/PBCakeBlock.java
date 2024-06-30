@@ -90,23 +90,6 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
     }
 
     @Override
-    public void removePartsWhenReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        for (BlockPos partPos : this.getParts(world, pos)) {
-            if (!(world.getBlockState(partPos).getBlock() instanceof MultipartBlockPart<?, ?>) || !world.getBlockState(partPos).contains(MultipartBlockPart.DELEGATE)) {
-                return;
-            }
-            world.setBlockState(partPos, world.getBlockState(partPos).with(MultipartBlockPart.DELEGATE, false));
-            if (moved) {
-                world.removeBlock(partPos, true);
-            } else if (newState.isIn(PBTags.Blocks.CAKES)) {
-                world.removeBlock(partPos, false);
-            } else {
-                world.breakBlock(partPos, false);
-            }
-        }
-    }
-
-    @Override
     public PBCakeBlockPart getPart() {
         return (PBCakeBlockPart) PBBlocks.CAKE_PART;
     }
@@ -331,6 +314,23 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         removePartsWhenReplaced(state, world, pos, newState, moved);
         super.onStateReplaced(state, world, pos, newState, moved);
         world.updateListeners(pos, state, newState, Block.NOTIFY_ALL_AND_REDRAW | (moved ? Block.MOVED : 0));
+    }
+
+    @Override
+    public void removePartsWhenReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        for (BlockPos partPos : this.getParts(world, pos)) {
+            if (!(world.getBlockState(partPos).getBlock() instanceof MultipartBlockPart<?, ?>) || !world.getBlockState(partPos).contains(MultipartBlockPart.DELEGATE)) {
+                return;
+            }
+            world.setBlockState(partPos, world.getBlockState(partPos).with(MultipartBlockPart.DELEGATE, false));
+            if (moved) {
+                world.removeBlock(partPos, true);
+            } else if (newState.isIn(PBTags.Blocks.CAKES)) {
+                world.removeBlock(partPos, false);
+            } else {
+                world.breakBlock(partPos, false);
+            }
+        }
     }
 
     @Override

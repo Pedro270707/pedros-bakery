@@ -23,7 +23,6 @@ import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockPart;
-import net.pedroricardo.block.tags.PBTags;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -92,8 +91,8 @@ public class BakingTrayBlock extends BlockWithEntity implements MultipartBlock<B
 
     @Override
     public List<BlockPos> getParts(WorldView world, BlockPos pos) {
-        if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
-            return cake.getParts();
+        if (world.getBlockEntity(pos) instanceof BakingTrayBlockEntity tray) {
+            return tray.getParts();
         }
         return List.of();
     }

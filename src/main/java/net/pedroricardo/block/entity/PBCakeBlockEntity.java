@@ -78,11 +78,13 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
             blockEntity.removeAllParts(world);
             world.removeBlock(pos, false);
             world.emitGameEvent(null, GameEvent.BLOCK_DESTROY, pos);
-            PBHelpers.updateListeners(world, pos, state, blockEntity);
         } else {
             blockEntity.getLayers().forEach(layer -> layer.tick(world, pos, state, blockEntity));
         }
-        blockEntity.updateParts(world, pos, state);
+        if (!world.isClient()) {
+            PBHelpers.updateListeners(world, pos, state, blockEntity);
+            blockEntity.updateParts(world, pos, state);
+        }
     }
 
     public List<CakeLayer> getLayers() {

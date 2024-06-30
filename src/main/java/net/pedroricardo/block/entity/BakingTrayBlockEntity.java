@@ -7,6 +7,8 @@ import net.minecraft.component.ComponentMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -57,6 +59,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         nbt.putInt("size", this.size);
         nbt.putInt("height", this.height);
         nbt.put("layer", this.getCakeBatter().toNbt(new NbtCompound()));
+        nbt.put("parts", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.parts).result().orElse(new NbtList()));
     }
 
     @Override
@@ -71,6 +74,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         if (nbt.contains("layer", NbtElement.COMPOUND_TYPE)) {
             this.cakeBatter = CakeBatter.fromNbt(nbt.getCompound("layer"));
         }
+        this.parts = Lists.newArrayList(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(Lists.newArrayList()).iterator());
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, BakingTrayBlockEntity blockEntity) {

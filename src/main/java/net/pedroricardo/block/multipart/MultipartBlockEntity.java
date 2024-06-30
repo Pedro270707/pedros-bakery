@@ -1,8 +1,11 @@
 package net.pedroricardo.block.multipart;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.pedroricardo.PBHelpers;
 
 import java.util.List;
 
@@ -20,8 +23,9 @@ public interface MultipartBlockEntity {
      */
     default void removeAllParts(World world) {
         for (BlockPos pos : this.getParts()) {
-            if (world.getBlockState(pos).getBlock() instanceof MultipartBlockPart<?, ?> && world.getBlockState(pos).contains(MultipartBlockPart.DELEGATE)) {
-                world.setBlockState(pos, world.getBlockState(pos).with(MultipartBlockPart.DELEGATE, false));
+            BlockState state = world.getBlockState(pos);
+            if (state.getBlock() instanceof MultipartBlockPart<?, ?> && state.contains(MultipartBlockPart.DELEGATE)) {
+                world.setBlockState(pos, state.with(MultipartBlockPart.DELEGATE, false));
             }
             world.removeBlock(pos, false);
         }

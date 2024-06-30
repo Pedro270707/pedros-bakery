@@ -3,7 +3,6 @@ package net.pedroricardo.block.multipart;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,9 +17,9 @@ import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
+import net.pedroricardo.PBHelpers;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -91,55 +90,14 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
     }
 
     @Override
-    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity partBlockEntity, ItemStack tool) {
-        if (state.getOrEmpty(DELEGATE).orElse(false)) {
-            this.parentConsumer(partBlockEntity, blockEntity -> {
-//                System.out.println("Breaking " + blockEntity.getPos());
-//                world.breakBlock(blockEntity.getPos(), true, player, Block.NOTIFY_ALL_AND_REDRAW);
-            });
-        }
-        super.afterBreak(world, player, pos, state, partBlockEntity, tool);
-    }
-
-    @Override
-    public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
-//        if (state.getOrEmpty(DELEGATE).orElse(false)) {
-//            this.parentConsumer(world.getBlockEntity(pos), blockEntity -> {
-//                world.getBlockState(blockEntity.getPos()).getBlock().onBroken(world, blockEntity.getPos(), blockEntity.getCachedState());
-//            });
-//        }
-        super.onBroken(world, pos, state);
-    }
-
-    @Override
-    protected void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-//        if (state.getOrEmpty(DELEGATE).orElse(false)) {
-//            this.parentConsumer(world, pos, blockEntity -> world.getBlockState(blockEntity.getPos()).onBlockBreakStart(world, blockEntity.getPos(), player));
-//        }
-        super.onBlockBreakStart(state, world, pos, player);
-    }
-
-    @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (state.getOrEmpty(DELEGATE).orElse(false)) {
             this.parentConsumer(world.getBlockEntity(pos), blockEntity -> {
                 world.breakBlock(blockEntity.getPos(), player.canHarvest(blockEntity.getCachedState()), player);
+                PBHelpers.updateListeners(blockEntity);
             });
         }
         return super.onBreak(world, pos, state, player);
-    }
-
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, @Nullable BlockEntity partBlockEntity, boolean moved) {
-//        if (newState.getOrEmpty(DELEGATE).orElse(state.getOrEmpty(DELEGATE).orElse(false))) {
-//            this.parentConsumer(partBlockEntity, blockEntity -> {
-//                world.breakBlock(blockEntity.getPos(), false);
-//            });
-//        }
-    }
-
-    @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     @Override
