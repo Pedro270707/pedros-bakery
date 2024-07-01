@@ -80,8 +80,8 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (state.getOrEmpty(DELEGATE).orElse(false)) {
             this.parentConsumer(world.getBlockEntity(pos), blockEntity -> {
-                world.breakBlock(blockEntity.getPos(), player.canHarvest(blockEntity.getCachedState()), player);
-                blockEntity.getCachedState().getBlock().afterBreak(world, player, blockEntity.getPos(), blockEntity.getCachedState(), blockEntity, player.getMainHandStack());
+                world.breakBlock(blockEntity.getPos(), player.canHarvest(blockEntity.getCachedState()) && !player.isInCreativeMode(), player);
+//                blockEntity.getCachedState().getBlock().afterBreak(world, player, blockEntity.getPos(), blockEntity.getCachedState(), blockEntity, player.getMainHandStack());
                 PBHelpers.updateListeners(blockEntity);
             });
         }
