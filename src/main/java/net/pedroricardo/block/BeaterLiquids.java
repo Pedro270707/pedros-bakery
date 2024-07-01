@@ -89,7 +89,7 @@ public enum BeaterLiquids implements StringIdentifiable {
         }
         return false;
     }, (stack, state, world, pos, player, hand, hit, beater) -> {
-        if (stack.isOf(PBBlocks.BAKING_TRAY.asItem()) && ((BakingTrayItem) PBBlocks.BAKING_TRAY.asItem()).addBatter(player, stack, beater.getFlavor(), 4)) {
+        if (stack.getItem() instanceof BakingTrayItem && ((BakingTrayItem) stack.getItem()).addBatter(player, stack, beater.getFlavor(), 4)) {
             world.setBlockState(pos, state.with(BeaterBlock.LIQUID, BeaterLiquids.EMPTY));
             beater.setFlavor(null);
             world.emitGameEvent(player, GameEvent.FLUID_PICKUP, pos);

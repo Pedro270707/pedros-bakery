@@ -56,7 +56,7 @@ public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
                 }
             }
         }
-        return trayStack.getOrDefault(PBComponentTypes.HEIGHT, BakingTrayBlockEntity.DEFAULT_HEIGHT) <= 16 && trayStack.getOrDefault(PBComponentTypes.SIZE, BakingTrayBlockEntity.DEFAULT_SIZE) <= 16;
+        return trayStack.getOrDefault(PBComponentTypes.HEIGHT, BakingTrayBlockEntity.DEFAULT_HEIGHT) <= BakingTrayBlockEntity.MAX_HEIGHT && trayStack.getOrDefault(PBComponentTypes.SIZE, BakingTrayBlockEntity.DEFAULT_SIZE) <= BakingTrayBlockEntity.MAX_SIZE;
     }
 
     @Override

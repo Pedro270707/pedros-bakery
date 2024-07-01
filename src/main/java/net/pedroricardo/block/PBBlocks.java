@@ -11,6 +11,7 @@ import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.item.BakingTrayItem;
+import net.pedroricardo.item.ExpandableBakingTrayItem;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 
@@ -40,6 +41,7 @@ public class PBBlocks {
     public static final Block BAKING_TRAY = register("baking_tray", new BakingTrayBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.METAL).hardness(1.0f).resistance(1.0f).mapColor(MapColor.OFF_WHITE).requiresTool().dynamicBounds().nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)), (name, block) -> PBItems.register(name, new BakingTrayItem(block, new Item.Settings().maxCount(1).component(PBComponentTypes.BATTER, CakeBatter.getEmpty()).component(PBComponentTypes.SIZE, BakingTrayBlockEntity.DEFAULT_SIZE).component(PBComponentTypes.HEIGHT, BakingTrayBlockEntity.DEFAULT_HEIGHT))));
     public static final Block BAKING_TRAY_PART = registerWithoutItem("baking_tray_part", new BakingTrayBlockPart(AbstractBlock.Settings.copy(BAKING_TRAY)));
     public static final Block CAKE_STAND = register("cake_stand", new CakeStandBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.GLASS).hardness(0.4f).mapColor(MapColor.OFF_WHITE).dynamicBounds().nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)));
+    public static final Block EXPANDABLE_BAKING_TRAY = register("expandable_baking_tray", new BakingTrayBlock(AbstractBlock.Settings.copy(BAKING_TRAY)), (name, block) -> PBItems.register(name, new ExpandableBakingTrayItem(block, new Item.Settings().maxCount(1).component(PBComponentTypes.BATTER, CakeBatter.getEmpty()).component(PBComponentTypes.SIZE, BakingTrayBlockEntity.DEFAULT_SIZE).component(PBComponentTypes.HEIGHT, BakingTrayBlockEntity.DEFAULT_HEIGHT))));
 
     private static Block register(final String name, Block block) {
         return register(name, block, (str, registeredBlock) -> PBItems.register(str, new BlockItem(registeredBlock, new Item.Settings())));

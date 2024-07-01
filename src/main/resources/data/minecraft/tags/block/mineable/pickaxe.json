@@ -3,6 +3,7 @@
   "values": [
     "pedrosbakery:beater",
     "pedrosbakery:baking_tray",
-    "pedrosbakery:baking_tray_part"
+    "pedrosbakery:baking_tray_part",
+    "pedrosbakery:expandable_baking_tray"
   ]
 }

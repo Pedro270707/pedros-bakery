@@ -39,6 +39,10 @@ import java.util.List;
 public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlockEntity {
     public static final int DEFAULT_SIZE = 8;
     public static final int DEFAULT_HEIGHT = 8;
+    public static final int MIN_SIZE = 8;
+    public static final int MAX_SIZE = 16;
+    public static final int MIN_HEIGHT = 8;
+    public static final int MAX_HEIGHT = 16;
     private int size = DEFAULT_SIZE;
     private int height = DEFAULT_HEIGHT;
     private CakeBatter cakeBatter = CakeBatter.getEmpty();

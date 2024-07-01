@@ -33,6 +33,7 @@
   "block.pedrosbakery.beater": "Beater",
   "item.pedrosbakery.frosting_bottle": "Bottle of Frosting",
   "block.pedrosbakery.baking_tray": "Baking Tray",
+  "block.pedrosbakery.expandable_baking_tray": "Expandable Baking Tray",
   "block.pedrosbakery.baking_tray.size": "%sx%sx%s",
   "block.pedrosbakery.baking_tray.full": "%s%% full",
   "block.pedrosbakery.cake_stand": "Cake Stand",

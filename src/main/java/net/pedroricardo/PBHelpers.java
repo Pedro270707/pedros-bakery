@@ -8,6 +8,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.OptionalInt;
+
 public class PBHelpers {
     private PBHelpers() {}
 
@@ -16,10 +18,10 @@ public class PBHelpers {
     }
 
     public static void decrementStackAndAdd(PlayerEntity player, ItemStack oldStack, ItemStack newStack, boolean decrementUnlessCreative) {
-        int slot = -1;
+        OptionalInt oldStackSlot = OptionalInt.empty();
         for (int i = 0; i < player.getInventory().main.size(); ++i) {
             if (player.getInventory().main.get(i).isEmpty() || player.getInventory().main.get(i) != oldStack) continue;
-            slot = i;
+            oldStackSlot = OptionalInt.of(i);
             break;
         }
         if (decrementUnlessCreative) {
@@ -27,10 +29,10 @@ public class PBHelpers {
         } else {
             oldStack.decrement(1);
         }
-        if (oldStack.isEmpty() && slot != -1) {
-            player.getInventory().insertStack(slot, newStack);
-        } else {
-            player.giveItemStack(newStack);
+        if (oldStack.isEmpty() && oldStackSlot.isPresent()) {
+            player.getInventory().insertStack(oldStackSlot.getAsInt(), newStack);
+        } else if (!player.giveItemStack(newStack)) {
+            player.dropItem(newStack, false);
         }
     }
 
