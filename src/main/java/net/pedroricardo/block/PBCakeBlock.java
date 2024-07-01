@@ -285,9 +285,11 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             return true;
         }
 
+
         if (layers.getFirst().getSize() / 2.0f - layers.getFirst().getBites() <= cake.getLayers().getLast().getSize() / 2.0f - cake.getLayers().getLast().getBites()) {
             float layersHeight = (float) layers.stream().mapToDouble(CakeLayer::getHeight).sum();
-            return cake.getHeight() + layersHeight <= MAX_CAKE_HEIGHT && cake.getLayers().addAll(layers);
+            Direction direction = cake.getWorld().getBlockState(cake.getPos()).getOrEmpty(Properties.HORIZONTAL_FACING).orElse(Direction.NORTH);
+            return cake.getHeight() + layersHeight <= MAX_CAKE_HEIGHT && (!cake.hasWorld() || cake.getWorld().doesNotIntersectEntities(null, PBCakeBlockEntity.toShape(layers, direction).offset(cake.getPos().getX(), cake.getPos().getY() + cake.getHeight() / 16.0f, cake.getPos().getZ()))) && cake.getLayers().addAll(layers);
         }
 
         return false;

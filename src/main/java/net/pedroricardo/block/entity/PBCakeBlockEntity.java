@@ -122,9 +122,13 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     }
 
     public VoxelShape toShape(Direction direction) {
+        return toShape(this.getLayers(), direction);
+    }
+
+    public static VoxelShape toShape(List<CakeLayer> layers, Direction direction) {
         VoxelShape shape = VoxelShapes.empty();
         float currentHeight = 0;
-        for (CakeLayer cakeLayer : this.getLayers()) {
+        for (CakeLayer cakeLayer : layers) {
             shape = switch (direction) {
                 default -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeLayer.getSize() / 2.0, currentHeight, 8 - cakeLayer.getSize() / 2.0, 8 + cakeLayer.getSize() / 2.0 - cakeLayer.getBites(), currentHeight + cakeLayer.getHeight(), 8 + cakeLayer.getSize() / 2.0));
                 case SOUTH -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeLayer.getSize() / 2.0 + cakeLayer.getBites(), currentHeight, 8 - cakeLayer.getSize() / 2.0, 8 + cakeLayer.getSize() / 2.0, currentHeight + cakeLayer.getHeight(), 8 + cakeLayer.getSize() / 2.0));
