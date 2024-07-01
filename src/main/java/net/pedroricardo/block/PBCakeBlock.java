@@ -7,6 +7,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
@@ -150,7 +151,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             layerIndex = cake.getLayers().size() - 1;
         }
         if (player.isSneaking()) {
-            changeState(world, pos, state);
+            changeState(player, world, pos, state);
             List<CakeLayer> layers = Lists.newArrayList();
             while (cake.getLayers().size() > layerIndex) {
                 layers.add(cake.getLayers().remove(layerIndex));
@@ -166,7 +167,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         if (!player.isCreative() && cake.getLayers().size() > layerIndex + 1 && cake.getLayers().get(layerIndex + 1).getSize() / 2.0f - cake.getLayers().get(layerIndex + 1).getBites() >= cake.getLayers().get(layerIndex).getSize() / 2.0f - cake.getLayers().get(layerIndex).getBites()) {
             return ActionResult.PASS;
         }
-        changeState(world, pos, state);
+        changeState(player, world, pos, state);
         cake.getLayers().get(layerIndex).bite(world, pos, state, player, cake);
         if (cake.getLayers().size() == 1 && cake.getLayers().get(layerIndex).isEmpty()) {
             cake.removeAllParts(world);
@@ -206,7 +207,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         if (stack.isIn(ItemTags.CANDLES) && cake.getLayers().getLast().getBites() == 0 && block instanceof CandleBlock candleBlock) {
             stack.decrementUnlessCreative(1, player);
             world.playSound(null, pos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0f, 1.0f);
-            changeState(world, pos, PBCandleCakeBlock.getCandleCakeFromCandle(candleBlock).with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING)));
+            changeState(player, world, pos, PBCandleCakeBlock.getCandleCakeFromCandle(candleBlock).with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING)));
             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             player.incrementStat(Stats.USED.getOrCreateStat(item));
             return ItemActionResult.SUCCESS;
@@ -295,13 +296,15 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         return false;
     }
 
-    private static void changeState(World world, BlockPos pos, BlockState candleState) {
+    private static void changeState(@Nullable Entity entity, World world, BlockPos pos, BlockState candleState) {
+        BlockState oldState = world.getBlockState(pos);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         world.setBlockState(pos, candleState);
         if (blockEntity instanceof PBCakeBlockEntity cake) {
             cake.setCachedState(candleState);
             world.addBlockEntity(cake);
         }
+        world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(entity, oldState));
     }
 
     @Override
