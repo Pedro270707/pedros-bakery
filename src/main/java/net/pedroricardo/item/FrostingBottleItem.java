@@ -18,6 +18,7 @@ import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.block.helpers.CakeTop;
+import net.pedroricardo.block.tags.PBTags;
 
 import java.util.List;
 
@@ -54,6 +55,11 @@ public class FrostingBottleItem extends Item {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        ItemStack stack = user.getStackInHand(hand);
+        CakeTop top = stack.get(PBComponentTypes.TOP);
+        if (top != null && top.isIn(PBTags.Tops.INEDIBLE)) {
+            return TypedActionResult.fail(stack);
+        }
         return ItemUsage.consumeHeldItem(world, user, hand);
     }
 

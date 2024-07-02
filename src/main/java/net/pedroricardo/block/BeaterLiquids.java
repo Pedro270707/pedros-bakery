@@ -54,7 +54,7 @@ public enum BeaterLiquids implements StringIdentifiable {
     }),
     FROSTING("frosting", (world, state, pos, beater) -> {
         if (beater.getMixTime() <= 200) return false;
-        CakeTop top = CakeTops.from(beater.getItem().getItem());
+        CakeTop top = CakeTops.from(beater.getItem());
         if (top != null && top.base() == beater.getTop()) {
             beater.setItem(ItemStack.EMPTY);
             beater.setTop(top);
@@ -71,7 +71,7 @@ public enum BeaterLiquids implements StringIdentifiable {
             world.emitGameEvent(player, GameEvent.FLUID_PICKUP, pos);
             return ItemActionResult.SUCCESS;
         }
-        CakeTop top = CakeTops.from(stack.getItem());
+        CakeTop top = CakeTops.from(stack);
         if (top != null && top.base() == beater.getTop() && beater.getItem().isEmpty()) {
             beater.setItem(stack.copyWithCount(1));
             stack.decrementUnlessCreative(1, player);
@@ -105,7 +105,7 @@ public enum BeaterLiquids implements StringIdentifiable {
     }),
     MILK("milk", (world, state, pos, beater) -> {
         if (beater.getMixTime() <= 200) return false;
-        CakeTop top = CakeTops.from(beater.getItem().getItem());
+        CakeTop top = CakeTops.from(beater.getItem());
         if (top != null) {
             beater.setItem(ItemStack.EMPTY);
             beater.setTop(top);
@@ -122,7 +122,7 @@ public enum BeaterLiquids implements StringIdentifiable {
         return false;
     }, (stack, state, world, pos, player, hand, hit, beater) -> {
         Optional<CakeFlavor> flavor = CakeFlavors.from(stack);
-        if (CakeTops.from(stack.getItem()) != null || (flavor.isPresent() && flavor.get().base() == null)) {
+        if (CakeTops.from(stack) != null || (flavor.isPresent() && flavor.get().base() == null)) {
             if (!beater.getItem().isEmpty()) {
                 player.giveItemStack(beater.getItem());
                 beater.setItem(ItemStack.EMPTY);

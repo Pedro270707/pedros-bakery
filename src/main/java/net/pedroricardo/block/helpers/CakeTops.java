@@ -14,6 +14,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.SimpleRegistry;
@@ -32,40 +33,38 @@ import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class CakeTops {
     public static final RegistryKey<Registry<CakeTop>> REGISTRY_KEY = RegistryKey.ofRegistry(Identifier.of(PedrosBakery.MOD_ID, "cake_top"));
     public static SimpleRegistry<CakeTop> REGISTRY = FabricRegistryBuilder.from(new SimpleRegistry<>(REGISTRY_KEY, Lifecycle.stable(), true)).buildAndRegister();
 
-    private static final Map<ItemConvertible, CakeTop> ITEM_TO_TOP = Maps.newHashMap();
-
     private static CakeTop register(String name, CakeTop top) {
-        ITEM_TO_TOP.put(top.item(), top);
         return Registry.register(REGISTRY, Identifier.of(PedrosBakery.MOD_ID, name), top);
     }
 
-    public static final CakeTop SUGAR = register("sugar", new CakeTop(null, Items.SUGAR, 0xFFFDF4D8) {
+    public static final CakeTop SUGAR = register("sugar", new CakeTop(null, Ingredient.ofItems(Items.SUGAR), 0xFFFDF4D8) {
         @Override
         public void onDrink(ItemStack stack, World world, LivingEntity user) {
             super.onDrink(stack, world, user);
             user.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 50, 2));
         }
     });
-    public static final CakeTop CHOCOLATE = register("chocolate", new CakeTop(SUGAR, Items.COCOA_BEANS, 0xFF594939) {
+    public static final CakeTop CHOCOLATE = register("chocolate", new CakeTop(SUGAR, Ingredient.ofItems(Items.COCOA_BEANS), 0xFF594939) {
         @Override
         public void onDrink(ItemStack stack, World world, LivingEntity user) {
             super.onDrink(stack, world, user);
             user.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, 100, 0));
         }
     });
-    public static final CakeTop SCULK = register("sculk", new CakeTop(SUGAR, Items.SCULK, 0xFF052A32) {
+    public static final CakeTop SCULK = register("sculk", new CakeTop(SUGAR, Ingredient.ofItems(Items.SCULK), 0xFF052A32) {
         @Override
         public void onDrink(ItemStack stack, World world, LivingEntity user) {
             super.onDrink(stack, world, user);
             user.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 100, 0));
         }
     });
-    public static final CakeTop CHORUS = register("chorus", new CakeTop(SUGAR, Items.CHORUS_FRUIT, 0xFFA381A2) {
+    public static final CakeTop CHORUS = register("chorus", new CakeTop(SUGAR, Ingredient.ofItems(Items.CHORUS_FRUIT), 0xFFA381A2) {
         @Override
         public void onDrink(ItemStack stack, World world, LivingEntity user) {
             super.onDrink(stack, world, user);
@@ -108,15 +107,22 @@ public class CakeTops {
             }
         }
     });
-    public static final CakeTop RED_MUSHROOM = register("red_mushroom", new CakeTop(SUGAR, Items.RED_MUSHROOM, 0xFFC92B29));
-    public static final CakeTop SWEET_BERRY = register("sweet_berry", new CakeTop(SUGAR, Items.SWEET_BERRIES, 0xFFF6C9BD));
+    public static final CakeTop RED_MUSHROOM = register("red_mushroom", new CakeTop(SUGAR, Ingredient.ofItems(Items.RED_MUSHROOM), 0xFFC92B29));
+    public static final CakeTop SWEET_BERRY = register("sweet_berry", new CakeTop(SUGAR, Ingredient.ofItems(Items.SWEET_BERRIES), 0xFFF6C9BD));
+    public static final CakeTop DIRT = register("dirt", new CakeTop(SUGAR, Ingredient.ofItems(Items.DIRT), 0xFF79553A));
+    public static final CakeTop GRASS = register("grass", new CakeTop(SUGAR, Ingredient.ofItems(Items.SHORT_GRASS, Items.TALL_GRASS), 0xFF486E3E));
 
     @Nullable
-    public static CakeTop from(ItemConvertible item) {
-        if (item == null || item == Items.AIR || ITEM_TO_TOP.get(item) == null) {
+    public static CakeTop from(ItemStack item) {
+        if (item == null || item.getItem() == Items.AIR) {
             return null;
         }
-        return ITEM_TO_TOP.get(item);
+        for (CakeTop flavor : REGISTRY.stream().toList()) {
+            if (flavor.ingredient().test(item)) {
+                return flavor;
+            }
+        }
+        return null;
     }
 
     public static void init() {

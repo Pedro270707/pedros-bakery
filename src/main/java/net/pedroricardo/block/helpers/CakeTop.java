@@ -5,6 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -15,13 +16,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class CakeTop {
     private final CakeTop base;
-    private final ItemConvertible item;
+    private final Ingredient ingredient;
     private final int color;
     private final RegistryEntry.Reference<CakeTop> registryEntry = CakeTops.REGISTRY.createEntry(this);
 
-    public CakeTop(CakeTop base, ItemConvertible item, int color) {
+    public CakeTop(CakeTop base, Ingredient ingredient, int color) {
         this.base = base;
-        this.item = item;
+        this.ingredient = ingredient;
         this.color = color;
     }
 
@@ -48,8 +49,8 @@ public class CakeTop {
         return this.base;
     }
 
-    public final ItemConvertible item() {
-        return this.item;
+    public final Ingredient ingredient() {
+        return this.ingredient;
     }
 
     public final int color() {
