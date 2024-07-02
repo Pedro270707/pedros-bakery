@@ -36,6 +36,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
+import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.PBBlockEntities;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.entity.PBCakeBlockEntityPart;
@@ -54,9 +55,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCakeBlockEntity, PBCakeBlockEntityPart, PBCakeBlockPart> {
-    public static final int MAX_CAKE_HEIGHT = 256;
-    public static final int BITE_SIZE = 2;
-    public static final int TICKS_UNTIL_BAKED = 2000;
     public static final MapCodec<PBCakeBlock> CODEC = createCodec(PBCakeBlock::new);
 
     public PBCakeBlock(Settings settings) {
@@ -290,7 +288,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         if (layers.getFirst().getSize() / 2.0f - layers.getFirst().getBites() <= cake.getLayers().getLast().getSize() / 2.0f - cake.getLayers().getLast().getBites()) {
             float layersHeight = (float) layers.stream().mapToDouble(CakeLayer::getHeight).sum();
             Direction direction = cake.getWorld().getBlockState(cake.getPos()).getOrEmpty(Properties.HORIZONTAL_FACING).orElse(Direction.NORTH);
-            return cake.getHeight() + layersHeight <= MAX_CAKE_HEIGHT && (!cake.hasWorld() || cake.getWorld().doesNotIntersectEntities(null, PBCakeBlockEntity.toShape(layers, direction).offset(cake.getPos().getX(), cake.getPos().getY() + cake.getHeight() / 16.0f, cake.getPos().getZ()))) && cake.getLayers().addAll(layers);
+            return cake.getHeight() + layersHeight <= PedrosBakery.CONFIG.maxCakeHeight() && (!cake.hasWorld() || cake.getWorld().doesNotIntersectEntities(null, PBCakeBlockEntity.toShape(layers, direction).offset(cake.getPos().getX(), cake.getPos().getY() + cake.getHeight() / 16.0f, cake.getPos().getZ()))) && cake.getLayers().addAll(layers);
         }
 
         return false;

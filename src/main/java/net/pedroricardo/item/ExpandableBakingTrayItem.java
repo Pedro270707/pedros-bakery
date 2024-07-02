@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
 
@@ -17,7 +18,7 @@ public class ExpandableBakingTrayItem extends BakingTrayItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        TypedActionResult<ItemStack> result = user.getFacing().getAxis().isVertical() ? change(user, hand, PBComponentTypes.HEIGHT, BakingTrayBlockEntity.MIN_HEIGHT, BakingTrayBlockEntity.MAX_HEIGHT, BakingTrayBlockEntity.DEFAULT_HEIGHT) : change(user, hand, PBComponentTypes.SIZE, BakingTrayBlockEntity.MIN_SIZE, BakingTrayBlockEntity.MAX_SIZE, BakingTrayBlockEntity.DEFAULT_SIZE);
+        TypedActionResult<ItemStack> result = user.getFacing().getAxis().isVertical() ? change(user, hand, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayMinHeight(), PedrosBakery.CONFIG.bakingTrayMaxHeight(), PedrosBakery.CONFIG.bakingTrayDefaultHeight()) : change(user, hand, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayMinSize(), PedrosBakery.CONFIG.bakingTrayMaxSize(), PedrosBakery.CONFIG.bakingTrayDefaultSize());
         if (result.getResult().isAccepted()) {
             return result;
         }
@@ -34,7 +35,7 @@ public class ExpandableBakingTrayItem extends BakingTrayItem {
         }
         if (stack.get(componentType) != size) {
             CakeBatter batter = stack.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty());
-            batter.setHeight(Math.min(batter.getHeight(), stack.getOrDefault(PBComponentTypes.HEIGHT, BakingTrayBlockEntity.DEFAULT_HEIGHT)));
+            batter.setHeight(Math.min(batter.getHeight(), stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight())));
             user.setStackInHand(hand, stack);
             return TypedActionResult.success(stack, false);
         }

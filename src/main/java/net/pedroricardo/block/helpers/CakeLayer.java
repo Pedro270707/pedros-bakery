@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
-import net.pedroricardo.block.PBCakeBlock;
+import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.tags.PBTags;
 import org.apache.commons.compress.utils.Lists;
@@ -100,7 +100,7 @@ public class CakeLayer extends CakeBatter {
         for (CakeFeature feature : this.getFeatures()) {
             feature.onTryEat(this, world, pos, state, player, cake);
         }
-        float biteSize = player.getUuidAsString().equals("7bb71eb9-b55e-4071-9175-8ec2f42ddd79") ? Math.min(0.125f, PBCakeBlock.BITE_SIZE) : PBCakeBlock.BITE_SIZE;
+        float biteSize = player.getUuidAsString().equals("7bb71eb9-b55e-4071-9175-8ec2f42ddd79") ? Math.min(0.125f, PedrosBakery.CONFIG.biteSize()) : PedrosBakery.CONFIG.biteSize();
         this.bites += biteSize;
         if (this.bites > this.getSize()) {
             this.bites = this.getSize();

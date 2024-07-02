@@ -23,8 +23,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PBSounds;
+import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.block.PBCakeBlock;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockEntity;
@@ -37,14 +37,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlockEntity {
-    public static final int DEFAULT_SIZE = 8;
-    public static final int DEFAULT_HEIGHT = 8;
-    public static final int MIN_SIZE = 8;
-    public static final int MAX_SIZE = 16;
-    public static final int MIN_HEIGHT = 8;
-    public static final int MAX_HEIGHT = 16;
-    private int size = DEFAULT_SIZE;
-    private int height = DEFAULT_HEIGHT;
+    private int size = PedrosBakery.CONFIG.bakingTrayDefaultSize();
+    private int height = PedrosBakery.CONFIG.bakingTrayDefaultHeight();
     private CakeBatter cakeBatter = CakeBatter.getEmpty();
     private List<BlockPos> parts = Lists.newArrayList();
 
@@ -86,7 +80,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
             blockEntity.getCakeBatter().bakeTick(world, pos, state);
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
             PBHelpers.updateListeners(blockEntity);
-            if (blockEntity.getCakeBatter().getBakeTime() == PBCakeBlock.TICKS_UNTIL_BAKED) {
+            if (blockEntity.getCakeBatter().getBakeTime() == PedrosBakery.CONFIG.ticksUntilBaked()) {
                 world.playSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.BAKING_TRAY_DONE, SoundCategory.BLOCKS, 1.25f, 1.0f, true);
             }
         }
@@ -107,8 +101,8 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
         this.cakeBatter = components.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty());
-        this.size = components.getOrDefault(PBComponentTypes.SIZE, DEFAULT_SIZE);
-        this.height = components.getOrDefault(PBComponentTypes.HEIGHT, DEFAULT_HEIGHT);
+        this.size = components.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize());
+        this.height = components.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight());
     }
 
     @Override

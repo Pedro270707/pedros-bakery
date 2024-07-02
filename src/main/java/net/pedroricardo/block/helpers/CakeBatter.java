@@ -73,7 +73,9 @@ public class CakeBatter {
     }
 
     public final void bakeTick(World world, BlockPos pos, BlockState state) {
-        this.setBakeTime(this.getBakeTime() + 1);
+        if (this.getBakeTime() != Integer.MAX_VALUE) {
+            this.setBakeTime(this.getBakeTime() + 1);
+        }
         this.getFlavor().bakeTick(this, world, pos, state);
     }
 

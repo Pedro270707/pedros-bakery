@@ -16,6 +16,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
+import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
 import net.pedroricardo.block.entity.BakingTrayBlockEntityPart;
 import net.pedroricardo.block.entity.PBBlockEntities;
@@ -70,7 +71,7 @@ public class BakingTrayBlock extends BlockWithEntity implements MultipartBlock<B
         if (!(world.getBlockEntity(pos) instanceof BakingTrayBlockEntity tray)) {
             return ActionResult.PASS;
         }
-        if (!tray.getCakeBatter().isEmpty() && tray.getCakeBatter().getBakeTime() >= PBCakeBlock.TICKS_UNTIL_BAKED) {
+        if (!tray.getCakeBatter().isEmpty() && tray.getCakeBatter().getBakeTime() >= PedrosBakery.CONFIG.ticksUntilBaked()) {
             player.giveItemStack(PBCakeBlock.of(Collections.singletonList(tray.getCakeBatter().toLayer(tray.getSize()))));
             tray.setCakeBatter(CakeBatter.getEmpty());
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));

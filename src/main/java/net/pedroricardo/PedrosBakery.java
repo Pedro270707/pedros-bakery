@@ -18,6 +18,7 @@ import java.util.Collections;
 public class PedrosBakery implements ModInitializer {
 	public static final String MOD_ID = "pedrosbakery";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	public static final net.pedroricardo.PBConfig CONFIG = net.pedroricardo.PBConfig.createAndLoad();
 
 	@Override
 	public void onInitialize() {

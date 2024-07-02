@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.PBCakeBlock;
 import net.pedroricardo.block.PBCandleCakeBlock;
@@ -76,7 +77,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
         PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, 48.0f + Math.round((16.0f - size) / 2.0f) + bites, 16.0f, light, overlay, color);
 
-        if (MinecraftClient.isFancyGraphicsOrBetter()) {
+        if (PedrosBakery.CONFIG.cakeRenderQuality().renderBordersOnSides()) {
             PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 0.0f, 32.0f, light, overlay, color);
             PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 16.0f - size + 16.0f, 32.0f, light, overlay, color);
             PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 32.0f, 32.0f + 16.0f - height, light, overlay, color);
@@ -95,7 +96,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
 
         if (bites == 0) {
             PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 48.0f + Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
-            if (MinecraftClient.isFancyGraphicsOrBetter()) {
+            if (PedrosBakery.CONFIG.cakeRenderQuality().renderBordersOnSides()) {
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 0.0f, 32.0f, light, overlay, color);
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 32.0f - size, 32.0f, light, overlay, color);
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 32.0f, 32.0f + 16.0f - height, light, overlay, color);
@@ -103,7 +104,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
             }
         } else {
             PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 48.0f + Math.round((16.0f - size) / 2.0f), 0.0f, light, overlay, color);
-            if (MinecraftClient.isFancyGraphicsOrBetter()) {
+            if (PedrosBakery.CONFIG.cakeRenderQuality().renderBordersOnSides()) {
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 0.0f, 48.0f, light, overlay, color);
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 32.0f - size, 48.0f, light, overlay, color);
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 32.0f, 48.0f + 16.0f - height, light, overlay, color);
@@ -114,7 +115,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, (16.0f + Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
         PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 32.0f + (Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
 
-        if (MinecraftClient.isFabulousGraphicsOrBetter()) {
+        if (PedrosBakery.CONFIG.cakeRenderQuality().renderTopAndBottomBorders()) {
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 64.0f, light, overlay, color);
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + bites, 80.0f - size, light, overlay, color);
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 48.0f - size + bites, 64.0f, light, overlay, color);
@@ -128,7 +129,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     }
 
     public static int getBakeTimeColor(int bakeTime, int color) {
-        if (bakeTime <= PBCakeBlock.TICKS_UNTIL_BAKED) {
+        if (bakeTime <= PedrosBakery.CONFIG.ticksUntilBaked()) {
             return color;
         }
 
@@ -137,7 +138,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         int green = color >> 8 & 0xFF;
         int blue = color & 0xFF;
 
-        float factor = Math.max(-1.0f/(2.0f * PBCakeBlock.TICKS_UNTIL_BAKED) * bakeTime + 1.5f, 0.25f);
+        float factor = Math.max(-1.0f/(2.0f * PedrosBakery.CONFIG.ticksUntilBaked()) * bakeTime + 1.5f, 0.25f);
 
         red = (int)MathHelper.clamp(red * factor, 0, 255);
         green = (int)MathHelper.clamp(green * factor, 0, 255);
@@ -147,10 +148,10 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     }
 
     public static int getBakeTimeOverlay(int bakeTime, int overlay) {
-        if (bakeTime > PBCakeBlock.TICKS_UNTIL_BAKED) {
+        if (bakeTime > PedrosBakery.CONFIG.ticksUntilBaked()) {
             return overlay;
         }
-        return OverlayTexture.getUv(((float) PBCakeBlock.TICKS_UNTIL_BAKED - bakeTime) / (2.0f * PBCakeBlock.TICKS_UNTIL_BAKED), false);
+        return OverlayTexture.getUv(((float) PedrosBakery.CONFIG.ticksUntilBaked() - bakeTime) / (2.0f * PedrosBakery.CONFIG.ticksUntilBaked()), false);
     }
 
     @Override

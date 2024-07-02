@@ -8,6 +8,7 @@ import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
+import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
@@ -50,13 +51,13 @@ public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
             ItemStack stack = inventory.getStackInSlot(i);
             if (stack.isOf(Items.IRON_INGOT)) {
                 if (i < (trayIndexInt - trayIndexInt % inventory.getWidth()) || i > trayIndexInt - trayIndexInt % inventory.getWidth() + 2) {
-                    trayStack.set(PBComponentTypes.HEIGHT, trayStack.getOrDefault(PBComponentTypes.HEIGHT, BakingTrayBlockEntity.DEFAULT_HEIGHT) + 2);
+                    trayStack.set(PBComponentTypes.HEIGHT, trayStack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) + 2);
                 } else {
-                    trayStack.set(PBComponentTypes.SIZE, trayStack.getOrDefault(PBComponentTypes.SIZE, BakingTrayBlockEntity.DEFAULT_SIZE) + 2);
+                    trayStack.set(PBComponentTypes.SIZE, trayStack.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()) + 2);
                 }
             }
         }
-        return trayStack.getOrDefault(PBComponentTypes.HEIGHT, BakingTrayBlockEntity.DEFAULT_HEIGHT) <= BakingTrayBlockEntity.MAX_HEIGHT && trayStack.getOrDefault(PBComponentTypes.SIZE, BakingTrayBlockEntity.DEFAULT_SIZE) <= BakingTrayBlockEntity.MAX_SIZE;
+        return trayStack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) <= PedrosBakery.CONFIG.bakingTrayMaxHeight() && trayStack.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()) <= PedrosBakery.CONFIG.bakingTrayMaxSize();
     }
 
     @Override

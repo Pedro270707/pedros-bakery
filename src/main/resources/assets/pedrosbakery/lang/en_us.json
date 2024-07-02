@@ -49,5 +49,19 @@
   "feature.pedrosbakery.end_dust": "End Dust",
   "feature.pedrosbakery.honey": "Honey",
   "subtitles.block.pedrosbakery.baking_tray.done": "Cake baked",
-  "itemGroup.pedrosbakery": "Pedro's Bakery"
+  "itemGroup.pedrosbakery": "Pedro's Bakery",
+  "text.config.pedrosbakery.option.bakingTrayMinSize": "Baking Tray Minimum Size",
+  "text.config.pedrosbakery.option.bakingTrayMaxSize": "Baking Tray Maximum Size",
+  "text.config.pedrosbakery.option.bakingTrayDefaultSize": "Baking Tray Default Size",
+  "text.config.pedrosbakery.option.bakingTrayMinHeight": "Baking Tray Minimum Height",
+  "text.config.pedrosbakery.option.bakingTrayMaxHeight": "Baking Tray Maximum Height",
+  "text.config.pedrosbakery.option.bakingTrayDefaultHeight": "Baking Tray Default Height",
+  "text.config.pedrosbakery.option.maxCakeHeight": "Maximum Cake Height",
+  "text.config.pedrosbakery.option.maxCakeHeight.tooltip": "Cakes turn into multiblocks if\nhigher than 16 blocks.",
+  "text.config.pedrosbakery.option.biteSize": "Bite Size",
+  "text.config.pedrosbakery.option.ticksUntilBaked": "Ticks Until Baked",
+  "text.config.pedrosbakery.option.cakeRenderQuality": "Cake Render Quality",
+  "text.config.pedrosbakery.enum.cakeRenderQuality.simple": "Simple",
+  "text.config.pedrosbakery.enum.cakeRenderQuality.borders_on_sides": "Borders on Sides",
+  "text.config.pedrosbakery.enum.cakeRenderQuality.all_borders": "All Borders"
 }
