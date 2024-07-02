@@ -9,20 +9,20 @@ import io.wispforest.owo.config.annotation.RestartRequired;
 @Config(wrapperName = "PBConfig", name = "pedrosbakery")
 public class PBConfigModel {
     @RangeConstraint(min = 1, max = 16)
-    public int bakingTrayMinSize = 8;
+    public int bakingTrayMinSize = 4;
 
     @RangeConstraint(min = 1, max = 16)
-    public int bakingTrayMaxSize = 8;
+    public int bakingTrayMaxSize = 16;
 
     @RangeConstraint(min = 1, max = 16)
     @RestartRequired
     public int bakingTrayDefaultSize = 8;
 
     @RangeConstraint(min = 1, max = 16)
-    public int bakingTrayMinHeight = 8;
+    public int bakingTrayMinHeight = 4;
 
     @RangeConstraint(min = 1, max = 16)
-    public int bakingTrayMaxHeight = 8;
+    public int bakingTrayMaxHeight = 16;
 
     @RangeConstraint(min = 1, max = 16)
     @RestartRequired

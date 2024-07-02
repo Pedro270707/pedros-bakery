@@ -75,6 +75,62 @@ public class PedrosBakery implements ModInitializer {
 			ctx.modify(Items.PAINTING, builder ->
 				builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.PAINTING))
 			);
+
+			ctx.modify(Items.DANDELION, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.DANDELION))
+			);
+
+			ctx.modify(Items.TORCHFLOWER, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.TORCHFLOWER))
+			);
+
+			ctx.modify(Items.POPPY, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.POPPY))
+			);
+
+			ctx.modify(Items.BLUE_ORCHID, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.BLUE_ORCHID))
+			);
+
+			ctx.modify(Items.ALLIUM, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.ALLIUM))
+			);
+
+			ctx.modify(Items.AZURE_BLUET, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.AZURE_BLUET))
+			);
+
+			ctx.modify(Items.RED_TULIP, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.RED_TULIP))
+			);
+
+			ctx.modify(Items.ORANGE_TULIP, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.ORANGE_TULIP))
+			);
+
+			ctx.modify(Items.WHITE_TULIP, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.WHITE_TULIP))
+			);
+
+			ctx.modify(Items.PINK_TULIP, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.PINK_TULIP))
+			);
+
+			ctx.modify(Items.OXEYE_DAISY, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.OXEYE_DAISY))
+			);
+
+			ctx.modify(Items.CORNFLOWER, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.CORNFLOWER))
+			);
+
+			ctx.modify(Items.WITHER_ROSE, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.WITHER_ROSE))
+			);
+
+			ctx.modify(Items.LILY_OF_THE_VALLEY, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.LILY_OF_THE_VALLEY))
+			);
 		});
 	}
 }
