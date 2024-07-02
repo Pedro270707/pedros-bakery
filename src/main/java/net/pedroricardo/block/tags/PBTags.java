@@ -8,8 +8,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.helpers.CakeFlavor;
-import net.pedroricardo.block.helpers.CakeFlavors;
+import net.pedroricardo.block.helpers.*;
 
 public class PBTags {
     public static class Blocks {
@@ -24,6 +23,14 @@ public class PBTags {
 
     public static class Flavors {
         public static final TagKey<CakeFlavor> INEDIBLE = of(CakeFlavors.REGISTRY_KEY, "inedible");
+    }
+
+    public static class Tops {
+        public static final TagKey<CakeTop> INEDIBLE = of(CakeTops.REGISTRY_KEY, "inedible");
+    }
+
+    public static class Features {
+        public static final TagKey<CakeFeature> INEDIBLE = of(CakeFeatures.REGISTRY_KEY, "inedible");
     }
 
     private static <T> TagKey<T> of(RegistryKey<Registry<T>> registryKey, String id) {

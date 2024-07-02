@@ -91,7 +91,7 @@ public class CakeLayer extends CakeBatter {
 
     public void bite(World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
         this.getFlavor().onTryEat(this, world, pos, state, player, cake);
-        if (this.getFlavor().isIn(PBTags.Flavors.INEDIBLE)) {
+        if (this.getFlavor().isIn(PBTags.Flavors.INEDIBLE) || (this.getTop().isPresent() && this.getTop().get().isIn(PBTags.Tops.INEDIBLE)) || this.getFeatures().stream().anyMatch(feature -> feature.isIn(PBTags.Features.INEDIBLE))) {
             return;
         }
         if (this.getTop().isPresent()) {
