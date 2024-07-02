@@ -15,7 +15,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.block.PBCakeBlock;
 import net.pedroricardo.block.PBCandleCakeBlock;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.helpers.CakeFeature;
@@ -77,7 +76,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
         PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, 48.0f + Math.round((16.0f - size) / 2.0f) + bites, 16.0f, light, overlay, color);
 
-        if (PedrosBakery.CONFIG.cakeRenderQuality().renderBordersOnSides()) {
+        if (PedrosBakery.CONFIG.cakeRenderQuality().renderSideBorders()) {
             PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 0.0f, 32.0f, light, overlay, color);
             PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 16.0f - size + 16.0f, 32.0f, light, overlay, color);
             PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 32.0f, 32.0f + 16.0f - height, light, overlay, color);
@@ -96,7 +95,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
 
         if (bites == 0) {
             PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 48.0f + Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
-            if (PedrosBakery.CONFIG.cakeRenderQuality().renderBordersOnSides()) {
+            if (PedrosBakery.CONFIG.cakeRenderQuality().renderSideBorders()) {
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 0.0f, 32.0f, light, overlay, color);
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 32.0f - size, 32.0f, light, overlay, color);
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 32.0f, 32.0f + 16.0f - height, light, overlay, color);
@@ -104,7 +103,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
             }
         } else {
             PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 48.0f + Math.round((16.0f - size) / 2.0f), 0.0f, light, overlay, color);
-            if (PedrosBakery.CONFIG.cakeRenderQuality().renderBordersOnSides()) {
+            if (PedrosBakery.CONFIG.cakeRenderQuality().renderSideBorders()) {
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 0.0f, 48.0f, light, overlay, color);
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 32.0f - size, 48.0f, light, overlay, color);
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 32.0f, 48.0f + 16.0f - height, light, overlay, color);
@@ -115,11 +114,13 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, (16.0f + Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
         PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 32.0f + (Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
 
-        if (PedrosBakery.CONFIG.cakeRenderQuality().renderTopAndBottomBorders()) {
+        if (PedrosBakery.CONFIG.cakeRenderQuality().renderTopBorder()) {
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 64.0f, light, overlay, color);
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + bites, 80.0f - size, light, overlay, color);
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 48.0f - size + bites, 64.0f, light, overlay, color);
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 64.0f - size + bites, 80.0f - size, light, overlay, color);
+        }
+        if (PedrosBakery.CONFIG.cakeRenderQuality().renderBottomBorder()) {
             PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 80.0f, light, overlay, color);
             PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + bites, 96.0f - size, light, overlay, color);
             PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 48.0f - size + bites, 80.0f, light, overlay, color);

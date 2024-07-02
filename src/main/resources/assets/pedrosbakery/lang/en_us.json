@@ -63,5 +63,6 @@
   "text.config.pedrosbakery.option.cakeRenderQuality": "Cake Render Quality",
   "text.config.pedrosbakery.enum.cakeRenderQuality.simple": "Simple",
   "text.config.pedrosbakery.enum.cakeRenderQuality.borders_on_sides": "Borders on Sides",
+  "text.config.pedrosbakery.enum.cakeRenderQuality.borders_on_sides_and_top": "Borders on Sides and Top",
   "text.config.pedrosbakery.enum.cakeRenderQuality.all_borders": "All Borders"
 }

@@ -40,22 +40,31 @@ public class PBConfigModel {
     public CakeRenderQuality cakeRenderQuality = CakeRenderQuality.ALL_BORDERS;
 
     public enum CakeRenderQuality {
-        SIMPLE(0),
-        BORDERS_ON_SIDES(1),
-        ALL_BORDERS(2);
+        SIMPLE(false, false, false),
+        BORDERS_ON_SIDES(true, false, false),
+        BORDERS_ON_SIDES_AND_TOP(true, true, false),
+        ALL_BORDERS(true, true, true);
 
-        private final int value;
+        private final boolean sides;
+        private final boolean top;
+        private final boolean bottom;
 
-        CakeRenderQuality(int value) {
-            this.value = value;
+        CakeRenderQuality(boolean sides, boolean top, boolean bottom) {
+            this.sides = sides;
+            this.top = top;
+            this.bottom = bottom;
         }
 
-        public boolean renderBordersOnSides() {
-            return this.value >= 1;
+        public boolean renderSideBorders() {
+            return this.sides;
         }
 
-        public boolean renderTopAndBottomBorders() {
-            return this.value >= 2;
+        public boolean renderTopBorder() {
+            return this.top;
+        }
+
+        public boolean renderBottomBorder() {
+            return this.bottom;
         }
     }
 }
