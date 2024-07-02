@@ -5,6 +5,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
@@ -25,12 +26,11 @@ import java.util.Optional;
 
 public class PaintingCakeFeature extends CakeFeature {
     @Override
-    public void onPlaced(ItemStack stack, CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void onPlaced(PlayerEntity player, ItemStack stack, CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         if (world.isClient()) return;
         NbtComponent nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
-        nbt.get(world.getRegistryManager().getOps(NbtOps.INSTANCE), PaintingEntity.VARIANT_MAP_CODEC).result().ifPresentOrElse(variant -> {
-            this.saveData(layer, (NbtCompound) PaintingEntity.VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, variant).result().orElse(new NbtCompound()));
-        }, () -> {
+        nbt.get(world.getRegistryManager().getOps(NbtOps.INSTANCE), PaintingEntity.VARIANT_MAP_CODEC).result().ifPresentOrElse(variant ->
+                this.saveData(layer, (NbtCompound) PaintingEntity.VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, variant).result().orElse(new NbtCompound())), () -> {
             List<RegistryEntry<PaintingVariant>> list = Lists.newArrayList();
             world.getRegistryManager().get(RegistryKeys.PAINTING_VARIANT).iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
             if (list.isEmpty()) {
@@ -45,8 +45,8 @@ public class PaintingCakeFeature extends CakeFeature {
     }
 
     @Override
-    public boolean canBeApplied(ItemStack stack, CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
-        if (super.canBeApplied(stack, layer, world, pos, state, blockEntity)) return true;
+    public boolean canBeApplied(PlayerEntity player, ItemStack stack, CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+        if (super.canBeApplied(player, stack, layer, world, pos, state, blockEntity)) return true;
         RegistryEntry<PaintingVariant> registryEntry = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).get(world.getRegistryManager().getOps(NbtOps.INSTANCE), PaintingEntity.VARIANT_MAP_CODEC).result().orElse(null);
         if (registryEntry == null) return true;
         RegistryEntry<PaintingVariant> entryOnLayer = PaintingEntity.VARIANT_ENTRY_CODEC.parse(NbtOps.INSTANCE, this.getData(layer)).result().orElse(null);

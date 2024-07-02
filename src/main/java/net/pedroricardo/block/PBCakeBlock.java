@@ -225,9 +225,9 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         List<CakeFeature> features = stack.getOrDefault(PBComponentTypes.FEATURES, List.of());
         boolean appliedFeature = false;
         for (CakeFeature feature : features) {
-            if (feature.canBeApplied(stack, clickedLayer, world, pos, state, cake)) {
+            if (feature.canBeApplied(player, stack, clickedLayer, world, pos, state, cake)) {
                 clickedLayer.addFeature(feature);
-                feature.onPlaced(stack, clickedLayer, world, pos, state, cake);
+                feature.onPlaced(player, stack, clickedLayer, world, pos, state, cake);
                 appliedFeature = true;
             }
         }

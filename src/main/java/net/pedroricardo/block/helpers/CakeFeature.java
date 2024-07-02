@@ -25,11 +25,11 @@ public class CakeFeature {
     public void tick(CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
     }
 
-    public boolean canBeApplied(ItemStack stack, CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public boolean canBeApplied(PlayerEntity player, ItemStack stack, CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         return !layer.getFeatures().contains(this);
     }
 
-    public void onPlaced(ItemStack stack, CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void onPlaced(PlayerEntity player, ItemStack stack, CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
     }
 
     public RegistryEntry.Reference<CakeFeature> getRegistryEntry() {
