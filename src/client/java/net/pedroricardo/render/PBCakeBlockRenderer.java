@@ -21,6 +21,9 @@ import net.pedroricardo.block.helpers.CakeFeature;
 import net.pedroricardo.block.helpers.CakeLayer;
 import net.pedroricardo.registry.CakeFeatureRenderer;
 import net.pedroricardo.registry.CakeFeatureRendererRegistry;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntity> {
     public static final PBCakeBlockEntity RENDER_CAKE = new PBCakeBlockEntity(BlockPos.ORIGIN, PBBlocks.CAKE.getDefaultState());
@@ -39,9 +42,9 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(state.get(Properties.HORIZONTAL_FACING).asRotation()));
             matrices.translate(-0.5f, -0.5f, -0.5f);
 
-            renderCakeLayer(layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getFlavor().getTextureLocation())), light, getBakeTimeOverlay(layer.getBakeTime(), overlay), getBakeTimeColor(layer.getBakeTime(), 0xFFFFFFFF));
+            renderCakeLayer(entity.getLayers(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getFlavor().getTextureLocation())), light, getBakeTimeOverlay(layer.getBakeTime(), overlay), getBakeTimeColor(layer.getBakeTime(), 0xFFFFFFFF));
             if (layer.getTop().isPresent()) {
-                renderCakeLayer(layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getTop().get().getTextureLocation())), light, overlay, 0xFFFFFFFF);
+                renderCakeLayer(entity.getLayers(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getTop().get().getTextureLocation())), light, overlay, 0xFFFFFFFF);
             }
             for (CakeFeature feature : layer.getFeatures()) {
                 if (feature == null) continue;
@@ -59,17 +62,29 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         }
     }
 
-    public static void renderCakeLayer(CakeLayer layer, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+    public static void renderCakeLayer(List<CakeLayer> layers, CakeLayer layer, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
         float size = layer.getSize();
         float height = layer.getHeight();
         float bites = layer.getBites();
 
-        renderCakeLayer(size, height, bites, matrices, vertexConsumer, light, overlay, color);
-    }
-
-    private static void renderCakeLayer(float size, float height, float bites, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
         float length = size - bites;
         if (length == 0) return;
+        @Nullable CakeLayer layerOnTop = null;
+        @Nullable CakeLayer layerUnder = null;
+        int index = -1;
+        for (int i = 0; i < layers.size(); i++) {
+            if (layers.get(i) == layer) {
+                index = i;
+            }
+        }
+        if (index != -1) {
+            if (index < layers.size() - 1) {
+                layerOnTop = layers.get(index + 1);
+            }
+            if (index > 0) {
+                layerUnder = layers.get(index - 1);
+            }
+        }
 
         matrices.push();
         PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 16.0f + Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
@@ -111,20 +126,25 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
             }
         }
 
-        PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, (16.0f + Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
-        PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 32.0f + (Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
 
-        if (PedrosBakery.CONFIG.cakeRenderQuality().renderTopBorder()) {
-            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 64.0f, light, overlay, color);
-            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + bites, 80.0f - size, light, overlay, color);
-            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 48.0f - size + bites, 64.0f, light, overlay, color);
-            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 64.0f - size + bites, 80.0f - size, light, overlay, color);
+        if (layerOnTop == null || (layerOnTop.getSize() / 2.0f) - layerOnTop.getBites() < (layer.getSize() / 2.0f) - layer.getBites()) {
+            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, (16.0f + Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
+            if (PedrosBakery.CONFIG.cakeRenderQuality().renderTopBorder()) {
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 64.0f, light, overlay, color);
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + bites, 80.0f - size, light, overlay, color);
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 48.0f - size + bites, 64.0f, light, overlay, color);
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 64.0f - size + bites, 80.0f - size, light, overlay, color);
+            }
         }
-        if (PedrosBakery.CONFIG.cakeRenderQuality().renderBottomBorder()) {
-            PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 80.0f, light, overlay, color);
-            PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + bites, 96.0f - size, light, overlay, color);
-            PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 48.0f - size + bites, 80.0f, light, overlay, color);
-            PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 64.0f - size + bites, 96.0f - size, light, overlay, color);
+
+        if (layerUnder == null || (layerUnder.getSize() / 2.0f) - layerUnder.getBites() < (layer.getSize() / 2.0f) - layer.getBites()) {
+            PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 32.0f + (Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
+            if (PedrosBakery.CONFIG.cakeRenderQuality().renderBottomBorder()) {
+                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 80.0f, light, overlay, color);
+                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + bites, 96.0f - size, light, overlay, color);
+                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 48.0f - size + bites, 80.0f, light, overlay, color);
+                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 64.0f - size + bites, 96.0f - size, light, overlay, color);
+            }
         }
         matrices.pop();
     }

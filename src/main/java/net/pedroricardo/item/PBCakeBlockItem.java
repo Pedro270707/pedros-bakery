@@ -46,6 +46,7 @@ public class PBCakeBlockItem extends BlockItem {
         blockEntity.readComponents(context.getStack());
         VoxelShape shape = blockEntity.toShape(state.get(Properties.HORIZONTAL_FACING));
         if (!context.getWorld().doesNotIntersectEntities(null, shape.offset(context.getBlockPos().getX(), context.getBlockPos().getY(), context.getBlockPos().getZ()))) return false;
+        if (shape.isEmpty()) return false;
         Box box = shape.getBoundingBox().offset(context.getBlockPos());
         box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
         for (int x = (int)box.minX; x < box.maxX; x++) {
