@@ -50,6 +50,7 @@
   "feature.pedrosbakery.honey": "Honey",
   "subtitles.block.pedrosbakery.baking_tray.done": "Cake baked",
   "itemGroup.pedrosbakery": "Pedro's Bakery",
+  "text.config.pedrosbakery.title": "Pedro's Bakery",
   "text.config.pedrosbakery.option.bakingTrayMinSize": "Baking Tray Minimum Size",
   "text.config.pedrosbakery.option.bakingTrayMaxSize": "Baking Tray Maximum Size",
   "text.config.pedrosbakery.option.bakingTrayDefaultSize": "Baking Tray Default Size",
