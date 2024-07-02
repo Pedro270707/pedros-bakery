@@ -81,7 +81,7 @@ public enum BeaterLiquids implements StringIdentifiable {
     }),
     MIXTURE("mixture", (world, state, pos, beater) -> {
         if (beater.getMixTime() <= 200) return false;
-        Optional<CakeFlavor> flavor = CakeFlavors.from(beater.getItem().getItem());
+        Optional<CakeFlavor> flavor = CakeFlavors.from(beater.getItem());
         if (flavor.isPresent() && flavor.get().base() == beater.getFlavor()) {
             beater.setItem(ItemStack.EMPTY);
             beater.setFlavor(flavor.get());
@@ -95,7 +95,7 @@ public enum BeaterLiquids implements StringIdentifiable {
             world.emitGameEvent(player, GameEvent.FLUID_PICKUP, pos);
             return ItemActionResult.SUCCESS;
         }
-        Optional<CakeFlavor> flavor = CakeFlavors.from(stack.getItem());
+        Optional<CakeFlavor> flavor = CakeFlavors.from(stack);
         if (flavor.isPresent() && flavor.get().base() == beater.getFlavor() && beater.getItem().isEmpty()) {
             beater.setItem(stack.copyWithCount(1));
             stack.decrementUnlessCreative(1, player);
@@ -112,7 +112,7 @@ public enum BeaterLiquids implements StringIdentifiable {
             world.setBlockState(pos, state.with(BeaterBlock.LIQUID, FROSTING));
             return true;
         }
-        Optional<CakeFlavor> flavor = CakeFlavors.from(beater.getItem().getItem());
+        Optional<CakeFlavor> flavor = CakeFlavors.from(beater.getItem());
         if (flavor.isPresent() && flavor.get().base() == null) {
             beater.setItem(ItemStack.EMPTY);
             beater.setFlavor(flavor.get());
@@ -121,7 +121,7 @@ public enum BeaterLiquids implements StringIdentifiable {
         }
         return false;
     }, (stack, state, world, pos, player, hand, hit, beater) -> {
-        Optional<CakeFlavor> flavor = CakeFlavors.from(stack.getItem());
+        Optional<CakeFlavor> flavor = CakeFlavors.from(stack);
         if (CakeTops.from(stack.getItem()) != null || (flavor.isPresent() && flavor.get().base() == null)) {
             if (!beater.getItem().isEmpty()) {
                 player.giveItemStack(beater.getItem());

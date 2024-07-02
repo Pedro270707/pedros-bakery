@@ -113,6 +113,17 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
 
         PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, (16.0f + Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
         PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 32.0f + (Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
+
+        if (MinecraftClient.isFabulousGraphicsOrBetter()) {
+            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 64.0f, light, overlay, color);
+            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + bites, 80.0f - size, light, overlay, color);
+            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 48.0f - size + bites, 64.0f, light, overlay, color);
+            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 64.0f - size + bites, 80.0f - size, light, overlay, color);
+            PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 80.0f, light, overlay, color);
+            PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + bites, 96.0f - size, light, overlay, color);
+            PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 48.0f - size + bites, 80.0f, light, overlay, color);
+            PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 64.0f - size + bites, 96.0f - size, light, overlay, color);
+        }
         matrices.pop();
     }
 
@@ -139,7 +150,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         if (bakeTime > PBCakeBlock.TICKS_UNTIL_BAKED) {
             return overlay;
         }
-        return OverlayTexture.getUv(((float) PBCakeBlock.TICKS_UNTIL_BAKED - bakeTime) / (float)(2.0f * PBCakeBlock.TICKS_UNTIL_BAKED), false);
+        return OverlayTexture.getUv(((float) PBCakeBlock.TICKS_UNTIL_BAKED - bakeTime) / (2.0f * PBCakeBlock.TICKS_UNTIL_BAKED), false);
     }
 
     @Override

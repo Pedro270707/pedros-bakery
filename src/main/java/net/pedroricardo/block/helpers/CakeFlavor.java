@@ -2,7 +2,7 @@ package net.pedroricardo.block.helpers;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemConvertible;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -13,12 +13,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class CakeFlavor {
     private final CakeFlavor base;
-    private final ItemConvertible item;
+    private final Ingredient ingredient;
     private final RegistryEntry.Reference<CakeFlavor> registryEntry = CakeFlavors.REGISTRY.createEntry(this);
 
-    public CakeFlavor(CakeFlavor base, ItemConvertible item) {
+    public CakeFlavor(CakeFlavor base, Ingredient ingredient) {
         this.base = base;
-        this.item = item;
+        this.ingredient = ingredient;
     }
 
     @NotNull
@@ -44,8 +44,8 @@ public class CakeFlavor {
         return this.base;
     }
 
-    public final ItemConvertible item() {
-        return this.item;
+    public final Ingredient ingredient() {
+        return this.ingredient;
     }
 
     public RegistryEntry.Reference<CakeFlavor> getRegistryEntry() {
