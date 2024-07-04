@@ -12,6 +12,8 @@ import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.item.PBComponentTypes;
 
+import java.util.List;
+
 public class ExpandableBakingTrayRecipe extends SpecialCraftingRecipe {
     public ExpandableBakingTrayRecipe(CraftingRecipeCategory category) {
         super(category);
@@ -32,7 +34,7 @@ public class ExpandableBakingTrayRecipe extends SpecialCraftingRecipe {
                     if (!itemStack.isOf(Items.DIAMOND)) return false;
                     break;
                 case 4:
-                    if (!itemStack.isOf(PBBlocks.BAKING_TRAY.asItem()) || !itemStack.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty()).isEmpty()) return false;
+                    if (!itemStack.isOf(PBBlocks.BAKING_TRAY.asItem()) || !itemStack.getOrDefault(PBComponentTypes.BATTER, List.of(CakeBatter.getEmpty())).isEmpty()) return false;
                     break;
                 default: {
                     if (!itemStack.isOf(Items.AIR)) return false;

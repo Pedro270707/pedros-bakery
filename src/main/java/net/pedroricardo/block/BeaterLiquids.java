@@ -28,26 +28,30 @@ import java.util.Optional;
 
 public enum BeaterLiquids implements StringIdentifiable {
     EMPTY("empty", (stack, state, world, pos, player, hand, hit, beater) -> {
+        BlockState newState = state;
         if (stack.isOf(Items.MILK_BUCKET)) {
             if (player instanceof ServerPlayerEntity serverPlayer) {
                 Criteria.CONSUME_ITEM.trigger(serverPlayer, stack);
                 serverPlayer.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
             }
-            world.setBlockState(pos, state.with(BeaterBlock.LIQUID, BeaterLiquids.valueOf("MILK")));
+            newState = newState.with(BeaterBlock.LIQUID, BeaterLiquids.valueOf("MILK"));
+            world.setBlockState(pos, newState);
             if (!player.isInCreativeMode()) {
                 PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.BUCKET), false);
             }
+            world.emitGameEvent(GameEvent.FLUID_PLACE, pos, GameEvent.Emitter.of(player, newState));
             return ItemActionResult.SUCCESS;
         } else if (stack.isOf(PBItems.FROSTING_BOTTLE)) {
-            world.emitGameEvent(player, GameEvent.FLUID_PICKUP, pos);
             if (player instanceof ServerPlayerEntity serverPlayer) {
                 serverPlayer.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
             }
             beater.setTop(stack.get(PBComponentTypes.TOP));
-            world.setBlockState(pos, state.with(BeaterBlock.LIQUID, BeaterLiquids.valueOf("FROSTING")));
+            newState = newState.with(BeaterBlock.LIQUID, BeaterLiquids.valueOf("FROSTING"));
+            world.setBlockState(pos, newState);
             if (!player.isInCreativeMode()) {
                 PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.GLASS_BOTTLE), false);
             }
+            world.emitGameEvent(GameEvent.FLUID_PLACE, pos, GameEvent.Emitter.of(player, newState));
             return ItemActionResult.SUCCESS;
         }
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
@@ -66,15 +70,17 @@ public enum BeaterLiquids implements StringIdentifiable {
             ItemStack frostingStack = new ItemStack(PBItems.FROSTING_BOTTLE);
             frostingStack.set(PBComponentTypes.TOP, beater.getTop());
             PBHelpers.decrementStackAndAdd(player, stack, frostingStack);
-            world.setBlockState(pos, state.with(BeaterBlock.LIQUID, BeaterLiquids.EMPTY));
+            BlockState newState = state.with(BeaterBlock.LIQUID, EMPTY);
+            world.setBlockState(pos, newState);
             beater.setTop(null);
-            world.emitGameEvent(player, GameEvent.FLUID_PICKUP, pos);
+            world.emitGameEvent(GameEvent.FLUID_PICKUP, pos, GameEvent.Emitter.of(player, newState));
             return ItemActionResult.SUCCESS;
         }
         CakeTop top = CakeTops.from(stack);
         if (top != null && top.base() == beater.getTop() && beater.getItem().isEmpty()) {
             beater.setItem(stack.copyWithCount(1));
             stack.decrementUnlessCreative(1, player);
+            world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             return ItemActionResult.SUCCESS;
         }
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
@@ -90,15 +96,17 @@ public enum BeaterLiquids implements StringIdentifiable {
         return false;
     }, (stack, state, world, pos, player, hand, hit, beater) -> {
         if (stack.getItem() instanceof BakingTrayItem && ((BakingTrayItem) stack.getItem()).addBatter(player, stack, beater.getFlavor(), 4)) {
-            world.setBlockState(pos, state.with(BeaterBlock.LIQUID, BeaterLiquids.EMPTY));
+            BlockState newState = state.with(BeaterBlock.LIQUID, EMPTY);
+            world.setBlockState(pos, newState);
             beater.setFlavor(null);
-            world.emitGameEvent(player, GameEvent.FLUID_PICKUP, pos);
+            world.emitGameEvent(GameEvent.FLUID_PICKUP, pos, GameEvent.Emitter.of(player, newState));
             return ItemActionResult.SUCCESS;
         }
         Optional<CakeFlavor> flavor = CakeFlavors.from(stack);
         if (flavor.isPresent() && flavor.get().base() == beater.getFlavor() && beater.getItem().isEmpty()) {
             beater.setItem(stack.copyWithCount(1));
             stack.decrementUnlessCreative(1, player);
+            world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             return ItemActionResult.SUCCESS;
         }
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
@@ -109,14 +117,18 @@ public enum BeaterLiquids implements StringIdentifiable {
         if (top != null) {
             beater.setItem(ItemStack.EMPTY);
             beater.setTop(top);
-            world.setBlockState(pos, state.with(BeaterBlock.LIQUID, FROSTING));
+            BlockState newState = state.with(BeaterBlock.LIQUID, FROSTING);
+            world.setBlockState(pos, newState);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(newState));
             return true;
         }
         Optional<CakeFlavor> flavor = CakeFlavors.from(beater.getItem());
         if (flavor.isPresent() && flavor.get().base() == null) {
             beater.setItem(ItemStack.EMPTY);
             beater.setFlavor(flavor.get());
-            world.setBlockState(pos, state.with(BeaterBlock.LIQUID, MIXTURE));
+            BlockState newState = state.with(BeaterBlock.LIQUID, MIXTURE);
+            world.setBlockState(pos, newState);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(newState));
             return true;
         }
         return false;
@@ -126,9 +138,11 @@ public enum BeaterLiquids implements StringIdentifiable {
             if (!beater.getItem().isEmpty()) {
                 player.giveItemStack(beater.getItem());
                 beater.setItem(ItemStack.EMPTY);
+                world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             } else {
                 beater.setItem(stack.copyWithCount(1));
                 stack.decrementUnlessCreative(1, player);
+                world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             }
             return ItemActionResult.SUCCESS;
         }

@@ -11,6 +11,8 @@ import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
 
+import java.util.List;
+
 public class ExpandableBakingTrayItem extends BakingTrayItem {
     public ExpandableBakingTrayItem(Block block, Settings settings) {
         super(block, settings);
@@ -34,7 +36,7 @@ public class ExpandableBakingTrayItem extends BakingTrayItem {
             stack.set(componentType, Math.min(size + 1, max));
         }
         if (stack.get(componentType) != size) {
-            CakeBatter batter = stack.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty());
+            CakeBatter batter = stack.getOrDefault(PBComponentTypes.BATTER, List.of(CakeBatter.getEmpty())).getFirst();
             batter.setHeight(Math.min(batter.getHeight(), stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight())));
             user.setStackInHand(hand, stack);
             return TypedActionResult.success(stack, false);
