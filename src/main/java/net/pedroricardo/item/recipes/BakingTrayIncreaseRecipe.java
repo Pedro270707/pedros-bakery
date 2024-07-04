@@ -47,7 +47,7 @@ public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
         if (!hasIronIngots || trayIndex.isEmpty()) return false;
         int trayIndexInt = trayIndex.getAsInt();
         ItemStack trayStack = inventory.getStackInSlot(trayIndexInt).copy();
-        if (!trayStack.getOrDefault(PBComponentTypes.BATTER, List.of(CakeBatter.getEmpty())).getFirst().isEmpty()) return false;
+        if (!trayStack.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty()).isEmpty()) return false;
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
             if (stack.isOf(Items.IRON_INGOT)) {

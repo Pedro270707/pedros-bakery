@@ -36,7 +36,7 @@ public class ExpandableBakingTrayItem extends BakingTrayItem {
             stack.set(componentType, Math.min(size + 1, max));
         }
         if (stack.get(componentType) != size) {
-            CakeBatter batter = stack.getOrDefault(PBComponentTypes.BATTER, List.of(CakeBatter.getEmpty())).getFirst();
+            CakeBatter batter = stack.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty());
             batter.setHeight(Math.min(batter.getHeight(), stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight())));
             user.setStackInHand(hand, stack);
             return TypedActionResult.success(stack, false);

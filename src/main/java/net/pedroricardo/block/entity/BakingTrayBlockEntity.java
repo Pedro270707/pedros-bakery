@@ -92,7 +92,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     @Override
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
-        componentMapBuilder.add(PBComponentTypes.BATTER, List.of(this.getCakeBatter()));
+        componentMapBuilder.add(PBComponentTypes.BATTER, this.getCakeBatter());
         componentMapBuilder.add(PBComponentTypes.SIZE, this.getSize());
         componentMapBuilder.add(PBComponentTypes.HEIGHT, this.getHeight());
     }
@@ -100,7 +100,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     @Override
     protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
-        this.cakeBatter = components.getOrDefault(PBComponentTypes.BATTER, List.of(CakeBatter.getEmpty())).getFirst();
+        this.cakeBatter = components.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty());
         this.size = components.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize());
         this.height = components.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight());
     }
@@ -127,7 +127,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
 
     public ItemStack toStack() {
         ItemStack stack = new ItemStack(PBBlocks.BAKING_TRAY.asItem());
-        stack.set(PBComponentTypes.BATTER, List.of(this.getCakeBatter()));
+        stack.set(PBComponentTypes.BATTER, this.getCakeBatter());
         stack.set(PBComponentTypes.SIZE, this.getSize());
         stack.set(PBComponentTypes.HEIGHT, this.getHeight());
         return stack;
