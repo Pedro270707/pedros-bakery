@@ -45,6 +45,11 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(BakingTrayBlockRenderer.RENDER_EXPANDABLE_TRAY, matrices, vertexConsumers, light, overlay);
 		});
 		BlockEntityRendererFactories.register(PBBlockEntities.CAKE_STAND, CakeStandBlockRenderer::new);
+		BlockEntityRendererFactories.register(PBBlockEntities.CUPCAKE_TRAY, CupcakeTrayBlockRenderer::new);
+		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.CUPCAKE_TRAY, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
+			CupcakeTrayBlockRenderer.RENDER_CUPCAKE_TRAY.readComponents(stack);
+			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(CupcakeTrayBlockRenderer.RENDER_CUPCAKE_TRAY, matrices, vertexConsumers, light, overlay);
+		});
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
 			CakeTop top = stack.get(PBComponentTypes.TOP);
 			if (tintIndex > 0 || top == null) {

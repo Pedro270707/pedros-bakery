@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BakingTrayItem extends BlockItem {
+public class BakingTrayItem extends BlockItem implements BatterContainerItem {
     public BakingTrayItem(Block block, Settings settings) {
         super(block, settings);
     }
@@ -46,7 +46,7 @@ public class BakingTrayItem extends BlockItem {
     }
 
     public boolean addBatter(PlayerEntity player, ItemStack stack, @Nullable CakeFlavor flavor, int amount) {
-        if (flavor == null) return false;
+        if (flavor == null || !stack.isOf(this)) return false;
         ItemStack newStack = stack.copyWithCount(1);
         CakeBatter batter = stack.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty());
         if (batter.isEmpty()) {

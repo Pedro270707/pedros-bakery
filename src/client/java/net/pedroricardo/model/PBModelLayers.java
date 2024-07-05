@@ -7,6 +7,7 @@ import net.minecraft.util.Identifier;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.render.BeaterBlockRenderer;
 import net.pedroricardo.render.CakeStandBlockRenderer;
+import net.pedroricardo.render.CupcakeTrayBlockRenderer;
 
 import java.util.Set;
 
@@ -14,6 +15,7 @@ public class PBModelLayers {
     private static final Set<EntityModelLayer> LAYERS = Sets.newHashSet();
     public static final EntityModelLayer BEATER = register("beater", "main", BeaterBlockRenderer::getTexturedModelData);
     public static final EntityModelLayer CAKE_STAND = register("cake_stand", "main", CakeStandBlockRenderer::getTexturedModelData);
+    public static final EntityModelLayer CUPCAKE_TRAY = register("cupcake_tray", "main", CupcakeTrayBlockRenderer::getTexturedModelData);
 
     private static EntityModelLayer register(String id, String layer, EntityModelLayerRegistry.TexturedModelDataProvider texturedModelProvider) {
         EntityModelLayer entityModelLayer = create(id, layer);

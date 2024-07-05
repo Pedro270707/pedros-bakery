@@ -3,6 +3,7 @@ package net.pedroricardo.block;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -15,12 +16,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
+import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.BeaterBlockEntity;
 import net.pedroricardo.block.helpers.CakeFlavor;
 import net.pedroricardo.block.helpers.CakeFlavors;
 import net.pedroricardo.block.helpers.CakeTop;
 import net.pedroricardo.block.helpers.CakeTops;
 import net.pedroricardo.item.BakingTrayItem;
+import net.pedroricardo.item.BatterContainerItem;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 
@@ -95,7 +98,8 @@ public enum BeaterLiquids implements StringIdentifiable {
         }
         return false;
     }, (stack, state, world, pos, player, hand, hit, beater) -> {
-        if (stack.getItem() instanceof BakingTrayItem && ((BakingTrayItem) stack.getItem()).addBatter(player, stack, beater.getFlavor(), 4)) {
+        Item item = stack.getItem();
+        if (item instanceof BatterContainerItem container && container.addBatter(player, stack, beater.getFlavor(), PedrosBakery.CONFIG.beaterBatterAmount())) {
             BlockState newState = state.with(BeaterBlock.LIQUID, EMPTY);
             world.setBlockState(pos, newState);
             beater.setFlavor(null);

@@ -40,6 +40,7 @@
   "block.pedrosbakery.baking_tray.size": "%sx%sx%s",
   "block.pedrosbakery.baking_tray.full": "%s%% full",
   "block.pedrosbakery.cake_stand": "Cake Stand",
+  "block.pedrosbakery.cupcake_tray": "Cupcake Tray",
   "tag.block.pedrosbakery.bakes_cake": "Bakes Cake",
   "tag.block.pedrosbakery.cake_stand_item": "Cake Stand Item",
   "feature.pedrosbakery.glint": "Glint",

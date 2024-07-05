@@ -39,6 +39,9 @@ public class PBConfigModel {
 
     public CakeRenderQuality cakeRenderQuality = CakeRenderQuality.ALL_BORDERS;
 
+    @RangeConstraint(min = 1, max = 16)
+    public int beaterBatterAmount = 4;
+
     public enum CakeRenderQuality {
         SIMPLE(false, false, false),
         BORDERS_ON_SIDES(true, false, false),

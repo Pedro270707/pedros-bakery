@@ -56,7 +56,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         super.writeNbt(nbt, registryLookup);
         nbt.putInt("size", this.size);
         nbt.putInt("height", this.height);
-        nbt.put("layer", this.getCakeBatter().toNbt(new NbtCompound()));
+        nbt.put("batter", this.getCakeBatter().toNbt(new NbtCompound()));
         nbt.put("parts", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.parts).result().orElse(new NbtList()));
     }
 
@@ -70,7 +70,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
             this.height = nbt.getInt("height");
         }
         if (nbt.contains("layer", NbtElement.COMPOUND_TYPE)) {
-            this.cakeBatter = CakeBatter.fromNbt(nbt.getCompound("layer"));
+            this.cakeBatter = CakeBatter.fromNbt(nbt.getCompound("batter"));
         }
         this.parts = Lists.newArrayList(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(Lists.newArrayList()).iterator());
     }
@@ -139,6 +139,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
 
     public void setSize(int size) {
         this.size = size;
+        this.markDirty();
     }
 
     public int getHeight() {
@@ -147,6 +148,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
 
     public void setHeight(int height) {
         this.height = height;
+        this.markDirty();
     }
 
     @Nullable

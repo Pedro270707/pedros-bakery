@@ -18,15 +18,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public class CakeBatter {
-    private int bakeTime;
+public class CakeBatter extends SimpleCakeBatter {
     private float height;
-    private CakeFlavor flavor;
 
     public CakeBatter(int bakeTime, float height, CakeFlavor flavor) {
-        this.bakeTime = bakeTime;
+        super(bakeTime, flavor);
         this.height = height;
-        this.flavor = flavor;
     }
 
     private static final CakeBatter DEFAULT = new CakeBatter(0, 8, CakeFlavors.VANILLA);
@@ -64,31 +61,12 @@ public class CakeBatter {
         return CODEC.parse(NbtOps.INSTANCE, nbt).result().orElse(getDefault());
     }
 
-    public int getBakeTime() {
-        return this.bakeTime;
-    }
-
-    public void setBakeTime(int time) {
-        this.bakeTime = Math.max(time, 0);
-    }
-
-    public final void bakeTick(World world, BlockPos pos, BlockState state) {
-        if (this.getBakeTime() != Integer.MAX_VALUE) {
-            this.setBakeTime(this.getBakeTime() + 1);
-        }
-        this.getFlavor().bakeTick(this, world, pos, state);
-    }
-
     public float getHeight() {
         return this.height;
     }
 
     public void setHeight(float height) {
         this.height = height;
-    }
-
-    public CakeFlavor getFlavor() {
-        return this.flavor;
     }
 
     public boolean isEmpty() {
@@ -104,7 +82,7 @@ public class CakeBatter {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CakeBatter that = (CakeBatter) o;
-        return this.bakeTime == that.bakeTime && this.height == that.height && Objects.equals(this.flavor, that.flavor);
+        return this.getBakeTime() == that.getBakeTime() && this.getHeight() == that.getHeight() && Objects.equals(this.getFlavor(), that.getFlavor());
     }
 
     public CakeBatter copy() {
@@ -113,6 +91,6 @@ public class CakeBatter {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.bakeTime, this.height, this.flavor);
+        return Objects.hash(this.getBakeTime(), this.getHeight(), this.getFlavor());
     }
 }

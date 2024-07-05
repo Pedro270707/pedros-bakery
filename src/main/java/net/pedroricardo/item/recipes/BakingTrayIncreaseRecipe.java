@@ -10,12 +10,9 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.block.entity.BakingTrayBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
-import net.pedroricardo.item.BakingTrayItem;
 import net.pedroricardo.item.PBComponentTypes;
 
-import java.util.List;
 import java.util.OptionalInt;
 
 public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
@@ -73,18 +70,17 @@ public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
                 break;
             }
         }
-        BakingTrayBlockEntity blockEntity = ((BakingTrayItem) PBBlocks.BAKING_TRAY.asItem()).asBlockEntity(trayStack);
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
             if (stack.isOf(Items.IRON_INGOT)) {
                 if (i < (trayIndex - trayIndex % inventory.getWidth()) || i > trayIndex - trayIndex % inventory.getWidth() + 2) {
-                    blockEntity.setHeight(Math.min(blockEntity.getHeight() + 2, 16));
+                    trayStack.set(PBComponentTypes.HEIGHT, Math.min(trayStack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) + 2, 16));
                 } else {
-                    blockEntity.setSize(Math.min(blockEntity.getSize() + 2, 16));
+                    trayStack.set(PBComponentTypes.SIZE, Math.min(trayStack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultSize()) + 2, 16));
                 }
             }
         }
-        return blockEntity.toStack();
+        return trayStack;
     }
 
     @Override

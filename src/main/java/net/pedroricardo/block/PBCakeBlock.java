@@ -18,6 +18,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -195,6 +196,8 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             List<CakeLayer> cakeLayers = stackList.stream().map(element -> element.getType() == NbtElement.COMPOUND_TYPE ? CakeLayer.fromNbt((NbtCompound) element) : CakeLayer.getEmpty()).toList();
             if (tryAddLayers(cake, cakeLayers)) {
                 PBHelpers.updateListeners(cake);
+                world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+                world.playSound(pos.getX(), pos.getY(), pos.getZ(), state.getSoundGroup().getPlaceSound(), SoundCategory.BLOCKS, (state.getSoundGroup().getVolume() + 1.0f) / 2.0f, state.getSoundGroup().getPitch() * 0.8f, true);
                 stack.decrementUnlessCreative(1, player);
                 return ItemActionResult.SUCCESS;
             }

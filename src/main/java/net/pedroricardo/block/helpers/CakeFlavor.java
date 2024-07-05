@@ -34,7 +34,7 @@ public class CakeFlavor {
     public void onTryEat(CakeLayer layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
     }
 
-    public void bakeTick(CakeBatter batter, World world, BlockPos pos, BlockState state) {
+    public void bakeTick(SimpleCakeBatter batter, World world, BlockPos pos, BlockState state) {
     }
 
     public void tick(CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
