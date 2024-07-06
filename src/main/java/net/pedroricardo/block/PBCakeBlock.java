@@ -23,9 +23,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.*;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -287,7 +285,6 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             return true;
         }
 
-
         if (layers.getFirst().getSize() / 2.0f - layers.getFirst().getBites() <= cake.getLayers().getLast().getSize() / 2.0f - cake.getLayers().getLast().getBites()) {
             float layersHeight = (float) layers.stream().mapToDouble(CakeLayer::getHeight).sum();
             Direction direction = cake.getWorld().getBlockState(cake.getPos()).getOrEmpty(Properties.HORIZONTAL_FACING).orElse(Direction.NORTH);
@@ -338,6 +335,16 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
                 world.breakBlock(partPos, false);
             }
         }
+    }
+
+    @Override
+    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+        return state.with(Properties.HORIZONTAL_FACING, rotation.rotate(state.get(Properties.HORIZONTAL_FACING)));
+    }
+
+    @Override
+    protected BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(Properties.HORIZONTAL_FACING)));
     }
 
     @Override

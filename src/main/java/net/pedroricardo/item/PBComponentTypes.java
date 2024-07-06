@@ -3,7 +3,6 @@ package net.pedroricardo.item;
 import com.mojang.serialization.Codec;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -20,7 +19,8 @@ public class PBComponentTypes extends DataComponentTypes {
     public static final ComponentType<Integer> SIZE = register("size", (builder) -> builder.codec(Codec.INT).packetCodec(PacketCodecs.INTEGER).cache());
     public static final ComponentType<Integer> HEIGHT = register("height", (builder) -> builder.codec(Codec.INT).packetCodec(PacketCodecs.INTEGER).cache());
     public static final ComponentType<List<CakeFeature>> FEATURES = register("features", (builder) -> builder.codec(CakeFeatures.REGISTRY.getCodec().listOf()).packetCodec(PacketCodecs.codec(CakeFeatures.REGISTRY.getCodec().listOf())).cache());
-    public static final ComponentType<CupcakeBatter> CUPCAKE_BATTER = register("cupcake_batter", (builder) -> builder.codec(CupcakeBatter.CODEC).packetCodec(CupcakeBatter.PACKET_CODEC).cache());
+    public static final ComponentType<CupcakeBatters> CUPCAKE_BATTERS = register("cupcake_batters", (builder) -> builder.codec(CupcakeBatters.CODEC).packetCodec(CupcakeBatters.PACKET_CODEC).cache());
+    public static final ComponentType<SimpleCakeBatter> SIMPLE_BATTER = register("simple_batter", (builder) -> builder.codec(SimpleCakeBatter.CODEC).packetCodec(SimpleCakeBatter.PACKET_CODEC).cache());
 
     private static <T> ComponentType<T> register(String id, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of(PedrosBakery.MOD_ID, id), builderOperator.apply(ComponentType.builder()).build());

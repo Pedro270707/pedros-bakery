@@ -15,17 +15,17 @@ import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PBSounds;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.helpers.CupcakeBatter;
+import net.pedroricardo.block.helpers.CupcakeBatters;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.Nullable;
 
 public class CupcakeTrayBlockEntity extends BlockEntity {
-    private CupcakeBatter batter;
+    private CupcakeBatters batter;
 
     public CupcakeTrayBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.CUPCAKE_TRAY, pos, state);
-        this.batter = CupcakeBatter.getEmpty();
+        this.batter = CupcakeBatters.getEmpty();
     }
 
     @Override
@@ -42,7 +42,7 @@ public class CupcakeTrayBlockEntity extends BlockEntity {
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
-        this.batter = CupcakeBatter.fromNbt(nbt);
+        this.batter = CupcakeBatters.fromNbt(nbt);
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, CupcakeTrayBlockEntity blockEntity) {
@@ -59,11 +59,11 @@ public class CupcakeTrayBlockEntity extends BlockEntity {
         }
     }
 
-    public CupcakeBatter getBatter() {
+    public CupcakeBatters getBatter() {
         return this.batter;
     }
 
-    public void setBatter(CupcakeBatter batter) {
+    public void setBatter(CupcakeBatters batter) {
         this.batter = batter;
         this.markDirty();
     }
@@ -77,13 +77,13 @@ public class CupcakeTrayBlockEntity extends BlockEntity {
     @Override
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
-        componentMapBuilder.add(PBComponentTypes.CUPCAKE_BATTER, this.getBatter());
+        componentMapBuilder.add(PBComponentTypes.CUPCAKE_BATTERS, this.getBatter());
     }
 
     @Override
     protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
-        this.batter = components.getOrDefault(PBComponentTypes.CUPCAKE_BATTER, CupcakeBatter.getEmpty());
+        this.batter = components.getOrDefault(PBComponentTypes.CUPCAKE_BATTERS, CupcakeBatters.getEmpty());
     }
 
     @Nullable

@@ -13,7 +13,7 @@ import net.minecraft.util.math.Direction;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.CupcakeTrayBlockEntity;
-import net.pedroricardo.block.helpers.CupcakeBatter;
+import net.pedroricardo.block.helpers.CupcakeBatters;
 import net.pedroricardo.block.helpers.SimpleCakeBatter;
 import net.pedroricardo.model.PBModelLayers;
 
@@ -48,14 +48,14 @@ public class CupcakeTrayBlockRenderer implements BlockEntityRenderer<CupcakeTray
         this.root.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(Identifier.of(PedrosBakery.MOD_ID, "textures/entity/cupcake_tray.png"))), light, overlay);
         matrices.pop();
 
-        CupcakeBatter batter = entity.getBatter();
+        CupcakeBatters batter = entity.getBatter();
         List<Optional<SimpleCakeBatter>> batters = batter.stream();
 
         for (int i = 0; i < batters.size(); i++) {
             if (batters.get(i).isEmpty()) continue;
             float x = 3.0f + ((i >> 1 & 1) == 1 ? 6 : 0);
             float y = 3.0f + ((i & 1) == 1 ? 6 : 0);
-            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(batters.get(i).get().getFlavor().getTextureLocation())), x, y, 4.0f, 4.0f, 4.0f, 22.0f, 6.0f, light, PBCakeBlockRenderer.getBakeTimeOverlay(batters.get(i).get().getBakeTime(), overlay), PBCakeBlockRenderer.getBakeTimeColor(batters.get(i).get().getBakeTime(), 0xFFFFFFFF));
+            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(batters.get(i).get().getFlavor().getCupcakeTextureLocation())), x, y, 4.0f, 4.0f, 4.0f, 4.0f, 0.0f, 8.0f, 4.0f, 16.0f, 16.0f, light, PBCakeBlockRenderer.getBakeTimeOverlay(batters.get(i).get().getBakeTime(), overlay), PBCakeBlockRenderer.getBakeTimeColor(batters.get(i).get().getBakeTime(), 0xFFFFFFFF));
         }
     }
 }

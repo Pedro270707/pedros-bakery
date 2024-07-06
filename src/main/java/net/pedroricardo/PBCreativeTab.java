@@ -31,6 +31,8 @@ public class PBCreativeTab {
                 addFrostingBottles(entries);
                 entries.add(new ItemStack(PBBlocks.CAKE_STAND));
                 entries.add(new ItemStack(PBBlocks.EXPANDABLE_BAKING_TRAY));
+                entries.add(new ItemStack(PBBlocks.CUPCAKE));
+                entries.add(new ItemStack(PBBlocks.CUPCAKE_TRAY));
                 addBakingTrays(entries);
             }).build();
 

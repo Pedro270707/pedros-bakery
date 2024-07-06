@@ -22,8 +22,13 @@ public class CakeFlavor {
     }
 
     @NotNull
-    public Identifier getTextureLocation() {
+    public Identifier getCakeTextureLocation() {
         return CakeFlavors.REGISTRY.getId(this).withPrefixedPath("textures/entity/cake/").withSuffixedPath(".png");
+    }
+
+    @NotNull
+    public Identifier getCupcakeTextureLocation() {
+        return CakeFlavors.REGISTRY.getId(this).withPrefixedPath("textures/entity/cupcake/").withSuffixedPath(".png");
     }
 
     @NotNull
@@ -31,7 +36,7 @@ public class CakeFlavor {
         return "flavor.pedrosbakery." + CakeFlavors.REGISTRY.getId(this).getPath();
     }
 
-    public void onTryEat(CakeLayer layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
+    public void onTryEat(SimpleCakeBatter batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
     }
 
     public void bakeTick(SimpleCakeBatter batter, World world, BlockPos pos, BlockState state) {

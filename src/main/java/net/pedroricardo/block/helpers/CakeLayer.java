@@ -90,7 +90,7 @@ public class CakeLayer extends CakeBatter {
     }
 
     public void bite(World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
-        this.getFlavor().onTryEat(this, world, pos, state, player, cake);
+        this.getFlavor().onTryEat(this, world, pos, state, player);
         if (this.getTop().isPresent()) {
             this.getTop().get().onTryEat(this, world, pos, state, player, cake);
         }

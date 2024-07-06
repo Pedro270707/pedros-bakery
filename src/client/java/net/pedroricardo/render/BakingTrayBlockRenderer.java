@@ -51,7 +51,7 @@ public class BakingTrayBlockRenderer implements BlockEntityRenderer<BakingTrayBl
 
         CakeBatter batter = entity.getCakeBatter();
         if (!batter.isEmpty()) {
-            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(batter.getFlavor().getTextureLocation())), 8.0f - size / 2.0f, 8.0f - size / 2.0f, entity.getCakeBatter().getHeight(), size, size, (16.0f + Math.round(8.0f - size / 2.0f)), Math.round(8.0f - size / 2.0f), light, PBCakeBlockRenderer.getBakeTimeOverlay(batter.getBakeTime(), overlay), PBCakeBlockRenderer.getBakeTimeColor(batter.getBakeTime(), color));
+            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(batter.getFlavor().getCakeTextureLocation())), 8.0f - size / 2.0f, 8.0f - size / 2.0f, entity.getCakeBatter().getHeight(), size, size, (16.0f + Math.round(8.0f - size / 2.0f)), Math.round(8.0f - size / 2.0f), light, PBCakeBlockRenderer.getBakeTimeOverlay(batter.getBakeTime(), overlay), PBCakeBlockRenderer.getBakeTimeColor(batter.getBakeTime(), color));
         }
         matrices.pop();
     }

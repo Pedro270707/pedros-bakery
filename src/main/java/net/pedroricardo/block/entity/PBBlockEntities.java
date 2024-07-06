@@ -55,6 +55,10 @@ public class PBBlockEntities {
             CupcakeTrayBlockEntity::new,
             PBBlocks.CUPCAKE_TRAY), "cupcake_tray");
 
+    public static final BlockEntityType<? extends CupcakeBlockEntity> CUPCAKE = register(BlockEntityType.Builder.create(
+            CupcakeBlockEntity::new,
+            PBBlocks.CUPCAKE), "cupcake");
+
     private static <T extends BlockEntity> BlockEntityType<T> register(BlockEntityType.Builder<T> builder, String id) {
         return Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of(PedrosBakery.MOD_ID, id), builder.build());
     }
