@@ -24,8 +24,8 @@ public interface MultipartBlockEntity {
             BlockState state = world.getBlockState(pos);
             if (state.getBlock() instanceof MultipartBlockPart<?, ?> && state.contains(MultipartBlockPart.DELEGATE)) {
                 world.setBlockState(pos, state.with(MultipartBlockPart.DELEGATE, false));
+                world.removeBlock(pos, false);
             }
-            world.removeBlock(pos, false);
         }
         this.getParts().clear();
         ((BlockEntity)this).markDirty();

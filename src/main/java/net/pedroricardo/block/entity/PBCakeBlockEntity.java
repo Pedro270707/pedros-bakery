@@ -140,6 +140,12 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
         return shape;
     }
 
+    @Override
+    public void removeFromCopiedStackNbt(NbtCompound nbt) {
+        super.removeFromCopiedStackNbt(nbt);
+        nbt.remove("parts");
+    }
+
     @Nullable
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {

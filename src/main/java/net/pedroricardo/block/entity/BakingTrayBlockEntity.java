@@ -111,6 +111,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         nbt.remove("layer");
         nbt.remove("size");
         nbt.remove("height");
+        nbt.remove("parts");
     }
 
     public CakeBatter getCakeBatter() {

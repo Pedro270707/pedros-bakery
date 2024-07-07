@@ -23,6 +23,7 @@ import net.pedroricardo.block.entity.PBBlockEntities;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockPart;
+import net.pedroricardo.block.tags.PBTags;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -95,28 +96,6 @@ public class BakingTrayBlock extends BlockWithEntity implements MultipartBlock<B
             return tray.getParts();
         }
         return List.of();
-    }
-
-    @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        removePartsWhenReplaced(state, world, pos, newState, moved);
-        super.onStateReplaced(state, world, pos, newState, moved);
-        world.updateListeners(pos, state, newState, Block.NOTIFY_ALL_AND_REDRAW | (moved ? Block.MOVED : 0));
-    }
-
-    @Override
-    public void removePartsWhenReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        for (BlockPos partPos : this.getParts(world, pos)) {
-            if (!(world.getBlockState(partPos).getBlock() instanceof MultipartBlockPart<?, ?>) || !world.getBlockState(partPos).contains(MultipartBlockPart.DELEGATE)) {
-                return;
-            }
-            world.setBlockState(partPos, world.getBlockState(partPos).with(MultipartBlockPart.DELEGATE, false));
-            if (moved) {
-                world.removeBlock(partPos, true);
-            } else {
-                world.breakBlock(partPos, false);
-            }
-        }
     }
 
     @Override

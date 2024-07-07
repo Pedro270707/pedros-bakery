@@ -314,13 +314,6 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        removePartsWhenReplaced(state, world, pos, newState, moved);
-        super.onStateReplaced(state, world, pos, newState, moved);
-        world.updateListeners(pos, state, newState, Block.NOTIFY_ALL_AND_REDRAW | (moved ? Block.MOVED : 0));
-    }
-
-    @Override
     public void removePartsWhenReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         for (BlockPos partPos : this.getParts(world, pos)) {
             if (!(world.getBlockState(partPos).getBlock() instanceof MultipartBlockPart<?, ?>) || !world.getBlockState(partPos).contains(MultipartBlockPart.DELEGATE)) {

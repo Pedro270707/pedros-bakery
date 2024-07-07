@@ -39,15 +39,6 @@ public abstract class MultipartBlockEntityPart<T extends BlockEntity & Multipart
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, MultipartBlockEntityPart<?> blockEntity) {
-        if (state.getOutlineShape(world, pos).isEmpty()) {
-            world.setBlockState(pos, state.with(MultipartBlockPart.DELEGATE, false));
-            world.removeBlock(pos, false);
-            PBHelpers.updateListeners(world, pos, state, blockEntity);
-        } else if (!(state.getBlock() instanceof MultipartBlockPart<?, ?> part) || !part.stillValid(world, pos)) {
-            world.setBlockState(pos, state.with(MultipartBlockPart.DELEGATE, false));
-            world.breakBlock(pos, false);
-            PBHelpers.updateListeners(world, pos, state, blockEntity);
-        }
     }
 
     @Override

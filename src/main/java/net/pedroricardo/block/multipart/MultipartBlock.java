@@ -26,11 +26,21 @@ public interface MultipartBlock<C extends BlockEntity & MultipartBlockEntity, E 
     List<BlockPos> getParts(WorldView world, BlockPos pos);
 
     /**
-     * Call this in the block's {@link AbstractBlock#onStateReplaced(BlockState, World, BlockPos, BlockState, boolean)} method
-     * alongside calling the super method afterward.
-     * <p>
-     * Remember to update listeners with {@link Block#NOTIFY_ALL_AND_REDRAW} at the end of the method.
+     * Called when block is replaced in order to remove all the current parts.
      */
-    void removePartsWhenReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved);
+    default void removePartsWhenReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        for (BlockPos partPos : this.getParts(world, pos)) {
+            if (!(world.getBlockState(partPos).getBlock() instanceof MultipartBlockPart<?, ?>) || !world.getBlockState(partPos).contains(MultipartBlockPart.DELEGATE)) {
+                return;
+            }
+            world.setBlockState(partPos, world.getBlockState(partPos).with(MultipartBlockPart.DELEGATE, false));
+            if (moved) {
+                world.removeBlock(partPos, true);
+            } else {
+                world.breakBlock(partPos, false);
+            }
+        }
+    }
+
     P getPart();
 }
