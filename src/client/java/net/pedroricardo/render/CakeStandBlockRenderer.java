@@ -1,5 +1,9 @@
 package net.pedroricardo.render;
 
+import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -9,10 +13,14 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.CakeStandBlockEntity;
 import net.pedroricardo.model.PBModelLayers;
+import org.joml.Quaternionf;
 
 public class CakeStandBlockRenderer implements BlockEntityRenderer<CakeStandBlockEntity> {
     private final ItemRenderer itemRenderer;
@@ -46,8 +54,24 @@ public class CakeStandBlockRenderer implements BlockEntityRenderer<CakeStandBloc
         this.plate.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(Identifier.of(PedrosBakery.MOD_ID, "textures/entity/cake_stand.png"))), light, overlay);
         matrices.pop();
 
-        matrices.translate(0.5f, 0.25f, 0.5f);
-        matrices.scale(0.75f, 0.75f, 0.75f);
-        this.itemRenderer.renderItem(entity.getItem(), ModelTransformationMode.FIXED, light, overlay, matrices, vertexConsumers, entity.getWorld(), (int) entity.getPos().asLong());
+        if (entity.getItem().getItem() instanceof BlockItem blockItem) {
+            matrices.translate(0.5f, 0.0625f, 0.5f);
+            matrices.scale(0.75f, 0.75f, 0.75f);
+            matrices.translate(-0.5f, 0.0f, -0.5f);
+            BlockState state = blockItem.getBlock().getDefaultState();
+            if (state.hasBlockEntity()) {
+                BlockEntity blockEntity = ((BlockEntityProvider) blockItem.getBlock()).createBlockEntity(entity.getPos(), state);
+                if (blockEntity != null) {
+                    blockEntity.readComponents(entity.getItem());
+                    MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(blockEntity, matrices, vertexConsumers, light, overlay);
+                }
+            } else {
+                MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(state, matrices, vertexConsumers, light, overlay);
+            }
+        } else {
+            matrices.translate(0.5f, 0.5f, 0.5f);
+            matrices.scale(0.75f, 0.75f, 0.75f);
+            this.itemRenderer.renderItem(entity.getItem(), ModelTransformationMode.FIXED, light, overlay, matrices, vertexConsumers, entity.getWorld(), (int) entity.getPos().asLong());
+        }
     }
 }
