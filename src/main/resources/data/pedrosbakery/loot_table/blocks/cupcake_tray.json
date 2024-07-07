@@ -15,7 +15,7 @@
             {
               "function": "minecraft:copy_components",
               "include": [
-                "pedrosbakery:cupcake_batters"
+                "pedrosbakery:cupcake_tray_batter"
               ],
               "source": "block_entity"
             }

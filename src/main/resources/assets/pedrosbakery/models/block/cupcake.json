@@ -1,5 +1,5 @@
 {
 	"textures": {
-		"particle": "minecraft:block/cake_side"
+		"particle": "pedrosbakery:item/cupcake_liner"
 	}
 }

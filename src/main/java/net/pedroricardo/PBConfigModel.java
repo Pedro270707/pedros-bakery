@@ -42,6 +42,18 @@ public class PBConfigModel {
     @RangeConstraint(min = 1, max = 16)
     public int beaterBatterAmount = 4;
 
+    @RangeConstraint(min = 1, max = 100)
+    public int cakeBiteFood = 2;
+
+    @RangeConstraint(min = 1, max = 1000)
+    public float cakeBiteSaturation = 0.1f;
+
+    @RangeConstraint(min = 1, max = 100)
+    public int cupcakeFood = 2;
+
+    @RangeConstraint(min = 1, max = 1000)
+    public float cupcakeSaturation = 0.1f;
+
     public enum CakeRenderQuality {
         SIMPLE(false, false, false),
         BORDERS_ON_SIDES(true, false, false),

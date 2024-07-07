@@ -5,6 +5,8 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
@@ -19,7 +21,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import net.pedroricardo.PBHelpers;
+import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.CupcakeBlockEntity;
 import net.pedroricardo.block.tags.PBTags;
 import org.jetbrains.annotations.Nullable;
@@ -76,7 +78,9 @@ public class CupcakeBlock extends BlockWithEntity {
                 cupcake.setBatter(null);
                 player.incrementStat(Stats.EAT_CAKE_SLICE);
                 world.emitGameEvent(player, GameEvent.EAT, pos);
-                player.getHungerManager().add(2, 0.1f);
+                world.playSound(player, pos, SoundEvents.ENTITY_GENERIC_EAT, SoundCategory.BLOCKS, 1.0f, 0.8f + world.getRandom().nextFloat() * 0.4f);
+                player.playSound(SoundEvents.ENTITY_PLAYER_BURP, 0.5f, 1.0f);
+                player.getHungerManager().add(PedrosBakery.CONFIG.cupcakeFood(), PedrosBakery.CONFIG.cupcakeSaturation());
             }
             return ActionResult.SUCCESS;
         }

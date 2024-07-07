@@ -107,7 +107,7 @@ public class CakeLayer extends CakeBatter {
         }
         player.incrementStat(Stats.EAT_CAKE_SLICE);
         world.emitGameEvent(player, GameEvent.EAT, pos);
-        player.getHungerManager().add((int) biteSize, 0.05f * biteSize);
+        player.getHungerManager().add(PedrosBakery.CONFIG.cakeBiteFood(), PedrosBakery.CONFIG.cakeBiteSaturation());
         PBHelpers.updateListeners(cake);
     }
 
