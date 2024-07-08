@@ -89,7 +89,7 @@ public class CakeLayer extends CakeBatter {
         return this.bites;
     }
 
-    public void bite(World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
+    public void bite(World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake, float biteSize) {
         this.getFlavor().onTryEat(this, world, pos, state, player);
         if (this.getTop().isPresent()) {
             this.getTop().get().onTryEat(this, world, pos, state, player, cake);
@@ -100,7 +100,6 @@ public class CakeLayer extends CakeBatter {
         if (this.getFlavor().isIn(PBTags.Flavors.INEDIBLE) || (this.getTop().isPresent() && this.getTop().get().isIn(PBTags.Tops.INEDIBLE)) || this.getFeatures().stream().anyMatch(feature -> feature.isIn(PBTags.Features.INEDIBLE))) {
             return;
         }
-        float biteSize = player.getUuidAsString().equals("7bb71eb9-b55e-4071-9175-8ec2f42ddd79") ? Math.min(0.125f, PedrosBakery.CONFIG.biteSize()) : PedrosBakery.CONFIG.biteSize();
         this.bites += biteSize;
         if (this.bites > this.getSize()) {
             this.bites = this.getSize();

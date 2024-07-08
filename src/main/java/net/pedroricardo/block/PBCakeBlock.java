@@ -161,11 +161,12 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         if (!player.canConsume(false)) {
             return ActionResult.PASS;
         }
-        if (!player.isCreative() && cake.getLayers().size() > layerIndex + 1 && cake.getLayers().get(layerIndex + 1).getSize() / 2.0f - cake.getLayers().get(layerIndex + 1).getBites() > cake.getLayers().get(layerIndex).getSize() / 2.0f - cake.getLayers().get(layerIndex).getBites() - PedrosBakery.CONFIG.biteSize()) {
+        float biteSize = player.getUuidAsString().equals("7bb71eb9-b55e-4071-9175-8ec2f42ddd79") ? Math.min(0.125f, PedrosBakery.CONFIG.biteSize()) : PedrosBakery.CONFIG.biteSize();
+        if (!player.isCreative() && cake.getLayers().size() > layerIndex + 1 && cake.getLayers().get(layerIndex + 1).getSize() / 2.0f - cake.getLayers().get(layerIndex + 1).getBites() > cake.getLayers().get(layerIndex).getSize() / 2.0f - cake.getLayers().get(layerIndex).getBites() - biteSize) {
             return ActionResult.PASS;
         }
         changeState(player, world, pos, state);
-        cake.getLayers().get(layerIndex).bite(world, pos, state, player, cake);
+        cake.getLayers().get(layerIndex).bite(world, pos, state, player, cake, biteSize);
         if (cake.getLayers().size() == 1 && cake.getLayers().get(layerIndex).isEmpty()) {
             cake.removeAllParts(world);
             world.removeBlock(pos, false);
