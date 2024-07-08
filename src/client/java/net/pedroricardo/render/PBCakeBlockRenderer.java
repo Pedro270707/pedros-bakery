@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.pedroricardo.PBConfigModel;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.PBCandleCakeBlock;
@@ -63,6 +64,10 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     }
 
     public static void renderCakeLayer(List<CakeLayer> layers, CakeLayer layer, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+        renderCakeLayer(layers, layer, matrices, vertexConsumer, light, overlay, color, PedrosBakery.CONFIG.cakeRenderQuality());
+    }
+
+    public static void renderCakeLayer(List<CakeLayer> layers, CakeLayer layer, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color, PBConfigModel.CakeRenderQuality quality) {
         float size = layer.getSize();
         float height = layer.getHeight();
         float bites = layer.getBites();
@@ -87,63 +92,93 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         }
 
         matrices.push();
-        PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 16.0f + Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
-        PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
-        PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, 48.0f + Math.round((16.0f - size) / 2.0f) + bites, 16.0f, light, overlay, color);
+        float halfSizeDifference = Math.round((16.0f - size) / 2.0f);
+        float halfHeightDifference = Math.round((16.0f - height) / 2.0f);
+        PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 16.0f + halfSizeDifference, 16.0f, light, overlay, color);
+        PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, halfSizeDifference, 16.0f, light, overlay, color);
+        PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, 48.0f + halfSizeDifference + bites, 16.0f, light, overlay, color);
 
-        if (PedrosBakery.CONFIG.cakeRenderQuality().renderSideBorders()) {
-            PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 0.0f, 32.0f, light, overlay, color);
-            PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 16.0f - size + 16.0f, 32.0f, light, overlay, color);
-            PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 32.0f, 32.0f + 16.0f - height, light, overlay, color);
-            PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 48.0f + 16.0f - size, 32.0f + 16.0f - height, light, overlay, color);
+        if (quality.renderSideBorders()) {
+            PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 16.0f + halfSizeDifference, 32.0f, light, overlay, color); // Top
+            PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 16.0f + halfSizeDifference, 80.0f - height, light, overlay, color); // Bottom
+            PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 0.0f, 48.0f + halfHeightDifference, light, overlay, color); // Left
+            PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 48.0f - size, 48.0f + halfHeightDifference, light, overlay, color); // Right
+            PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 0.0f, 32.0f, light, overlay, color); // Top Left
+            PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 48.0f - size, 32.0f, light, overlay, color); // Top Right
+            PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 0.0f, 64.0f + 16.0f - height, light, overlay, color); // Bottom Left
+            PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 48.0f - size, 64.0f + 16.0f - height, light, overlay, color); // Bottom Right
 
-            PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 0, 32.0f, light, overlay, color);
-            PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 32.0f - size, 32.0f, light, overlay, color);
-            PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 32.0f, 32.0f + 16.0f - height, light, overlay, color);
-            PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 48.0f + 16.0f - size, 32.0f + 16.0f - height, light, overlay, color);
+            PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 16.0f + halfSizeDifference, 32.0f, light, overlay, color); // Top
+            PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 16.0f + halfSizeDifference, 80.0f - height, light, overlay, color); // Bottom
+            PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 0.0f, 48.0f + halfHeightDifference, light, overlay, color); // Left
+            PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 48.0f - size, 48.0f + halfHeightDifference, light, overlay, color); // Right
+            PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 0, 32.0f, light, overlay, color); // Top Left
+            PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 48.0f - size, 32.0f, light, overlay, color); // Top Right
+            PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 0.0f, 64.0f + 16.0f - height, light, overlay, color); // Bottom Left
+            PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumer, -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 48.0f - size, 64.0f + 16.0f - height, light, overlay, color); // Bottom Right
 
-            PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, bites, 32.0f, light, overlay, color);
-            PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, 32.0f - size + bites, 32.0f, light, overlay, color);
-            PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, 32.0f + bites, 32.0f + 16.0f - height, light, overlay, color);
-            PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, 48.0f + 16.0f - size + bites, 32.0f + 16.0f - height, light, overlay, color);
+            PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, 16.0f + halfSizeDifference + bites, 32.0f, light, overlay, color); // Top
+            PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, 16.0f + halfSizeDifference + bites, 80.0f - height, light, overlay, color); // Bottom
+            PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, bites, 48.0f + halfHeightDifference, light, overlay, color); // Left
+            PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, 48.0f - size + bites, 48.0f + halfHeightDifference, light, overlay, color); // Right
+            PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, bites, 32.0f, light, overlay, color); // Top Left
+            PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, 48.0f - size + bites, 32.0f, light, overlay, color); // Top Right
+            PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, bites, 64.0f + 16.0f - height, light, overlay, color); // Bottom Left
+            PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -height, 8.0f + size / 2.0f, length, height, 48.0f - size + bites, 64.0f + 16.0f - height, light, overlay, color); // Bottom Right
         }
 
         if (bites == 0) {
             PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 48.0f + Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
-            if (PedrosBakery.CONFIG.cakeRenderQuality().renderSideBorders()) {
-                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 0.0f, 32.0f, light, overlay, color);
-                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 32.0f - size, 32.0f, light, overlay, color);
-                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 32.0f, 32.0f + 16.0f - height, light, overlay, color);
-                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 48.0f + 16.0f - size, 32.0f + 16.0f - height, light, overlay, color);
+            if (quality.renderSideBorders()) {
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 16.0f + halfSizeDifference, 32.0f, light, overlay, color); // Top
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 16.0f + halfSizeDifference, 80.0f - height, light, overlay, color); // Bottom
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 0.0f, 48.0f + halfHeightDifference, light, overlay, color); // Left
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 48.0f - size, 48.0f + halfHeightDifference, light, overlay, color); // Right
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 0.0f, 32.0f, light, overlay, color); // Top Left
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 48.0f - size, 32.0f, light, overlay, color); // Top Right
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 0.0f, 64.0f + 16.0f - height, light, overlay, color); // Bottom Left
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 48.0f - size, 64.0f + 16.0f - height, light, overlay, color); // Bottom Right
             }
         } else {
             PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 48.0f + Math.round((16.0f - size) / 2.0f), 0.0f, light, overlay, color);
-            if (PedrosBakery.CONFIG.cakeRenderQuality().renderSideBorders()) {
-                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 0.0f, 48.0f, light, overlay, color);
-                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 32.0f - size, 48.0f, light, overlay, color);
-                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 32.0f, 48.0f + 16.0f - height, light, overlay, color);
-                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 48.0f + 16.0f - size, 48.0f + 16.0f - height, light, overlay, color);
+            if (quality.renderSideBorders()) {
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 64.0f + halfSizeDifference, 32.0f, light, overlay, color); // Top
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 64.0f + halfSizeDifference, 80.0f - height, light, overlay, color); // Bottom
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 48.0f, 48.0f + halfHeightDifference, light, overlay, color); // Left
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 96.0f - size, 48.0f + halfHeightDifference, light, overlay, color); // Right
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 48.0f, 32.0f, light, overlay, color); // Top Left
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 96.0f - size, 32.0f, light, overlay, color); // Top Right
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 48.0f, 64.0f + 16.0f - height, light, overlay, color); // Bottom Left
+                PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f - bites, size, height, 96.0f + 16.0f - size, 64.0f + 16.0f - height, light, overlay, color); // Bottom Right
             }
         }
 
 
         if (layerOnTop == null || (layerOnTop.getSize() / 2.0f) - layerOnTop.getBites() < (layer.getSize() / 2.0f) - layer.getBites()) {
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, (16.0f + Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
-            if (PedrosBakery.CONFIG.cakeRenderQuality().renderTopBorder()) {
-                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 64.0f, light, overlay, color);
-                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 32.0f - size + bites, 64.0f, light, overlay, color);
-                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 32.0f + bites, 80.0f - size, light, overlay, color);
-                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 64.0f - size + bites, 80.0f - size, light, overlay, color);
+            if (quality.renderTopBorder()) {
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + halfSizeDifference + bites, 80.0f, light, overlay, color); // Top
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + halfSizeDifference + bites, 128.0f - size, light, overlay, color); // Bottom
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 96.0f + halfSizeDifference, light, overlay, color); // Left
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 48.0f - size + bites, 96.0f + halfSizeDifference, light, overlay, color); // Right
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 80.0f, light, overlay, color); // Top Left
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 48.0f - size + bites, 80.0f, light, overlay, color); // Top Right
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 128.0f - size, light, overlay, color); // Bottom Left
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 48.0f - size + bites, 128.0f - size, light, overlay, color); // Bottom Right
             }
         }
 
         if (layerUnder == null || (layerUnder.getSize() / 2.0f) - layerUnder.getBites() < (layer.getSize() / 2.0f) - layer.getBites()) {
             PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 32.0f + (Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
-            if (PedrosBakery.CONFIG.cakeRenderQuality().renderBottomBorder()) {
-                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, bites, 80.0f, light, overlay, color);
-                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 32.0f - size + bites, 80.0f, light, overlay, color);
-                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 32.0f + bites, 96.0f - size, light, overlay, color);
-                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 64.0f - size + bites, 96.0f - size, light, overlay, color);
+            if (quality.renderBottomBorder()) {
+                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 64.0f + halfSizeDifference + bites, 80.0f, light, overlay, color); // Top
+                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 64.0f + halfSizeDifference + bites, 128.0f - size, light, overlay, color); // Bottom
+                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 48.0f + bites, 96.0f + halfSizeDifference, light, overlay, color); // Left
+                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 96.0f - size + bites, 96.0f + halfSizeDifference, light, overlay, color); // Right
+                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 48.0f + bites, 80.0f, light, overlay, color);
+                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 96.0f - size + bites, 80.0f, light, overlay, color);
+                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 48.0f + bites, 128.0f - size, light, overlay, color);
+                PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 96.0f - size + bites, 128.0f - size, light, overlay, color);
             }
         }
         matrices.pop();

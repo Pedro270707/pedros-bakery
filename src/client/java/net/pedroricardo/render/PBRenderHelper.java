@@ -13,7 +13,7 @@ public class PBRenderHelper {
     }
 
     public static void createFace(Direction direction, MatrixStack matrices, VertexConsumer vertexConsumer, float x, float y, float z, float width, float height, float u, float v, float u2, float v2, int light, int overlay, int color) {
-        createFace(direction, matrices, vertexConsumer, x, y, z, width, height, u, v, u2, v2, 64.0f, 96.0f, light, overlay, color);
+        createFace(direction, matrices, vertexConsumer, x, y, z, width, height, u, v, u2, v2, 128.0f, 128.0f, light, overlay, color);
     }
 
     public static void createFace(Direction direction, MatrixStack matrices, VertexConsumer vertexConsumer, float x, float y, float z, float width, float height, float u, float v, float u2, float v2, float textureWidth, float textureHeight, int light, int overlay, int color) {

@@ -1,6 +1,7 @@
 package net.pedroricardo.render;
 
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -33,25 +34,32 @@ public class BakingTrayBlockRenderer implements BlockEntityRenderer<BakingTrayBl
         matrices.push();
         PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, size, height, 16.0f + Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
         PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, size, height, 0.0f, 32.0f, light, overlay, color);
-        PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, size, height, 16.0f - size + 16.0f, 32.0f, light, overlay, color);
+        PBRenderHelper.createFace(Direction.NORTH, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), -8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, size, height, 32.0f - size + 16.0f, 32.0f, light, overlay, color);
 
         PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
         PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 0, 32.0f, light, overlay, color);
-        PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 32.0f - size, 32.0f, light, overlay, color);
+        PBRenderHelper.createFace(Direction.EAST, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), -8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 48.0f - size, 32.0f, light, overlay, color);
 
         PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), 8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 48.0f + Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
         PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), 8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 0, 32.0f, light, overlay, color);
-        PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), 8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 32.0f - size, 32.0f, light, overlay, color);
+        PBRenderHelper.createFace(Direction.SOUTH, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), 8.0f - size / 2.0f, -height, 8.0f + size / 2.0f, size, height, 48.0f - size, 32.0f, light, overlay, color);
 
         PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, size, height, 48.0f + Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
         PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, size, height, 0.0f, 32.0f, light, overlay, color);
-        PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, size, height, 32.0f - size, 32.0f, light, overlay, color);
+        PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, size, height, 48.0f - size, 32.0f, light, overlay, color);
 
         PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), 8.0f - size / 2.0f, -8.0f - size / 2.0f, 0.0f, size, size, 32.0f + (Math.round(8.0f - size / 2.0f)), Math.round(8.0f - size / 2.0f), light, overlay, color);
 
         CakeBatter batter = entity.getCakeBatter();
         if (!batter.isEmpty()) {
-            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(batter.getFlavor().getCakeTextureLocation())), 8.0f - size / 2.0f, 8.0f - size / 2.0f, entity.getCakeBatter().getHeight(), size, size, (16.0f + Math.round(8.0f - size / 2.0f)), Math.round(8.0f - size / 2.0f), light, PBCakeBlockRenderer.getBakeTimeOverlay(batter.getBakeTime(), overlay), PBCakeBlockRenderer.getBakeTimeColor(batter.getBakeTime(), color));
+            VertexConsumer consumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(batter.getFlavor().getCakeTextureLocation()));
+            PBRenderHelper.createFace(Direction.UP, matrices, consumer, 8.0f - size / 2.0f, 8.0f - size / 2.0f, entity.getCakeBatter().getHeight(), size, size, (16.0f + Math.round(8.0f - size / 2.0f)), Math.round(8.0f - size / 2.0f), light, PBCakeBlockRenderer.getBakeTimeOverlay(batter.getBakeTime(), overlay), PBCakeBlockRenderer.getBakeTimeColor(batter.getBakeTime(), color));
+            if (PedrosBakery.CONFIG.cakeRenderQuality().renderTopBorder()) {
+                PBRenderHelper.createFace(Direction.UP, matrices, consumer, 8.0f - size / 2.0f, 8.0f - size / 2.0f, entity.getCakeBatter().getHeight(), size, size, (16.0f + Math.round(8.0f - size / 2.0f)), 64.0f, light, overlay, color);
+                PBRenderHelper.createFace(Direction.UP, matrices, consumer, 8.0f - size / 2.0f, 8.0f - size / 2.0f, entity.getCakeBatter().getHeight(), size, size, 32.0f - size, 64.0f, light, overlay, color);
+                PBRenderHelper.createFace(Direction.UP, matrices, consumer, 8.0f - size / 2.0f, 8.0f - size / 2.0f, entity.getCakeBatter().getHeight(), size, size, 32.0f, 80.0f - size, light, overlay, color);
+                PBRenderHelper.createFace(Direction.UP, matrices, consumer, 8.0f - size / 2.0f, 8.0f - size / 2.0f, entity.getCakeBatter().getHeight(), size, size, 64.0f - size, 80.0f - size, light, overlay, color);
+            }
         }
         matrices.pop();
     }

@@ -77,7 +77,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		};
 
 		CakeFeatureRendererRegistry.register(CakeFeatures.GLINT, (feature, entity, layer, matrices, vertexConsumers, light, overlay) -> {
-			PBCakeBlockRenderer.renderCakeLayer(entity.getLayers(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getDirectEntityGlint()), light, overlay, 0xFFFFFFFF);
+			PBCakeBlockRenderer.renderCakeLayer(entity.getLayers(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getDirectEntityGlint()), light, overlay, 0xFFFFFFFF, PBConfigModel.CakeRenderQuality.SIMPLE);
 		});
 
 		CakeFeatureRendererRegistry.register(CakeFeatures.SWEET_BERRIES, cakeLayerFeatureRenderer);

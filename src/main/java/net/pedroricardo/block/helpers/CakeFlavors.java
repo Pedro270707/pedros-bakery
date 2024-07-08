@@ -17,7 +17,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.entity.PBCakeBlockEntity;
 
 import java.util.Optional;
 
@@ -46,7 +45,8 @@ public class CakeFlavors {
             world.createExplosion(null, pos.toCenterPos().getX(), pos.toCenterPos().getY(), pos.toCenterPos().getZ(), batter instanceof CakeLayer layer ? (layer.getSize() * layer.getHeight()) / 64.0f : 0.5f, World.ExplosionSourceType.BLOCK);
         }
     });
-    public static final CakeFlavor PUMPKIN = register("pumpkin", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.PUMPKIN)));
+    public static final CakeFlavor PUMPKIN = register("pumpkin", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.PUMPKIN, Items.PUMPKIN_PIE)));
+    public static final CakeFlavor MELON = register("melon", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.MELON, Items.MELON_SLICE)));
 
     public static Optional<CakeFlavor> from(ItemStack item) {
         if (item == null || item.getItem() == Items.AIR) {
