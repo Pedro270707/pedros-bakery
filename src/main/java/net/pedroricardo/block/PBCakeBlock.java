@@ -161,7 +161,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         if (!player.canConsume(false)) {
             return ActionResult.PASS;
         }
-        if (!player.isCreative() && cake.getLayers().size() > layerIndex + 1 && cake.getLayers().get(layerIndex + 1).getSize() / 2.0f - cake.getLayers().get(layerIndex + 1).getBites() >= cake.getLayers().get(layerIndex).getSize() / 2.0f - cake.getLayers().get(layerIndex).getBites()) {
+        if (!player.isCreative() && cake.getLayers().size() > layerIndex + 1 && cake.getLayers().get(layerIndex + 1).getSize() / 2.0f - cake.getLayers().get(layerIndex + 1).getBites() > cake.getLayers().get(layerIndex).getSize() / 2.0f - cake.getLayers().get(layerIndex).getBites() - PedrosBakery.CONFIG.biteSize()) {
             return ActionResult.PASS;
         }
         changeState(player, world, pos, state);

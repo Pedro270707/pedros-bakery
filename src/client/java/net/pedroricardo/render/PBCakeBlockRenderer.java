@@ -154,7 +154,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         }
 
 
-        if (layerOnTop == null || (layerOnTop.getSize() / 2.0f) - layerOnTop.getBites() < (layer.getSize() / 2.0f) - layer.getBites()) {
+        if (layerOnTop == null || layerOnTop.getSize() < layer.getSize() || (layerOnTop.getSize() / 2.0f) - layerOnTop.getBites() < (layer.getSize() / 2.0f) - layer.getBites()) {
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, (16.0f + Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
             if (quality.renderTopBorder()) {
                 PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + halfSizeDifference + bites, 80.0f, light, overlay, color); // Top
@@ -168,7 +168,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
             }
         }
 
-        if (layerUnder == null || (layerUnder.getSize() / 2.0f) - layerUnder.getBites() < (layer.getSize() / 2.0f) - layer.getBites()) {
+        if (layerUnder == null || layerUnder.getSize() < layer.getSize() || (layerUnder.getSize() / 2.0f) - layerUnder.getBites() < (layer.getSize() / 2.0f) - layer.getBites()) {
             PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 32.0f + (Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
             if (quality.renderBottomBorder()) {
                 PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 64.0f + halfSizeDifference + bites, 80.0f, light, overlay, color); // Top
