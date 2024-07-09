@@ -49,13 +49,13 @@ public class CupcakeTrayBlockRenderer implements BlockEntityRenderer<CupcakeTray
         matrices.pop();
 
         CupcakeTrayBatter trayBatter = entity.getBatter();
-        List<Optional<CakeBatter>> batters = trayBatter.stream();
+        List<Optional<CakeBatter>> batterList = trayBatter.stream();
 
-        for (int i = 0; i < batters.size(); i++) {
-            if (batters.get(i).isEmpty()) continue;
+        for (int i = 0; i < batterList.size(); i++) {
+            if (batterList.get(i).isEmpty()) continue;
             float x = 3.0f + ((i >> 1 & 1) == 1 ? 6 : 0);
             float y = 3.0f + ((i & 1) == 1 ? 6 : 0);
-            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(batters.get(i).get().getFlavor().getCupcakeTextureLocation())), x, y, 4.0f, 4.0f, 4.0f, 4.0f, 0.0f, 8.0f, 4.0f, 16.0f, 16.0f, light, PBCakeBlockRenderer.getBakeTimeOverlay(batters.get(i).get().getBakeTime(), overlay), PBCakeBlockRenderer.getBakeTimeColor(batters.get(i).get().getBakeTime(), 0xFFFFFFFF));
+            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(batterList.get(i).get().getFlavor().getCupcakeTextureLocation())), x, y, 4.0f, 4.0f, 4.0f, 4.0f, 0.0f, 8.0f, 4.0f, 16.0f, 16.0f, light, PBCakeBlockRenderer.getBakeTimeOverlay(batterList.get(i).get().getBakeTime(), overlay), PBCakeBlockRenderer.getBakeTimeColor(batterList.get(i).get().getBakeTime(), 0xFFFFFFFF));
         }
     }
 }

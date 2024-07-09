@@ -66,7 +66,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		CakeFeatureRenderer cakeLayerFeatureRenderer = (feature, entity, layer, matrices, vertexConsumers, light, overlay) -> {
 			Identifier id = CakeFeatures.REGISTRY.getId(feature);
 			if (id == null) return;
-			PBCakeBlockRenderer.renderCakeLayer(entity.getLayers(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(Identifier.of(id.getNamespace(), "textures/entity/cake/feature/" + id.getPath() + ".png"))), light, overlay, 0xFFFFFFFF);
+			PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(Identifier.of(id.getNamespace(), "textures/entity/cake/feature/" + id.getPath() + ".png"))), light, overlay, 0xFFFFFFFF);
 		};
 		CakeFeatureRenderer blockOnTopFeatureRenderer = (feature, entity, layer, matrices, vertexConsumers, light, overlay) -> {
 			if (layer.getBites() >= layer.getSize() / 2.0f || !(feature instanceof BlockCakeFeature blockFeature)) return;
@@ -77,7 +77,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		};
 
 		CakeFeatureRendererRegistry.register(CakeFeatures.GLINT, (feature, entity, layer, matrices, vertexConsumers, light, overlay) -> {
-			PBCakeBlockRenderer.renderCakeLayer(entity.getLayers(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getDirectEntityGlint()), light, overlay, 0xFFFFFFFF, PBConfigModel.CakeRenderQuality.SIMPLE);
+			PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getDirectEntityGlint()), light, overlay, 0xFFFFFFFF, PBConfigModel.CakeRenderQuality.SIMPLE);
 		});
 
 		CakeFeatureRendererRegistry.register(CakeFeatures.SWEET_BERRIES, cakeLayerFeatureRenderer);
@@ -86,7 +86,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		CakeFeatureRendererRegistry.register(CakeFeatures.GLOW_BERRIES, (feature, entity, layer, matrices, vertexConsumers, light, overlay) -> {
 			Identifier id = CakeFeatures.REGISTRY.getId(feature);
 			if (id == null) return;
-			PBCakeBlockRenderer.renderCakeLayer(entity.getLayers(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(Identifier.of(id.getNamespace(), "textures/entity/cake/feature/" + id.getPath() + ".png"))), LightmapTextureManager.MAX_LIGHT_COORDINATE, overlay, 0xFFFFFFFF);
+			PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(Identifier.of(id.getNamespace(), "textures/entity/cake/feature/" + id.getPath() + ".png"))), LightmapTextureManager.MAX_LIGHT_COORDINATE, overlay, 0xFFFFFFFF);
 		});
 		CakeFeatureRendererRegistry.register(CakeFeatures.HONEY, cakeLayerFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.PAINTING, (feature, entity, layer, matrices, vertexConsumers, light, overlay) -> {

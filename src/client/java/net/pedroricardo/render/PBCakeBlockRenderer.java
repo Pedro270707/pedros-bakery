@@ -37,15 +37,15 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     public static void renderCake(PBCakeBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         BlockState state = entity.getCachedState();
         if (state == null || entity.isRemoved()) return; // entity.isRemoved() here seems more like a hack, because it shouldn't even be here if it is removed. TODO: investigate why removed cakes are still rendered
-        for (CakeBatter layer : entity.getLayers()) {
+        for (CakeBatter layer : entity.getBatterList()) {
             matrices.push();
             matrices.translate(0.5f, 0.5f, 0.5f);
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(state.get(Properties.HORIZONTAL_FACING).asRotation()));
             matrices.translate(-0.5f, -0.5f, -0.5f);
 
-            renderCakeLayer(entity.getLayers(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getFlavor().getCakeTextureLocation())), light, getBakeTimeOverlay(layer.getBakeTime(), overlay), getBakeTimeColor(layer.getBakeTime(), 0xFFFFFFFF));
+            renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getFlavor().getCakeTextureLocation())), light, getBakeTimeOverlay(layer.getBakeTime(), overlay), getBakeTimeColor(layer.getBakeTime(), 0xFFFFFFFF));
             if (layer.getTop().isPresent()) {
-                renderCakeLayer(entity.getLayers(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getTop().get().getTextureLocation())), light, overlay, 0xFFFFFFFF);
+                renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getTop().get().getTextureLocation())), light, overlay, 0xFFFFFFFF);
             }
             for (CakeFeature feature : layer.getFeatures()) {
                 if (feature == null) continue;
@@ -63,31 +63,31 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         }
     }
 
-    public static void renderCakeLayer(List<CakeBatter> layers, CakeBatter layer, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-        renderCakeLayer(layers, layer, matrices, vertexConsumer, light, overlay, color, PedrosBakery.CONFIG.cakeRenderQuality());
+    public static void renderCakeBatter(List<CakeBatter> batterList, CakeBatter batter, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+        renderCakeBatter(batterList, batter, matrices, vertexConsumer, light, overlay, color, PedrosBakery.CONFIG.cakeRenderQuality());
     }
 
-    public static void renderCakeLayer(List<CakeBatter> layers, CakeBatter layer, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color, PBConfigModel.CakeRenderQuality quality) {
-        float size = layer.getSize();
-        float height = layer.getHeight();
-        float bites = layer.getBites();
+    public static void renderCakeBatter(List<CakeBatter> batterList, CakeBatter batter, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color, PBConfigModel.CakeRenderQuality quality) {
+        float size = batter.getSize();
+        float height = batter.getHeight();
+        float bites = batter.getBites();
 
         float length = size - bites;
         if (length == 0) return;
         @Nullable CakeBatter layerOnTop = null;
         @Nullable CakeBatter layerUnder = null;
         int index = -1;
-        for (int i = 0; i < layers.size(); i++) {
-            if (layers.get(i) == layer) {
+        for (int i = 0; i < batterList.size(); i++) {
+            if (batterList.get(i) == batter) {
                 index = i;
             }
         }
         if (index != -1) {
-            if (index < layers.size() - 1) {
-                layerOnTop = layers.get(index + 1);
+            if (index < batterList.size() - 1) {
+                layerOnTop = batterList.get(index + 1);
             }
             if (index > 0) {
-                layerUnder = layers.get(index - 1);
+                layerUnder = batterList.get(index - 1);
             }
         }
 
@@ -154,7 +154,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         }
 
 
-        if (layerOnTop == null || layerOnTop.getSize() < layer.getSize() || (layerOnTop.getSize() / 2.0f) - layerOnTop.getBites() < (layer.getSize() / 2.0f) - layer.getBites()) {
+        if (layerOnTop == null || layerOnTop.getSize() < batter.getSize() || (layerOnTop.getSize() / 2.0f) - layerOnTop.getBites() < (batter.getSize() / 2.0f) - batter.getBites()) {
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, (16.0f + Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
             if (quality.renderTopBorder()) {
                 PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + halfSizeDifference + bites, 80.0f, light, overlay, color); // Top
@@ -168,7 +168,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
             }
         }
 
-        if (layerUnder == null || layerUnder.getSize() < layer.getSize() || (layerUnder.getSize() / 2.0f) - layerUnder.getBites() < (layer.getSize() / 2.0f) - layer.getBites()) {
+        if (layerUnder == null || layerUnder.getSize() < batter.getSize() || (layerUnder.getSize() / 2.0f) - layerUnder.getBites() < (batter.getSize() / 2.0f) - batter.getBites()) {
             PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 32.0f + (Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
             if (quality.renderBottomBorder()) {
                 PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 64.0f + halfSizeDifference + bites, 80.0f, light, overlay, color); // Top

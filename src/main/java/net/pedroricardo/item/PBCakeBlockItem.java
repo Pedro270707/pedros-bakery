@@ -24,15 +24,15 @@ public class PBCakeBlockItem extends BlockItem {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        List<CakeBatter> layers = stack.getOrDefault(PBComponentTypes.BATTER_LIST, List.of());
-        if (layers.isEmpty()) {
+        List<CakeBatter> batterList = stack.getOrDefault(PBComponentTypes.BATTER_LIST, List.of());
+        if (batterList.isEmpty()) {
             return;
         }
-        for (CakeBatter layer : layers.reversed()) {
-            if (layer.getTop().isPresent()) {
-                tooltip.add(Text.translatable("block.pedrosbakery.cake.flavor_and_top", Text.translatable(layer.getFlavor().getTranslationKey()), Text.translatable(layer.getTop().get().getTranslationKey())).formatted(Formatting.GRAY));
+        for (CakeBatter batter : batterList.reversed()) {
+            if (batter.getTop().isPresent()) {
+                tooltip.add(Text.translatable("block.pedrosbakery.cake.flavor_and_top", Text.translatable(batter.getFlavor().getTranslationKey()), Text.translatable(batter.getTop().get().getTranslationKey())).formatted(Formatting.GRAY));
             } else {
-                tooltip.add(Text.translatable(layer.getFlavor().getTranslationKey()).formatted(Formatting.GRAY));
+                tooltip.add(Text.translatable(batter.getFlavor().getTranslationKey()).formatted(Formatting.GRAY));
             }
         }
     }

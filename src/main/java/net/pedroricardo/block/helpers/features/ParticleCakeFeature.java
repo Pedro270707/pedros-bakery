@@ -22,7 +22,7 @@ public class ParticleCakeFeature extends CakeFeature {
     @Override
     public void tick(CakeBatter layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         float height = 0;
-        for (CakeBatter layer1 : blockEntity.getLayers()) {
+        for (CakeBatter layer1 : blockEntity.getBatterList()) {
             height += layer1.getHeight();
             if (layer1 == layer) {
                 break;
