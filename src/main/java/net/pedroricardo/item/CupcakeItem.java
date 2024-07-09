@@ -4,7 +4,10 @@ import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
@@ -14,11 +17,21 @@ import net.pedroricardo.block.entity.CupcakeTrayBlockEntity;
 import net.pedroricardo.block.helpers.CupcakeTrayBatter;
 import net.pedroricardo.block.helpers.SimpleCakeBatter;
 
+import java.util.List;
 import java.util.Optional;
 
 public class CupcakeItem extends BlockItem {
     public CupcakeItem(Block block, Settings settings) {
         super(block, settings);
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        SimpleCakeBatter batter = stack.get(PBComponentTypes.SIMPLE_BATTER);
+        if (batter == null) {
+            return;
+        }
+        tooltip.add(Text.translatable(batter.getFlavor().getTranslationKey()).formatted(Formatting.GRAY));
     }
 
     @Override
