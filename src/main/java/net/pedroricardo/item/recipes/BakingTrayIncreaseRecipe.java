@@ -8,11 +8,13 @@ import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
+import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.block.helpers.CakeBatter;
+import net.pedroricardo.block.helpers.CakeLayer;
 import net.pedroricardo.item.PBComponentTypes;
 
+import java.util.List;
 import java.util.OptionalInt;
 
 public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
@@ -44,7 +46,7 @@ public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
         if (!hasIronIngots || trayIndex.isEmpty()) return false;
         int trayIndexInt = trayIndex.getAsInt();
         ItemStack trayStack = inventory.getStackInSlot(trayIndexInt).copy();
-        if (!trayStack.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty()).isEmpty()) return false;
+        if (!PBHelpers.firstOrElse(trayStack.getOrDefault(PBComponentTypes.BATTER, List.of()), CakeLayer.getEmpty()).isEmpty()) return false;
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
             if (stack.isOf(Items.IRON_INGOT)) {

@@ -15,12 +15,11 @@ import java.util.function.UnaryOperator;
 
 public class PBComponentTypes extends DataComponentTypes {
     public static final ComponentType<CakeTop> TOP = register("top", (builder) -> builder.codec(CakeTops.REGISTRY.getCodec()).packetCodec(PacketCodecs.registryCodec(CakeTops.REGISTRY.getCodec())).cache());
-    public static final ComponentType<CakeBatter> BATTER = register("batter", (builder) -> builder.codec(CakeBatter.CODEC).packetCodec(CakeBatter.PACKET_CODEC).cache());
+    public static final ComponentType<List<CakeLayer>> BATTER = register("batter", (builder) -> builder.codec(CakeLayer.CODEC.listOf()).packetCodec(PacketCodecs.codec(CakeLayer.CODEC.listOf())).cache());
     public static final ComponentType<Integer> SIZE = register("size", (builder) -> builder.codec(Codec.INT).packetCodec(PacketCodecs.INTEGER).cache());
     public static final ComponentType<Integer> HEIGHT = register("height", (builder) -> builder.codec(Codec.INT).packetCodec(PacketCodecs.INTEGER).cache());
     public static final ComponentType<List<CakeFeature>> FEATURES = register("features", (builder) -> builder.codec(CakeFeatures.REGISTRY.getCodec().listOf()).packetCodec(PacketCodecs.codec(CakeFeatures.REGISTRY.getCodec().listOf())).cache());
     public static final ComponentType<CupcakeTrayBatter> CUPCAKE_TRAY_BATTER = register("cupcake_tray_batter", (builder) -> builder.codec(CupcakeTrayBatter.CODEC).packetCodec(CupcakeTrayBatter.PACKET_CODEC).cache());
-    public static final ComponentType<SimpleCakeBatter> SIMPLE_BATTER = register("simple_batter", (builder) -> builder.codec(SimpleCakeBatter.CODEC).packetCodec(SimpleCakeBatter.PACKET_CODEC).cache());
 
     private static <T> ComponentType<T> register(String id, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of(PedrosBakery.MOD_ID, id), builderOperator.apply(ComponentType.builder()).build());

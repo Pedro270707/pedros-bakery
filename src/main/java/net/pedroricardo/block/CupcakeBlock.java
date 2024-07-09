@@ -5,6 +5,7 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -20,11 +21,16 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.CupcakeBlockEntity;
+import net.pedroricardo.block.helpers.CakeLayer;
 import net.pedroricardo.block.tags.PBTags;
+import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
 
 public class CupcakeBlock extends BlockWithEntity {
     public static final MapCodec<CupcakeBlock> CODEC = createCodec(CupcakeBlock::new);
@@ -85,6 +91,20 @@ public class CupcakeBlock extends BlockWithEntity {
             return ActionResult.SUCCESS;
         }
         return ActionResult.FAIL;
+    }
+
+    public static ItemStack of(CakeLayer layer) {
+        ItemStack stack = new ItemStack(PBBlocks.CUPCAKE);
+        stack.set(PBComponentTypes.BATTER, Collections.singletonList(layer));
+        return stack;
+    }
+
+    @Override
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+        if (world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake) {
+            return of(cupcake.getBatter());
+        }
+        return super.getPickStack(world, pos, state);
     }
 
     @Nullable

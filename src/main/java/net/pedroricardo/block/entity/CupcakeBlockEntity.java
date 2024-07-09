@@ -10,12 +10,16 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
-import net.pedroricardo.block.helpers.SimpleCakeBatter;
+import net.pedroricardo.PBHelpers;
+import net.pedroricardo.block.helpers.CakeLayer;
 import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.List;
+
 public class CupcakeBlockEntity extends BlockEntity {
-    private SimpleCakeBatter batter;
+    private CakeLayer batter;
 
     public CupcakeBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.CUPCAKE, pos, state);
@@ -39,30 +43,38 @@ public class CupcakeBlockEntity extends BlockEntity {
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
         if (nbt.contains("batter", NbtElement.COMPOUND_TYPE)) {
-            this.batter = SimpleCakeBatter.fromNbt(nbt.getCompound("batter"));
+            this.batter = CakeLayer.fromNbt(nbt.getCompound("batter"));
         }
     }
 
     @Override
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
-        componentMapBuilder.add(PBComponentTypes.SIMPLE_BATTER, this.getBatter());
+        if (this.getBatter() != null) {
+            componentMapBuilder.add(PBComponentTypes.BATTER, Collections.singletonList(this.getBatter()));
+        }
     }
 
     @Override
     protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
-        this.setBatter(components.get(PBComponentTypes.SIMPLE_BATTER));
+        this.setBatter(PBHelpers.firstOrElse(components.getOrDefault(PBComponentTypes.BATTER, List.of()), null));
     }
 
-    public void setBatter(@Nullable SimpleCakeBatter batter) {
+    public void setBatter(@Nullable CakeLayer batter) {
         this.batter = batter;
         this.markDirty();
     }
 
     @Nullable
-    public SimpleCakeBatter getBatter() {
+    public CakeLayer getBatter() {
         return this.batter;
+    }
+
+    @Override
+    public void removeFromCopiedStackNbt(NbtCompound nbt) {
+        super.removeFromCopiedStackNbt(nbt);
+        nbt.remove("batter");
     }
 
     @Nullable

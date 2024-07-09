@@ -14,9 +14,10 @@ import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.CupcakeTrayBlockEntity;
+import net.pedroricardo.block.helpers.CakeLayer;
 import net.pedroricardo.block.helpers.CupcakeTrayBatter;
-import net.pedroricardo.block.helpers.SimpleCakeBatter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +28,7 @@ public class CupcakeItem extends BlockItem {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        SimpleCakeBatter batter = stack.get(PBComponentTypes.SIMPLE_BATTER);
+        CakeLayer batter = PBHelpers.firstOrElse(stack.getOrDefault(PBComponentTypes.BATTER, List.of()), null);
         if (batter == null) {
             return;
         }
@@ -36,16 +37,16 @@ public class CupcakeItem extends BlockItem {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        if (context.getStack().contains(PBComponentTypes.SIMPLE_BATTER) || !(context.getWorld().getBlockEntity(context.getBlockPos()) instanceof CupcakeTrayBlockEntity tray)) return super.useOnBlock(context);
+        if (PBHelpers.firstOrElse(context.getStack().getOrDefault(PBComponentTypes.BATTER, List.of()), null) != null || !(context.getWorld().getBlockEntity(context.getBlockPos()) instanceof CupcakeTrayBlockEntity tray)) return super.useOnBlock(context);
         Vec3d hitVector = context.getHitPos().subtract(context.getBlockPos().getX(), context.getBlockPos().getY(), context.getBlockPos().getZ());
         int i = (hitVector.getX() > 0.5 ? 2 : 0) | (hitVector.getZ() > 0.5 ? 1 : 0);
         CupcakeTrayBatter trayBatter = tray.getBatter();
-        Optional<SimpleCakeBatter> batter = trayBatter.stream().get(i);
+        Optional<CakeLayer> batter = trayBatter.stream().get(i);
         if (batter.isEmpty() || batter.get().getBakeTime() < PedrosBakery.CONFIG.ticksUntilBaked()) return super.useOnBlock(context);
         tray.setBatter(trayBatter.withBatter(i, null));
         context.getWorld().emitGameEvent(context.getPlayer(), GameEvent.FLUID_PICKUP, context.getBlockPos());
         ItemStack newStack = new ItemStack(PBBlocks.CUPCAKE);
-        newStack.set(PBComponentTypes.SIMPLE_BATTER, batter.get());
+        newStack.set(PBComponentTypes.BATTER, Collections.singletonList(batter.get()));
         PBHelpers.decrementStackAndAdd(context.getPlayer(), context.getStack(), newStack);
         return ActionResult.SUCCESS;
     }

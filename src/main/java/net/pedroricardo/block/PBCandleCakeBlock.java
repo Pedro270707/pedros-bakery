@@ -122,7 +122,7 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
     @Override
     public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
-            return ((PBCakeBlock)PBBlocks.CAKE).of(cake, cake.getLayers());
+            return PBCakeBlock.of(cake.getLayers());
         }
         return PBCakeBlock.of(Collections.singletonList(CakeLayer.getDefault()));
     }

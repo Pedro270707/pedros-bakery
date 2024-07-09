@@ -5,20 +5,14 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -186,13 +180,11 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         }
 
         if (stack.isOf(PBItems.CAKE)) {
-            NbtCompound stackNbt = stack.getComponents().getOrDefault(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.DEFAULT).copyNbt();
-            NbtList stackList = stackNbt.getList("layers", NbtElement.COMPOUND_TYPE);
-            if (stackList.isEmpty()) {
+            List<CakeLayer> cakeLayers = stack.getComponents().getOrDefault(PBComponentTypes.BATTER, List.of());
+            if (cakeLayers.isEmpty()) {
                 return ItemActionResult.FAIL;
             }
 
-            List<CakeLayer> cakeLayers = stackList.stream().map(element -> element.getType() == NbtElement.COMPOUND_TYPE ? CakeLayer.fromNbt((NbtCompound) element) : CakeLayer.getEmpty()).toList();
             if (tryAddLayers(cake, cakeLayers)) {
                 PBHelpers.updateListeners(cake);
                 world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
@@ -216,7 +208,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         CakeLayer clickedLayer = getClickedLayer(cake.getLayers(), hit);
         CakeTop top = stack.get(PBComponentTypes.TOP);
         if (stack.isOf(PBItems.FROSTING_BOTTLE) && clickedLayer.getTop().orElse(null) != top) {
-            clickedLayer.setTop(top);
+            clickedLayer.withTop(top);
             PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.GLASS_BOTTLE));
             PBHelpers.updateListeners(cake);
             return ItemActionResult.SUCCESS;
@@ -226,7 +218,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         boolean appliedFeature = false;
         for (CakeFeature feature : features) {
             if (feature.canBeApplied(player, stack, clickedLayer, world, pos, state, cake)) {
-                clickedLayer.addFeature(feature);
+                clickedLayer.withFeature(feature);
                 feature.onPlaced(player, stack, clickedLayer, world, pos, state, cake);
                 appliedFeature = true;
             }
@@ -255,29 +247,9 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         return layers.get(layerIndex);
     }
 
-    public ItemStack of(PBCakeBlockEntity blockEntity, List<CakeLayer> layers) {
-        ItemStack stack = new ItemStack(this);
-        NbtList list = new NbtList();
-        for (CakeLayer layer : layers) {
-            list.add(layer.toNbt(new NbtCompound()));
-        }
-        NbtCompound compound = new NbtCompound();
-        compound.put("layers", list);
-        BlockEntity.writeIdToNbt(compound, blockEntity.getType());
-        stack.set(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.of(compound));
-        return stack;
-    }
-
     public static ItemStack of(List<CakeLayer> layers) {
-        ItemStack stack = new ItemStack(PBItems.CAKE);
-        NbtList list = new NbtList();
-        for (CakeLayer layer : layers) {
-            list.add(layer.toNbt(new NbtCompound()));
-        }
-        NbtCompound compound = new NbtCompound();
-        compound.put("layers", list);
-        BlockEntity.writeIdToNbt(compound, PBBlockEntities.CAKE);
-        stack.set(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.of(compound));
+        ItemStack stack = new ItemStack(PBBlocks.CAKE);
+        stack.set(PBComponentTypes.BATTER, layers);
         return stack;
     }
 
@@ -309,7 +281,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
     @Override
     public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
-            return this.of(cake, cake.getLayers());
+            return of(cake.getLayers());
         }
         return of(Collections.singletonList(CakeLayer.getDefault()));
     }

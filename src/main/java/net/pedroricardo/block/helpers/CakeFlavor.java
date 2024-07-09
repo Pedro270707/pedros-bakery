@@ -36,10 +36,10 @@ public class CakeFlavor {
         return "flavor.pedrosbakery." + CakeFlavors.REGISTRY.getId(this).getPath();
     }
 
-    public void onTryEat(SimpleCakeBatter batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public void onTryEat(CakeLayer batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
     }
 
-    public void bakeTick(SimpleCakeBatter batter, World world, BlockPos pos, BlockState state) {
+    public void bakeTick(CakeLayer batter, World world, BlockPos pos, BlockState state) {
     }
 
     public void tick(CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {

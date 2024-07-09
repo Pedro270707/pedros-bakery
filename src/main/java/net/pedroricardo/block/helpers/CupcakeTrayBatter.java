@@ -15,25 +15,25 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public record CupcakeTrayBatter(Optional<SimpleCakeBatter> topLeft, Optional<SimpleCakeBatter> topRight, Optional<SimpleCakeBatter> bottomLeft, Optional<SimpleCakeBatter> bottomRight) {
+public record CupcakeTrayBatter(Optional<CakeLayer> topLeft, Optional<CakeLayer> topRight, Optional<CakeLayer> bottomLeft, Optional<CakeLayer> bottomRight) {
     public static final Codec<CupcakeTrayBatter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            SimpleCakeBatter.CODEC.optionalFieldOf("top_left").forGetter(CupcakeTrayBatter::topLeft),
-            SimpleCakeBatter.CODEC.optionalFieldOf("top_right").forGetter(CupcakeTrayBatter::topRight),
-            SimpleCakeBatter.CODEC.optionalFieldOf("bottom_left").forGetter(CupcakeTrayBatter::bottomLeft),
-            SimpleCakeBatter.CODEC.optionalFieldOf("bottom_right").forGetter(CupcakeTrayBatter::bottomRight)
+            CakeLayer.CODEC.optionalFieldOf("top_left").forGetter(CupcakeTrayBatter::topLeft),
+            CakeLayer.CODEC.optionalFieldOf("top_right").forGetter(CupcakeTrayBatter::topRight),
+            CakeLayer.CODEC.optionalFieldOf("bottom_left").forGetter(CupcakeTrayBatter::bottomLeft),
+            CakeLayer.CODEC.optionalFieldOf("bottom_right").forGetter(CupcakeTrayBatter::bottomRight)
     ).apply(instance, CupcakeTrayBatter::new));
-    public static final PacketCodec<RegistryByteBuf, CupcakeTrayBatter> PACKET_CODEC = PacketCodec.tuple(PacketCodecs.optional(SimpleCakeBatter.PACKET_CODEC), CupcakeTrayBatter::topLeft, PacketCodecs.optional(SimpleCakeBatter.PACKET_CODEC), CupcakeTrayBatter::topRight, PacketCodecs.optional(SimpleCakeBatter.PACKET_CODEC), CupcakeTrayBatter::bottomLeft, PacketCodecs.optional(SimpleCakeBatter.PACKET_CODEC), CupcakeTrayBatter::bottomRight, CupcakeTrayBatter::new);
+    public static final PacketCodec<RegistryByteBuf, CupcakeTrayBatter> PACKET_CODEC = PacketCodec.tuple(PacketCodecs.optional(CakeLayer.PACKET_CODEC), CupcakeTrayBatter::topLeft, PacketCodecs.optional(CakeLayer.PACKET_CODEC), CupcakeTrayBatter::topRight, PacketCodecs.optional(CakeLayer.PACKET_CODEC), CupcakeTrayBatter::bottomLeft, PacketCodecs.optional(CakeLayer.PACKET_CODEC), CupcakeTrayBatter::bottomRight, CupcakeTrayBatter::new);
     private static final CupcakeTrayBatter EMPTY = new CupcakeTrayBatter(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
 
     public static CupcakeTrayBatter getEmpty() {
         return EMPTY.copy();
     }
 
-    public CupcakeTrayBatter(List<Optional<SimpleCakeBatter>> list) {
+    public CupcakeTrayBatter(List<Optional<CakeLayer>> list) {
         this(list.isEmpty() ? Optional.empty() : list.getFirst(), list.size() > 1 ? list.get(1) : Optional.empty(), list.size() > 2 ? list.get(2) : Optional.empty(), list.size() > 3 ? list.get(3) : Optional.empty());
     }
 
-    public List<Optional<SimpleCakeBatter>> stream() {
+    public List<Optional<CakeLayer>> stream() {
         return Stream.of(this.topLeft, this.topRight, this.bottomLeft, this.bottomRight).toList();
     }
 
@@ -42,17 +42,17 @@ public record CupcakeTrayBatter(Optional<SimpleCakeBatter> topLeft, Optional<Sim
     }
 
     public static CupcakeTrayBatter fromNbt(@Nullable NbtCompound nbt) {
-        if (nbt == null || !nbt.contains("cupcake_tray_batter", NbtElement.COMPOUND_TYPE)) {
+        if (nbt == null || !nbt.contains("batter", NbtElement.COMPOUND_TYPE)) {
             return CupcakeTrayBatter.getEmpty();
         }
-        return CODEC.parse(NbtOps.INSTANCE, nbt.getCompound("cupcake_tray_batter")).result().orElse(CupcakeTrayBatter.getEmpty());
+        return CODEC.parse(NbtOps.INSTANCE, nbt.getCompound("batter")).result().orElse(CupcakeTrayBatter.getEmpty());
     }
 
     public NbtCompound toNbt(NbtCompound nbt) {
         if (this.equals(CupcakeTrayBatter.getEmpty())) {
             return nbt;
         }
-        nbt.put("cupcake_tray_batter", CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow());
+        nbt.put("batter", CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow());
         return nbt;
     }
 
@@ -64,7 +64,7 @@ public record CupcakeTrayBatter(Optional<SimpleCakeBatter> topLeft, Optional<Sim
         return this.stream().equals(that.stream());
     }
 
-    public CupcakeTrayBatter withBatter(int i, @Nullable SimpleCakeBatter batter) {
+    public CupcakeTrayBatter withBatter(int i, @Nullable CakeLayer batter) {
         return switch (i) {
             case 0 -> this.withTopLeft(batter);
             case 1 -> this.withTopRight(batter);
@@ -74,19 +74,19 @@ public record CupcakeTrayBatter(Optional<SimpleCakeBatter> topLeft, Optional<Sim
         };
     }
 
-    public CupcakeTrayBatter withTopLeft(@Nullable SimpleCakeBatter batter) {
+    public CupcakeTrayBatter withTopLeft(@Nullable CakeLayer batter) {
         return new CupcakeTrayBatter(Optional.ofNullable(batter), this.topRight(), this.bottomLeft(), this.bottomRight());
     }
 
-    public CupcakeTrayBatter withTopRight(@Nullable SimpleCakeBatter batter) {
+    public CupcakeTrayBatter withTopRight(@Nullable CakeLayer batter) {
         return new CupcakeTrayBatter(this.topLeft(), Optional.ofNullable(batter), this.bottomLeft(), this.bottomRight());
     }
 
-    public CupcakeTrayBatter withBottomLeft(@Nullable SimpleCakeBatter batter) {
+    public CupcakeTrayBatter withBottomLeft(@Nullable CakeLayer batter) {
         return new CupcakeTrayBatter(this.topLeft(), this.topRight(), Optional.ofNullable(batter), this.bottomRight());
     }
 
-    public CupcakeTrayBatter withBottomRight(@Nullable SimpleCakeBatter batter) {
+    public CupcakeTrayBatter withBottomRight(@Nullable CakeLayer batter) {
         return new CupcakeTrayBatter(this.topLeft(), this.topRight(), this.bottomLeft(), Optional.ofNullable(batter));
     }
 

@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.nbt.NbtCompound;
@@ -25,9 +26,11 @@ import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.helpers.CakeLayer;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockEntity;
+import net.pedroricardo.item.PBComponentTypes;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
 public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEntity {
@@ -50,7 +53,7 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
         for (CakeLayer layer : this.layers) {
             list.add(layer.toNbt(new NbtCompound()));
         }
-        nbt.put("layers", list);
+        nbt.put("batter", list);
         nbt.put("parts", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.parts).result().orElse(new NbtList()));
     }
 
@@ -66,9 +69,15 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     }
 
     @Override
+    protected void addComponents(ComponentMap.Builder componentMapBuilder) {
+        super.addComponents(componentMapBuilder);
+        componentMapBuilder.add(PBComponentTypes.BATTER, this.getLayers());
+    }
+
+    @Override
     protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
-        readCakeNbt(components.getOrDefault(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.DEFAULT).copyNbt());
+        this.layers = Lists.newArrayList(components.getOrDefault(PBComponentTypes.BATTER, List.<CakeLayer>of()).iterator());
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {

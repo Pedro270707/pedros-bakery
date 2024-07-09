@@ -33,14 +33,14 @@ public class CakeFlavors {
     public static final CakeFlavor SWEET_BERRY = register("sweet_berry", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.SWEET_BERRIES)));
     public static final CakeFlavor COAL = register("coal", new CakeFlavor(null, Ingredient.ofItems(Items.COAL)) {
         @Override
-        public void onTryEat(SimpleCakeBatter batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        public void onTryEat(CakeLayer batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
             super.onTryEat(batter, world, pos, state, player);
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 10, 2));
         }
     });
     public static final CakeFlavor TNT = register("tnt", new CakeFlavor(null, Ingredient.ofItems(Items.TNT)) {
         @Override
-        public void onTryEat(SimpleCakeBatter batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        public void onTryEat(CakeLayer batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
             super.onTryEat(batter, world, pos, state, player);
             world.createExplosion(null, pos.toCenterPos().getX(), pos.toCenterPos().getY(), pos.toCenterPos().getZ(), batter instanceof CakeLayer layer ? (layer.getSize() * layer.getHeight()) / 64.0f : 0.5f, World.ExplosionSourceType.BLOCK);
         }

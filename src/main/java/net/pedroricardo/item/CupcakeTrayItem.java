@@ -8,8 +8,8 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.helpers.CakeFlavor;
+import net.pedroricardo.block.helpers.CakeLayer;
 import net.pedroricardo.block.helpers.CupcakeTrayBatter;
-import net.pedroricardo.block.helpers.SimpleCakeBatter;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,11 +30,11 @@ public class CupcakeTrayItem extends BlockItem implements BatterContainerItem {
         if (flavor == null || !stack.isOf(this)) return false;
         ItemStack newStack = stack.copyWithCount(1);
         CupcakeTrayBatter batter = stack.getOrDefault(PBComponentTypes.CUPCAKE_TRAY_BATTER, CupcakeTrayBatter.getEmpty());
-        List<Optional<SimpleCakeBatter>> flavors = Lists.newArrayList(batter.stream().iterator());
+        List<Optional<CakeLayer>> flavors = Lists.newArrayList(batter.stream().iterator());
         boolean changed = false;
         for (int i = 0; i < batter.stream().size(); i++) {
             if (batter.stream().get(i).isEmpty()) {
-                flavors.set(i, Optional.of(new SimpleCakeBatter(0, flavor)));
+                flavors.set(i, Optional.of(new CakeLayer(0, flavor)));
                 changed = true;
             }
         }
