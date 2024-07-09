@@ -12,7 +12,7 @@ import net.minecraft.util.math.Direction;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
-import net.pedroricardo.block.helpers.CakeLayer;
+import net.pedroricardo.block.helpers.CakeBatter;
 
 public class BakingTrayBlockRenderer implements BlockEntityRenderer<BakingTrayBlockEntity> {
     public static final BakingTrayBlockEntity RENDER_TRAY = new BakingTrayBlockEntity(BlockPos.ORIGIN, PBBlocks.BAKING_TRAY.getDefaultState());
@@ -50,7 +50,7 @@ public class BakingTrayBlockRenderer implements BlockEntityRenderer<BakingTrayBl
 
         PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), 8.0f - size / 2.0f, -8.0f - size / 2.0f, 0.0f, size, size, 32.0f + (Math.round(8.0f - size / 2.0f)), Math.round(8.0f - size / 2.0f), light, overlay, color);
 
-        CakeLayer batter = entity.getCakeBatter();
+        CakeBatter batter = entity.getCakeBatter();
         if (!batter.isEmpty()) {
             VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(batter.getFlavor().getCakeTextureLocation()));
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f, 8.0f - size / 2.0f, batter.getHeight(), size, size, (16.0f + Math.round(8.0f - size / 2.0f)), Math.round(8.0f - size / 2.0f), light, PBCakeBlockRenderer.getBakeTimeOverlay(batter.getBakeTime(), overlay), PBCakeBlockRenderer.getBakeTimeColor(batter.getBakeTime(), color));

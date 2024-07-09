@@ -13,7 +13,7 @@ import net.minecraft.util.math.Direction;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.CupcakeTrayBlockEntity;
-import net.pedroricardo.block.helpers.CakeLayer;
+import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CupcakeTrayBatter;
 import net.pedroricardo.model.PBModelLayers;
 
@@ -49,7 +49,7 @@ public class CupcakeTrayBlockRenderer implements BlockEntityRenderer<CupcakeTray
         matrices.pop();
 
         CupcakeTrayBatter trayBatter = entity.getBatter();
-        List<Optional<CakeLayer>> batters = trayBatter.stream();
+        List<Optional<CakeBatter>> batters = trayBatter.stream();
 
         for (int i = 0; i < batters.size(); i++) {
             if (batters.get(i).isEmpty()) continue;

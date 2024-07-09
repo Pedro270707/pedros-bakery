@@ -19,17 +19,17 @@ public class CakeFeature {
         return "feature.pedrosbakery." + CakeFeatures.REGISTRY.getId(this).getPath();
     }
 
-    public void onTryEat(CakeLayer layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity blockEntity) {
+    public void onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity blockEntity) {
     }
 
-    public void tick(CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void tick(CakeBatter layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
     }
 
-    public boolean canBeApplied(PlayerEntity player, ItemStack stack, CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public boolean canBeApplied(PlayerEntity player, ItemStack stack, CakeBatter layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         return !layer.getFeatures().contains(this);
     }
 
-    public void onPlaced(PlayerEntity player, ItemStack stack, CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void onPlaced(PlayerEntity player, ItemStack stack, CakeBatter layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
     }
 
     public RegistryEntry.Reference<CakeFeature> getRegistryEntry() {
@@ -40,11 +40,11 @@ public class CakeFeature {
         return this.getRegistryEntry().isIn(tag);
     }
 
-    public NbtCompound getData(CakeLayer layer) {
+    public NbtCompound getData(CakeBatter layer) {
         return layer.getFeatureMap().get(this);
     }
 
-    public void saveData(CakeLayer layer, NbtCompound data) {
+    public void saveData(CakeBatter layer, NbtCompound data) {
         if (layer.getFeatureMap().containsKey(this)) {
             layer.getFeatureMap().put(this, data);
         }

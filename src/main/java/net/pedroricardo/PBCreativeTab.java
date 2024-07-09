@@ -9,8 +9,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.PBCakeBlock;
+import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CakeFeatures;
-import net.pedroricardo.block.helpers.CakeLayer;
 import net.pedroricardo.block.helpers.CakeTop;
 import net.pedroricardo.block.helpers.CakeTops;
 import net.pedroricardo.item.PBComponentTypes;
@@ -20,7 +20,7 @@ import java.util.Collections;
 
 public class PBCreativeTab {
     public static final ItemGroup ITEM_GROUP = FabricItemGroup.builder().icon(() -> {
-        CakeLayer layer = CakeLayer.getDefault();
+        CakeBatter layer = CakeBatter.getDefault();
         layer.withBakeTime(PedrosBakery.CONFIG.ticksUntilBaked());
         layer.withTop(CakeTops.SUGAR);
         layer.withFeature(CakeFeatures.SWEET_BERRIES);

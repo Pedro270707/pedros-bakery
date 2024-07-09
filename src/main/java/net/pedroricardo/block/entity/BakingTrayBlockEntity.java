@@ -25,7 +25,7 @@ import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PBSounds;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.block.helpers.CakeLayer;
+import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockEntity;
 import net.pedroricardo.block.tags.PBTags;
@@ -34,13 +34,12 @@ import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlockEntity {
     private int size = PedrosBakery.CONFIG.bakingTrayDefaultSize();
     private int height = PedrosBakery.CONFIG.bakingTrayDefaultHeight();
-    private CakeLayer cakeBatter = CakeLayer.getEmpty();
+    private CakeBatter cakeBatter = CakeBatter.getEmpty();
     private List<BlockPos> parts = Lists.newArrayList();
 
     public BakingTrayBlockEntity(BlockPos pos, BlockState state) {
@@ -71,7 +70,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
             this.height = nbt.getInt("height");
         }
         if (nbt.contains("batter", NbtElement.COMPOUND_TYPE)) {
-            this.cakeBatter = CakeLayer.fromNbt(nbt.getCompound("batter"));
+            this.cakeBatter = CakeBatter.fromNbt(nbt.getCompound("batter"));
         }
         this.parts = Lists.newArrayList(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(Lists.newArrayList()).iterator());
     }
@@ -93,7 +92,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     @Override
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
-        componentMapBuilder.add(PBComponentTypes.BATTER, Collections.singletonList(this.getCakeBatter()));
+        componentMapBuilder.add(PBComponentTypes.BATTER, this.getCakeBatter());
         componentMapBuilder.add(PBComponentTypes.SIZE, this.getSize());
         componentMapBuilder.add(PBComponentTypes.HEIGHT, this.getHeight());
     }
@@ -101,7 +100,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     @Override
     protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
-        this.cakeBatter = PBHelpers.firstOrElse(components.getOrDefault(PBComponentTypes.BATTER, List.of()), CakeLayer.getEmpty());
+        this.cakeBatter = components.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty());
         this.size = components.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize());
         this.height = components.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight());
     }
@@ -115,12 +114,12 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         nbt.remove("parts");
     }
 
-    public CakeLayer getCakeBatter() {
+    public CakeBatter getCakeBatter() {
         return this.cakeBatter;
     }
 
-    public void setCakeBatter(@NotNull CakeLayer cakeLayer) {
-        this.cakeBatter = cakeLayer;
+    public void setCakeBatter(@NotNull CakeBatter cakeBatter) {
+        this.cakeBatter = cakeBatter;
         if (this.cakeBatter.getHeight() > this.getHeight()) {
             this.cakeBatter.withHeight(this.getHeight());
         }
@@ -130,7 +129,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
 
     public ItemStack toStack() {
         ItemStack stack = new ItemStack(PBBlocks.BAKING_TRAY.asItem());
-        stack.set(PBComponentTypes.BATTER, Collections.singletonList(this.getCakeBatter()));
+        stack.set(PBComponentTypes.BATTER, this.getCakeBatter());
         stack.set(PBComponentTypes.SIZE, this.getSize());
         stack.set(PBComponentTypes.HEIGHT, this.getHeight());
         return stack;

@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CakeLayer {
+public class CakeBatter {
     private int bakeTime;
     private float height;
     private float bites;
@@ -37,15 +37,15 @@ public class CakeLayer {
     private Optional<CakeTop> top;
     private Map<CakeFeature, NbtCompound> features;
 
-    public CakeLayer(int bakeTime, CakeFlavor cakeFlavor) {
+    public CakeBatter(int bakeTime, CakeFlavor cakeFlavor) {
         this(bakeTime, 16.0f, cakeFlavor);
     }
 
-    public CakeLayer(int bakeTime, float height, CakeFlavor cakeFlavor) {
+    public CakeBatter(int bakeTime, float height, CakeFlavor cakeFlavor) {
         this(bakeTime, height, 0.0f, 16.0f, cakeFlavor, Optional.empty(), Maps.newHashMap());
     }
 
-    public CakeLayer(int bakeTime, float height, float bites, float size, CakeFlavor flavor, Optional<CakeTop> top, Map<CakeFeature, NbtCompound> features) {
+    public CakeBatter(int bakeTime, float height, float bites, float size, CakeFlavor flavor, Optional<CakeTop> top, Map<CakeFeature, NbtCompound> features) {
         this.bakeTime = bakeTime;
         this.height = height;
         this.bites = bites;
@@ -55,25 +55,25 @@ public class CakeLayer {
         this.features = features;
     }
 
-    private static final CakeLayer DEFAULT = new CakeLayer(0, 8, 0, 14, CakeFlavors.VANILLA, Optional.empty(), Map.of());
-    private static final CakeLayer EMPTY = new CakeLayer(0, 0, 0, 0, CakeFlavors.VANILLA, Optional.empty(), Map.of());
+    private static final CakeBatter DEFAULT = new CakeBatter(0, 8, 0, 14, CakeFlavors.VANILLA, Optional.empty(), Map.of());
+    private static final CakeBatter EMPTY = new CakeBatter(0, 0, 0, 0, CakeFlavors.VANILLA, Optional.empty(), Map.of());
 
-    public static final Codec<CakeLayer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeLayer::getBakeTime),
-                    Codec.FLOAT.fieldOf("height").orElse(8.0f).forGetter(CakeLayer::getHeight),
-                    Codec.FLOAT.fieldOf("bites").orElse(0.0f).forGetter(CakeLayer::getBites),
-                    Codec.FLOAT.fieldOf("size").orElse(14.0f).forGetter(CakeLayer::getSize),
-                    CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.getDefaultEntry().get().value()).forGetter(CakeLayer::getFlavor),
-                    CakeTops.REGISTRY.getCodec().optionalFieldOf("top").forGetter(CakeLayer::getTop),
-                    Codec.unboundedMap(CakeFeatures.REGISTRY.getCodec(), NbtCompound.CODEC).fieldOf("features").orElse(Map.of()).forGetter(CakeLayer::getFeatureMap))
-            .apply(instance, CakeLayer::new));
-    public static final PacketCodec<RegistryByteBuf, CakeLayer> PACKET_CODEC = PBHelpers.tuplePacketCodec(PacketCodecs.VAR_INT, CakeLayer::getBakeTime, PacketCodecs.FLOAT, CakeLayer::getHeight, PacketCodecs.FLOAT, CakeLayer::getBites, PacketCodecs.FLOAT, CakeLayer::getSize, PacketCodecs.registryValue(CakeFlavors.REGISTRY_KEY), CakeLayer::getFlavor, PacketCodecs.optional(PacketCodecs.registryValue(CakeTops.REGISTRY_KEY)), CakeLayer::getTop, PacketCodecs.map(Object2ObjectOpenHashMap::new, PacketCodecs.registryValue(CakeFeatures.REGISTRY_KEY), PacketCodecs.NBT_COMPOUND), CakeLayer::getFeatureMap, CakeLayer::new);
+    public static final Codec<CakeBatter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
+                    Codec.FLOAT.fieldOf("height").orElse(8.0f).forGetter(CakeBatter::getHeight),
+                    Codec.FLOAT.fieldOf("bites").orElse(0.0f).forGetter(CakeBatter::getBites),
+                    Codec.FLOAT.fieldOf("size").orElse(14.0f).forGetter(CakeBatter::getSize),
+                    CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.getDefaultEntry().get().value()).forGetter(CakeBatter::getFlavor),
+                    CakeTops.REGISTRY.getCodec().optionalFieldOf("top").forGetter(CakeBatter::getTop),
+                    Codec.unboundedMap(CakeFeatures.REGISTRY.getCodec(), NbtCompound.CODEC).fieldOf("features").orElse(Map.of()).forGetter(CakeBatter::getFeatureMap))
+            .apply(instance, CakeBatter::new));
+    public static final PacketCodec<RegistryByteBuf, CakeBatter> PACKET_CODEC = PBHelpers.tuplePacketCodec(PacketCodecs.VAR_INT, CakeBatter::getBakeTime, PacketCodecs.FLOAT, CakeBatter::getHeight, PacketCodecs.FLOAT, CakeBatter::getBites, PacketCodecs.FLOAT, CakeBatter::getSize, PacketCodecs.registryValue(CakeFlavors.REGISTRY_KEY), CakeBatter::getFlavor, PacketCodecs.optional(PacketCodecs.registryValue(CakeTops.REGISTRY_KEY)), CakeBatter::getTop, PacketCodecs.map(Object2ObjectOpenHashMap::new, PacketCodecs.registryValue(CakeFeatures.REGISTRY_KEY), PacketCodecs.NBT_COMPOUND), CakeBatter::getFeatureMap, CakeBatter::new);
 
-    public static CakeLayer getDefault() {
+    public static CakeBatter getDefault() {
         return DEFAULT.copy();
     }
 
-    public static CakeLayer getEmpty() {
+    public static CakeBatter getEmpty() {
         return EMPTY.copy();
     }
 
@@ -86,21 +86,21 @@ public class CakeLayer {
         return nbt;
     }
 
-    public static CakeLayer fromNbt(@Nullable NbtCompound nbt) {
+    public static CakeBatter fromNbt(@Nullable NbtCompound nbt) {
         if (nbt == null) {
             return DEFAULT;
         }
-        DataResult<CakeLayer> dataResult = CODEC.parse(NbtOps.INSTANCE, nbt);
+        DataResult<CakeBatter> dataResult = CODEC.parse(NbtOps.INSTANCE, nbt);
         return dataResult.result().orElse(DEFAULT);
     }
 
-    public static List<CakeLayer> listFrom(@Nullable NbtCompound nbt) {
+    public static List<CakeBatter> listFrom(@Nullable NbtCompound nbt) {
         if (nbt == null || !nbt.contains("batter", NbtElement.LIST_TYPE)) {
             return Collections.emptyList();
         }
         return nbt.getList("batter", NbtList.COMPOUND_TYPE).stream()
                 .filter(layer -> layer.getType() == NbtElement.COMPOUND_TYPE)
-                .map(layer -> CakeLayer.fromNbt((NbtCompound) layer)).collect(Collectors.toCollection(Lists::newArrayList));
+                .map(layer -> CakeBatter.fromNbt((NbtCompound) layer)).collect(Collectors.toCollection(Lists::newArrayList));
     }
 
     public float getBites() {
@@ -142,7 +142,7 @@ public class CakeLayer {
         return this.bakeTime;
     }
 
-    public CakeLayer withBakeTime(int bakeTime) {
+    public CakeBatter withBakeTime(int bakeTime) {
         this.bakeTime = bakeTime;
         return this;
     }
@@ -151,7 +151,7 @@ public class CakeLayer {
         return this.height;
     }
 
-    public CakeLayer withHeight(float height) {
+    public CakeBatter withHeight(float height) {
         this.height = height;
         return this;
     }
@@ -160,7 +160,7 @@ public class CakeLayer {
         return this.size;
     }
 
-    public CakeLayer withSize(float size) {
+    public CakeBatter withSize(float size) {
         this.size = size;
         return this;
     }
@@ -169,7 +169,7 @@ public class CakeLayer {
         return this.flavor;
     }
 
-    public CakeLayer withFlavor(CakeFlavor flavor) {
+    public CakeBatter withFlavor(CakeFlavor flavor) {
         this.flavor = flavor;
         return this;
     }
@@ -178,7 +178,7 @@ public class CakeLayer {
         return this.top;
     }
 
-    public CakeLayer withTop(@Nullable CakeTop top) {
+    public CakeBatter withTop(@Nullable CakeTop top) {
         this.top = Optional.ofNullable(top);
         return this;
     }
@@ -191,18 +191,18 @@ public class CakeLayer {
         return this.features;
     }
 
-    public CakeLayer withFeatures(Map<CakeFeature, NbtCompound> features) {
+    public CakeBatter withFeatures(Map<CakeFeature, NbtCompound> features) {
         this.features = features;
         return this;
     }
 
-    public CakeLayer withFeature(CakeFeature feature, NbtCompound nbt) {
+    public CakeBatter withFeature(CakeFeature feature, NbtCompound nbt) {
         Map<CakeFeature, NbtCompound> features = Maps.newHashMap(this.getFeatureMap());
         features.put(feature, nbt);
         return this.withFeatures(features);
     }
 
-    public CakeLayer withFeature(CakeFeature feature) {
+    public CakeBatter withFeature(CakeFeature feature) {
         return this.withFeature(feature, new NbtCompound());
     }
 
@@ -221,7 +221,7 @@ public class CakeLayer {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CakeLayer layer = (CakeLayer) o;
+        CakeBatter layer = (CakeBatter) o;
         return this.getBakeTime() == layer.getBakeTime() && this.getHeight() == layer.getHeight() && this.getBites() == layer.getBites() && this.getSize() == layer.getSize() && this.getFlavor() == layer.getFlavor() && Objects.equals(this.getTop(), layer.getTop()) && Objects.equals(this.getFeatureMap(), layer.getFeatureMap());
     }
 
@@ -230,7 +230,7 @@ public class CakeLayer {
         return Objects.hash(super.hashCode(), this.bites, this.size, this.top);
     }
 
-    public CakeLayer copy() {
-        return new CakeLayer(this.getBakeTime(), this.getHeight(), this.getBites(), this.getSize(), this.getFlavor(), this.getTop(), Maps.newHashMap(Maps.transformValues(this.getFeatureMap(), NbtCompound::copy)));
+    public CakeBatter copy() {
+        return new CakeBatter(this.getBakeTime(), this.getHeight(), this.getBites(), this.getSize(), this.getFlavor(), this.getTop(), Maps.newHashMap(Maps.transformValues(this.getFeatureMap(), NbtCompound::copy)));
     }
 }

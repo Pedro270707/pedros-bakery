@@ -1,6 +1,5 @@
 package net.pedroricardo.block.helpers;
 
-import com.google.common.collect.Maps;
 import com.mojang.serialization.Lifecycle;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.block.BlockState;
@@ -11,7 +10,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
@@ -31,9 +29,6 @@ import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
-import java.util.Optional;
 
 public class CakeTops {
     public static final RegistryKey<Registry<CakeTop>> REGISTRY_KEY = RegistryKey.ofRegistry(Identifier.of(PedrosBakery.MOD_ID, "cake_top"));
@@ -96,7 +91,7 @@ public class CakeTops {
         }
 
         @Override
-        public void onTryEat(CakeLayer layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
+        public void onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
             if (world instanceof ServerWorld) {
                 RegistryKey<World> registryKey = world.getRegistryKey() == World.END ? World.OVERWORLD : World.END;
                 ServerWorld serverWorld = ((ServerWorld)world).getServer().getWorld(registryKey);

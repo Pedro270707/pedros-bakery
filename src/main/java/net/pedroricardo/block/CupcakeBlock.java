@@ -25,12 +25,10 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.CupcakeBlockEntity;
-import net.pedroricardo.block.helpers.CakeLayer;
+import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Collections;
 
 public class CupcakeBlock extends BlockWithEntity {
     public static final MapCodec<CupcakeBlock> CODEC = createCodec(CupcakeBlock::new);
@@ -93,9 +91,9 @@ public class CupcakeBlock extends BlockWithEntity {
         return ActionResult.FAIL;
     }
 
-    public static ItemStack of(CakeLayer layer) {
+    public static ItemStack of(CakeBatter layer) {
         ItemStack stack = new ItemStack(PBBlocks.CUPCAKE);
-        stack.set(PBComponentTypes.BATTER, Collections.singletonList(layer));
+        stack.set(PBComponentTypes.BATTER, layer);
         return stack;
     }
 

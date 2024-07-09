@@ -31,7 +31,7 @@ import net.minecraft.world.WorldView;
 import net.pedroricardo.block.entity.PBBlockEntities;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.entity.PBCakeBlockEntityPart;
-import net.pedroricardo.block.helpers.CakeLayer;
+import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockPart;
 import net.pedroricardo.block.tags.PBTags;
@@ -124,7 +124,7 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
         if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
             return PBCakeBlock.of(cake.getLayers());
         }
-        return PBCakeBlock.of(Collections.singletonList(CakeLayer.getDefault()));
+        return PBCakeBlock.of(Collections.singletonList(CakeBatter.getDefault()));
     }
 
     @Override

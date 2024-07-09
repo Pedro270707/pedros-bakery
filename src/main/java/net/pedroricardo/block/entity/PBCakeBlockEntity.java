@@ -5,8 +5,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
@@ -23,18 +21,17 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
-import net.pedroricardo.block.helpers.CakeLayer;
+import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockEntity;
 import net.pedroricardo.item.PBComponentTypes;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEntity {
-    private List<CakeLayer> layers = Lists.newArrayList();
+    private List<CakeBatter> layers = Lists.newArrayList();
     private List<BlockPos> parts = Lists.newArrayList();
 
     public PBCakeBlockEntity(BlockPos pos, BlockState state) {
@@ -50,7 +47,7 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
         NbtList list = new NbtList();
-        for (CakeLayer layer : this.layers) {
+        for (CakeBatter layer : this.layers) {
             list.add(layer.toNbt(new NbtCompound()));
         }
         nbt.put("batter", list);
@@ -65,23 +62,23 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     }
 
     protected void readCakeNbt(NbtCompound nbt) {
-        this.layers = Lists.newArrayList(CakeLayer.listFrom(nbt).iterator());
+        this.layers = Lists.newArrayList(CakeBatter.listFrom(nbt).iterator());
     }
 
     @Override
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
-        componentMapBuilder.add(PBComponentTypes.BATTER, this.getLayers());
+        componentMapBuilder.add(PBComponentTypes.BATTER_LIST, this.getLayers());
     }
 
     @Override
     protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
-        this.layers = Lists.newArrayList(components.getOrDefault(PBComponentTypes.BATTER, List.<CakeLayer>of()).iterator());
+        this.layers = Lists.newArrayList(components.getOrDefault(PBComponentTypes.BATTER_LIST, List.<CakeBatter>of()).iterator());
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
-        blockEntity.getLayers().removeIf(CakeLayer::isEmpty);
+        blockEntity.getLayers().removeIf(CakeBatter::isEmpty);
         if (blockEntity.getLayers().isEmpty()) {
             blockEntity.removeAllParts(world);
             world.removeBlock(pos, false);
@@ -96,7 +93,7 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
         }
     }
 
-    public List<CakeLayer> getLayers() {
+    public List<CakeBatter> getLayers() {
         return this.layers;
     }
 
@@ -127,24 +124,24 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     }
 
     public float getHeight() {
-        return (float) this.layers.stream().mapToDouble(CakeLayer::getHeight).sum();
+        return (float) this.layers.stream().mapToDouble(CakeBatter::getHeight).sum();
     }
 
     public VoxelShape toShape(Direction direction) {
         return toShape(this.getLayers(), direction);
     }
 
-    public static VoxelShape toShape(List<CakeLayer> layers, Direction direction) {
+    public static VoxelShape toShape(List<CakeBatter> layers, Direction direction) {
         VoxelShape shape = VoxelShapes.empty();
         float currentHeight = 0;
-        for (CakeLayer cakeLayer : layers) {
+        for (CakeBatter cakeBatter : layers) {
             shape = switch (direction) {
-                default -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeLayer.getSize() / 2.0, currentHeight, 8 - cakeLayer.getSize() / 2.0, 8 + cakeLayer.getSize() / 2.0 - cakeLayer.getBites(), currentHeight + cakeLayer.getHeight(), 8 + cakeLayer.getSize() / 2.0));
-                case SOUTH -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeLayer.getSize() / 2.0 + cakeLayer.getBites(), currentHeight, 8 - cakeLayer.getSize() / 2.0, 8 + cakeLayer.getSize() / 2.0, currentHeight + cakeLayer.getHeight(), 8 + cakeLayer.getSize() / 2.0));
-                case WEST -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeLayer.getSize() / 2.0, currentHeight, 8 - cakeLayer.getSize() / 2.0 + cakeLayer.getBites(), 8 + cakeLayer.getSize() / 2.0, currentHeight + cakeLayer.getHeight(), 8 + cakeLayer.getSize() / 2.0));
-                case EAST -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeLayer.getSize() / 2.0, currentHeight, 8 - cakeLayer.getSize() / 2.0, 8 + cakeLayer.getSize() / 2.0, currentHeight + cakeLayer.getHeight(), 8 + cakeLayer.getSize() / 2.0 - cakeLayer.getBites()));
+                default -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeBatter.getSize() / 2.0, currentHeight, 8 - cakeBatter.getSize() / 2.0, 8 + cakeBatter.getSize() / 2.0 - cakeBatter.getBites(), currentHeight + cakeBatter.getHeight(), 8 + cakeBatter.getSize() / 2.0));
+                case SOUTH -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeBatter.getSize() / 2.0 + cakeBatter.getBites(), currentHeight, 8 - cakeBatter.getSize() / 2.0, 8 + cakeBatter.getSize() / 2.0, currentHeight + cakeBatter.getHeight(), 8 + cakeBatter.getSize() / 2.0));
+                case WEST -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeBatter.getSize() / 2.0, currentHeight, 8 - cakeBatter.getSize() / 2.0 + cakeBatter.getBites(), 8 + cakeBatter.getSize() / 2.0, currentHeight + cakeBatter.getHeight(), 8 + cakeBatter.getSize() / 2.0));
+                case EAST -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeBatter.getSize() / 2.0, currentHeight, 8 - cakeBatter.getSize() / 2.0, 8 + cakeBatter.getSize() / 2.0, currentHeight + cakeBatter.getHeight(), 8 + cakeBatter.getSize() / 2.0 - cakeBatter.getBites()));
             };
-            currentHeight += cakeLayer.getHeight();
+            currentHeight += cakeBatter.getHeight();
         }
         return shape;
     }

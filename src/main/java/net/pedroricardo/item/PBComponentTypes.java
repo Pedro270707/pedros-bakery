@@ -15,7 +15,8 @@ import java.util.function.UnaryOperator;
 
 public class PBComponentTypes extends DataComponentTypes {
     public static final ComponentType<CakeTop> TOP = register("top", (builder) -> builder.codec(CakeTops.REGISTRY.getCodec()).packetCodec(PacketCodecs.registryCodec(CakeTops.REGISTRY.getCodec())).cache());
-    public static final ComponentType<List<CakeLayer>> BATTER = register("batter", (builder) -> builder.codec(CakeLayer.CODEC.listOf()).packetCodec(PacketCodecs.codec(CakeLayer.CODEC.listOf())).cache());
+    public static final ComponentType<CakeBatter> BATTER = register("batter", (builder) -> builder.codec(CakeBatter.CODEC).packetCodec(CakeBatter.PACKET_CODEC).cache());
+    public static final ComponentType<List<CakeBatter>> BATTER_LIST = register("batter_list", (builder) -> builder.codec(CakeBatter.CODEC.listOf()).packetCodec(PacketCodecs.codec(CakeBatter.CODEC.listOf())).cache());
     public static final ComponentType<Integer> SIZE = register("size", (builder) -> builder.codec(Codec.INT).packetCodec(PacketCodecs.INTEGER).cache());
     public static final ComponentType<Integer> HEIGHT = register("height", (builder) -> builder.codec(Codec.INT).packetCodec(PacketCodecs.INTEGER).cache());
     public static final ComponentType<List<CakeFeature>> FEATURES = register("features", (builder) -> builder.codec(CakeFeatures.REGISTRY.getCodec().listOf()).packetCodec(PacketCodecs.codec(CakeFeatures.REGISTRY.getCodec().listOf())).cache());

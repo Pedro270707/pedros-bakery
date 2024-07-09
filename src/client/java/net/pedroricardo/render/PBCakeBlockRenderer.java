@@ -18,8 +18,8 @@ import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.PBCandleCakeBlock;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
+import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CakeFeature;
-import net.pedroricardo.block.helpers.CakeLayer;
 import net.pedroricardo.registry.CakeFeatureRenderer;
 import net.pedroricardo.registry.CakeFeatureRendererRegistry;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +37,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     public static void renderCake(PBCakeBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         BlockState state = entity.getCachedState();
         if (state == null || entity.isRemoved()) return; // entity.isRemoved() here seems more like a hack, because it shouldn't even be here if it is removed. TODO: investigate why removed cakes are still rendered
-        for (CakeLayer layer : entity.getLayers()) {
+        for (CakeBatter layer : entity.getLayers()) {
             matrices.push();
             matrices.translate(0.5f, 0.5f, 0.5f);
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(state.get(Properties.HORIZONTAL_FACING).asRotation()));
@@ -63,19 +63,19 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         }
     }
 
-    public static void renderCakeLayer(List<CakeLayer> layers, CakeLayer layer, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+    public static void renderCakeLayer(List<CakeBatter> layers, CakeBatter layer, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
         renderCakeLayer(layers, layer, matrices, vertexConsumer, light, overlay, color, PedrosBakery.CONFIG.cakeRenderQuality());
     }
 
-    public static void renderCakeLayer(List<CakeLayer> layers, CakeLayer layer, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color, PBConfigModel.CakeRenderQuality quality) {
+    public static void renderCakeLayer(List<CakeBatter> layers, CakeBatter layer, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color, PBConfigModel.CakeRenderQuality quality) {
         float size = layer.getSize();
         float height = layer.getHeight();
         float bites = layer.getBites();
 
         float length = size - bites;
         if (length == 0) return;
-        @Nullable CakeLayer layerOnTop = null;
-        @Nullable CakeLayer layerUnder = null;
+        @Nullable CakeBatter layerOnTop = null;
+        @Nullable CakeBatter layerUnder = null;
         int index = -1;
         for (int i = 0; i < layers.size(); i++) {
             if (layers.get(i) == layer) {

@@ -3,7 +3,6 @@ package net.pedroricardo.block.helpers;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -36,13 +35,13 @@ public class CakeTop {
         return "top.pedrosbakery." + CakeTops.REGISTRY.getId(this).getPath();
     }
 
-    public void onTryEat(CakeLayer layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
+    public void onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
     }
 
     public void onDrink(ItemStack stack, World world, LivingEntity user) {
     }
 
-    public void tick(CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void tick(CakeBatter layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
     }
 
     public final CakeTop base() {

@@ -8,12 +8,9 @@ import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
-import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.block.helpers.CakeLayer;
+import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.item.PBComponentTypes;
-
-import java.util.List;
 
 public class ExpandableBakingTrayRecipe extends SpecialCraftingRecipe {
     public ExpandableBakingTrayRecipe(CraftingRecipeCategory category) {
@@ -35,7 +32,7 @@ public class ExpandableBakingTrayRecipe extends SpecialCraftingRecipe {
                     if (!stack.isOf(Items.DIAMOND)) return false;
                     break;
                 case 4:
-                    if (!stack.isOf(PBBlocks.BAKING_TRAY.asItem()) || !PBHelpers.firstOrElse(stack.getOrDefault(PBComponentTypes.BATTER, List.of()), CakeLayer.getEmpty()).isEmpty()) return false;
+                    if (!stack.isOf(PBBlocks.BAKING_TRAY.asItem()) || !stack.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty()).isEmpty()) return false;
                     break;
                 default: {
                     if (!stack.isOf(Items.AIR)) return false;

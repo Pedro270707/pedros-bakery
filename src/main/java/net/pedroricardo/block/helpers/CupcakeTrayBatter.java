@@ -15,25 +15,25 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public record CupcakeTrayBatter(Optional<CakeLayer> topLeft, Optional<CakeLayer> topRight, Optional<CakeLayer> bottomLeft, Optional<CakeLayer> bottomRight) {
+public record CupcakeTrayBatter(Optional<CakeBatter> topLeft, Optional<CakeBatter> topRight, Optional<CakeBatter> bottomLeft, Optional<CakeBatter> bottomRight) {
     public static final Codec<CupcakeTrayBatter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CakeLayer.CODEC.optionalFieldOf("top_left").forGetter(CupcakeTrayBatter::topLeft),
-            CakeLayer.CODEC.optionalFieldOf("top_right").forGetter(CupcakeTrayBatter::topRight),
-            CakeLayer.CODEC.optionalFieldOf("bottom_left").forGetter(CupcakeTrayBatter::bottomLeft),
-            CakeLayer.CODEC.optionalFieldOf("bottom_right").forGetter(CupcakeTrayBatter::bottomRight)
+            CakeBatter.CODEC.optionalFieldOf("top_left").forGetter(CupcakeTrayBatter::topLeft),
+            CakeBatter.CODEC.optionalFieldOf("top_right").forGetter(CupcakeTrayBatter::topRight),
+            CakeBatter.CODEC.optionalFieldOf("bottom_left").forGetter(CupcakeTrayBatter::bottomLeft),
+            CakeBatter.CODEC.optionalFieldOf("bottom_right").forGetter(CupcakeTrayBatter::bottomRight)
     ).apply(instance, CupcakeTrayBatter::new));
-    public static final PacketCodec<RegistryByteBuf, CupcakeTrayBatter> PACKET_CODEC = PacketCodec.tuple(PacketCodecs.optional(CakeLayer.PACKET_CODEC), CupcakeTrayBatter::topLeft, PacketCodecs.optional(CakeLayer.PACKET_CODEC), CupcakeTrayBatter::topRight, PacketCodecs.optional(CakeLayer.PACKET_CODEC), CupcakeTrayBatter::bottomLeft, PacketCodecs.optional(CakeLayer.PACKET_CODEC), CupcakeTrayBatter::bottomRight, CupcakeTrayBatter::new);
+    public static final PacketCodec<RegistryByteBuf, CupcakeTrayBatter> PACKET_CODEC = PacketCodec.tuple(PacketCodecs.optional(CakeBatter.PACKET_CODEC), CupcakeTrayBatter::topLeft, PacketCodecs.optional(CakeBatter.PACKET_CODEC), CupcakeTrayBatter::topRight, PacketCodecs.optional(CakeBatter.PACKET_CODEC), CupcakeTrayBatter::bottomLeft, PacketCodecs.optional(CakeBatter.PACKET_CODEC), CupcakeTrayBatter::bottomRight, CupcakeTrayBatter::new);
     private static final CupcakeTrayBatter EMPTY = new CupcakeTrayBatter(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
 
     public static CupcakeTrayBatter getEmpty() {
         return EMPTY.copy();
     }
 
-    public CupcakeTrayBatter(List<Optional<CakeLayer>> list) {
+    public CupcakeTrayBatter(List<Optional<CakeBatter>> list) {
         this(list.isEmpty() ? Optional.empty() : list.getFirst(), list.size() > 1 ? list.get(1) : Optional.empty(), list.size() > 2 ? list.get(2) : Optional.empty(), list.size() > 3 ? list.get(3) : Optional.empty());
     }
 
-    public List<Optional<CakeLayer>> stream() {
+    public List<Optional<CakeBatter>> stream() {
         return Stream.of(this.topLeft, this.topRight, this.bottomLeft, this.bottomRight).toList();
     }
 
@@ -64,7 +64,7 @@ public record CupcakeTrayBatter(Optional<CakeLayer> topLeft, Optional<CakeLayer>
         return this.stream().equals(that.stream());
     }
 
-    public CupcakeTrayBatter withBatter(int i, @Nullable CakeLayer batter) {
+    public CupcakeTrayBatter withBatter(int i, @Nullable CakeBatter batter) {
         return switch (i) {
             case 0 -> this.withTopLeft(batter);
             case 1 -> this.withTopRight(batter);
@@ -74,19 +74,19 @@ public record CupcakeTrayBatter(Optional<CakeLayer> topLeft, Optional<CakeLayer>
         };
     }
 
-    public CupcakeTrayBatter withTopLeft(@Nullable CakeLayer batter) {
+    public CupcakeTrayBatter withTopLeft(@Nullable CakeBatter batter) {
         return new CupcakeTrayBatter(Optional.ofNullable(batter), this.topRight(), this.bottomLeft(), this.bottomRight());
     }
 
-    public CupcakeTrayBatter withTopRight(@Nullable CakeLayer batter) {
+    public CupcakeTrayBatter withTopRight(@Nullable CakeBatter batter) {
         return new CupcakeTrayBatter(this.topLeft(), Optional.ofNullable(batter), this.bottomLeft(), this.bottomRight());
     }
 
-    public CupcakeTrayBatter withBottomLeft(@Nullable CakeLayer batter) {
+    public CupcakeTrayBatter withBottomLeft(@Nullable CakeBatter batter) {
         return new CupcakeTrayBatter(this.topLeft(), this.topRight(), Optional.ofNullable(batter), this.bottomRight());
     }
 
-    public CupcakeTrayBatter withBottomRight(@Nullable CakeLayer batter) {
+    public CupcakeTrayBatter withBottomRight(@Nullable CakeBatter batter) {
         return new CupcakeTrayBatter(this.topLeft(), this.topRight(), this.bottomLeft(), Optional.ofNullable(batter));
     }
 

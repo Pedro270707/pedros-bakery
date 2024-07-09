@@ -17,8 +17,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
+import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CakeFeature;
-import net.pedroricardo.block.helpers.CakeLayer;
 import org.apache.commons.compress.utils.Lists;
 
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.Optional;
 
 public class PaintingCakeFeature extends CakeFeature {
     @Override
-    public void onPlaced(PlayerEntity player, ItemStack stack, CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void onPlaced(PlayerEntity player, ItemStack stack, CakeBatter layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         if (world.isClient()) return;
         NbtComponent nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
         nbt.get(world.getRegistryManager().getOps(NbtOps.INSTANCE), PaintingEntity.VARIANT_MAP_CODEC).result().ifPresentOrElse(variant ->
@@ -45,7 +45,7 @@ public class PaintingCakeFeature extends CakeFeature {
     }
 
     @Override
-    public boolean canBeApplied(PlayerEntity player, ItemStack stack, CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public boolean canBeApplied(PlayerEntity player, ItemStack stack, CakeBatter layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         if (super.canBeApplied(player, stack, layer, world, pos, state, blockEntity)) return true;
         RegistryEntry<PaintingVariant> registryEntry = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).get(world.getRegistryManager().getOps(NbtOps.INSTANCE), PaintingEntity.VARIANT_MAP_CODEC).result().orElse(null);
         if (registryEntry == null) return true;
@@ -53,7 +53,7 @@ public class PaintingCakeFeature extends CakeFeature {
         return entryOnLayer == null || !entryOnLayer.value().equals(registryEntry.value());
     }
 
-    public RegistryEntry<PaintingVariant> getPainting(CakeLayer layer, DynamicRegistryManager registry) {
+    public RegistryEntry<PaintingVariant> getPainting(CakeBatter layer, DynamicRegistryManager registry) {
         return PaintingEntity.VARIANT_ENTRY_CODEC.parse(NbtOps.INSTANCE, this.getData(layer)).result().orElse(registry == null ? null : registry.get(RegistryKeys.PAINTING_VARIANT).getDefaultEntry().orElseThrow());
     }
 }

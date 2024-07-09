@@ -8,7 +8,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.helpers.CakeFeature;
-import net.pedroricardo.block.helpers.CakeLayer;
+import net.pedroricardo.block.helpers.CakeBatter;
 
 public class ParticleCakeFeature extends CakeFeature {
     private final ParticleEffect effect;
@@ -20,9 +20,9 @@ public class ParticleCakeFeature extends CakeFeature {
     }
 
     @Override
-    public void tick(CakeLayer layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void tick(CakeBatter layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         float height = 0;
-        for (CakeLayer layer1 : blockEntity.getLayers()) {
+        for (CakeBatter layer1 : blockEntity.getLayers()) {
             height += layer1.getHeight();
             if (layer1 == layer) {
                 break;
