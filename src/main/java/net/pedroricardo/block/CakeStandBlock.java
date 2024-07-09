@@ -56,14 +56,14 @@ public class CakeStandBlock extends BlockWithEntity {
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!(world.getBlockEntity(pos) instanceof CakeStandBlockEntity stand)) return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        if (stand.getItem().isEmpty() && stack.isIn(PBTags.Items.CAKE_STAND_ITEM)) {
-            stand.setItem(stack.copyWithCount(1));
+        if (stand.getStack().isEmpty() && stack.isIn(PBTags.Items.CAKE_STAND_ITEM)) {
+            stand.setStack(stack.copyWithCount(1));
             stack.decrementUnlessCreative(1, player);
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, state));
             return ItemActionResult.SUCCESS;
-        } else if (!stand.getItem().isEmpty()) {
-            player.giveItemStack(stand.getItem());
-            stand.setItem(ItemStack.EMPTY);
+        } else if (!stand.getStack().isEmpty()) {
+            player.giveItemStack(stand.getStack());
+            stand.setStack(ItemStack.EMPTY);
             return ItemActionResult.SUCCESS;
         }
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
@@ -81,8 +81,8 @@ public class CakeStandBlock extends BlockWithEntity {
     private void dropCake(World world, BlockPos pos) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof CakeStandBlockEntity stand) {
-            ItemStack itemStack = stand.getItem().copy();
-            ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + 0.5, pos.getY() + 1, (double)pos.getZ() + 0.5, itemStack);
+            ItemStack stack = stand.getStack().copy();
+            ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + 0.5, pos.getY() + 1, (double)pos.getZ() + 0.5, stack);
             itemEntity.setToDefaultPickupDelay();
             world.spawnEntity(itemEntity);
             stand.clear();
@@ -92,6 +92,6 @@ public class CakeStandBlock extends BlockWithEntity {
 
     @Override
     protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        return world.getBlockEntity(pos) instanceof CakeStandBlockEntity stand && !stand.getItem().isEmpty() ? 15 : 0;
+        return world.getBlockEntity(pos) instanceof CakeStandBlockEntity stand && !stand.getStack().isEmpty() ? 15 : 0;
     }
 }

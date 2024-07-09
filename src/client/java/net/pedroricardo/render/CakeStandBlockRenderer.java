@@ -4,7 +4,6 @@ import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -56,7 +55,7 @@ public class CakeStandBlockRenderer implements BlockEntityRenderer<CakeStandBloc
         this.plate.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(Identifier.of(PedrosBakery.MOD_ID, "textures/entity/cake_stand.png"))), light, overlay);
         matrices.pop();
 
-        if (entity.getItem().getItem() instanceof BlockItem blockItem) {
+        if (entity.getStack().getItem() instanceof BlockItem blockItem) {
             matrices.translate(0.5f, 0.0625f, 0.5f);
             matrices.scale(0.75f, 0.75f, 0.75f);
             matrices.translate(-0.5f, 0.0f, -0.5f);
@@ -64,7 +63,7 @@ public class CakeStandBlockRenderer implements BlockEntityRenderer<CakeStandBloc
             if (state.hasBlockEntity()) {
                 BlockEntity blockEntity = ((BlockEntityProvider) blockItem.getBlock()).createBlockEntity(entity.getPos(), state);
                 if (blockEntity != null) {
-                    blockEntity.readComponents(entity.getItem());
+                    blockEntity.readComponents(entity.getStack());
                     this.blockEntityRenderer.renderEntity(blockEntity, matrices, vertexConsumers, light, overlay);
                 }
             }
@@ -75,7 +74,7 @@ public class CakeStandBlockRenderer implements BlockEntityRenderer<CakeStandBloc
             matrices.translate(0.5f, 0.125f, 0.5f);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
             matrices.scale(0.5f, 0.5f, 0.5f);
-            this.itemRenderer.renderItem(entity.getItem(), ModelTransformationMode.FIXED, light, overlay, matrices, vertexConsumers, entity.getWorld(), (int) entity.getPos().asLong());
+            this.itemRenderer.renderItem(entity.getStack(), ModelTransformationMode.FIXED, light, overlay, matrices, vertexConsumers, entity.getWorld(), (int) entity.getPos().asLong());
         }
     }
 }

@@ -14,7 +14,7 @@ import net.pedroricardo.PBHelpers;
 import org.jetbrains.annotations.Nullable;
 
 public class CakeStandBlockEntity extends BlockEntity implements Clearable {
-    ItemStack item = ItemStack.EMPTY;
+    ItemStack stack = ItemStack.EMPTY;
 
     public CakeStandBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.CAKE_STAND, pos, state);
@@ -28,23 +28,23 @@ public class CakeStandBlockEntity extends BlockEntity implements Clearable {
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
-        if (!this.item.isEmpty()) {
-            nbt.put("item", this.item.encode(registryLookup));
+        if (!this.stack.isEmpty()) {
+            nbt.put("item", this.stack.encode(registryLookup));
         }
     }
 
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
-        this.item = ItemStack.fromNbtOrEmpty(registryLookup, nbt.getCompound("item"));
+        this.stack = ItemStack.fromNbtOrEmpty(registryLookup, nbt.getCompound("item"));
     }
 
-    public ItemStack getItem() {
-        return this.item;
+    public ItemStack getStack() {
+        return this.stack;
     }
 
-    public void setItem(ItemStack stack) {
-        this.item = stack;
+    public void setStack(ItemStack stack) {
+        this.stack = stack;
         PBHelpers.updateListeners(this);
     }
 
@@ -56,6 +56,6 @@ public class CakeStandBlockEntity extends BlockEntity implements Clearable {
 
     @Override
     public void clear() {
-        this.setItem(ItemStack.EMPTY);
+        this.setStack(ItemStack.EMPTY);
     }
 }

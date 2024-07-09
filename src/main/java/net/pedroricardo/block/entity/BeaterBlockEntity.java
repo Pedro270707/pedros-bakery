@@ -61,9 +61,9 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
         @Override
         public ItemStack removeStack(int slot) {
             if (slot == 0) {
-                ItemStack itemStack = this.parent.item;
+                ItemStack stack = this.parent.item;
                 this.parent.item = ItemStack.EMPTY;
-                return itemStack;
+                return stack;
             }
             return ItemStack.EMPTY;
         }
