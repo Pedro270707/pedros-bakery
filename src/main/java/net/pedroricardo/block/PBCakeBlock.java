@@ -179,7 +179,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             return ItemActionResult.FAIL;
         }
 
-        if (stack.isOf(PBItems.CAKE)) {
+        if (stack.isOf(PBBlocks.CAKE.asItem())) {
             List<CakeBatter> batterList = stack.getComponents().getOrDefault(PBComponentTypes.BATTER_LIST, List.of());
             if (batterList.isEmpty()) {
                 return ItemActionResult.FAIL;

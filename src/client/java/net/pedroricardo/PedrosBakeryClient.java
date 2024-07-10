@@ -30,12 +30,16 @@ public class PedrosBakeryClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		PBModelLayers.init();
 		BlockEntityRendererFactories.register(PBBlockEntities.CAKE, (ctx) -> new PBCakeBlockRenderer());
-		BuiltinItemRendererRegistry.INSTANCE.register(PBItems.CAKE, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
+		BlockEntityRendererFactories.register(PBBlockEntities.BEATER, BeaterBlockRenderer::new);
+		BlockEntityRendererFactories.register(PBBlockEntities.BAKING_TRAY, BakingTrayBlockRenderer::new);
+		BlockEntityRendererFactories.register(PBBlockEntities.CAKE_STAND, CakeStandBlockRenderer::new);
+		BlockEntityRendererFactories.register(PBBlockEntities.CUPCAKE_TRAY, CupcakeTrayBlockRenderer::new);
+		BlockEntityRendererFactories.register(PBBlockEntities.CUPCAKE, CupcakeBlockRenderer::new);
+
+		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.CAKE, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
 			PBCakeBlockRenderer.RENDER_CAKE.readComponents(stack);
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(PBCakeBlockRenderer.RENDER_CAKE, matrices, vertexConsumers, light, overlay);
 		});
-		BlockEntityRendererFactories.register(PBBlockEntities.BEATER, BeaterBlockRenderer::new);
-		BlockEntityRendererFactories.register(PBBlockEntities.BAKING_TRAY, BakingTrayBlockRenderer::new);
 		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.BAKING_TRAY, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
 			BakingTrayBlockRenderer.RENDER_TRAY.readComponents(stack);
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(BakingTrayBlockRenderer.RENDER_TRAY, matrices, vertexConsumers, light, overlay);
@@ -44,17 +48,15 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			BakingTrayBlockRenderer.RENDER_EXPANDABLE_TRAY.readComponents(stack);
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(BakingTrayBlockRenderer.RENDER_EXPANDABLE_TRAY, matrices, vertexConsumers, light, overlay);
 		});
-		BlockEntityRendererFactories.register(PBBlockEntities.CAKE_STAND, CakeStandBlockRenderer::new);
-		BlockEntityRendererFactories.register(PBBlockEntities.CUPCAKE_TRAY, CupcakeTrayBlockRenderer::new);
 		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.CUPCAKE_TRAY, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
 			CupcakeTrayBlockRenderer.RENDER_CUPCAKE_TRAY.readComponents(stack);
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(CupcakeTrayBlockRenderer.RENDER_CUPCAKE_TRAY, matrices, vertexConsumers, light, overlay);
 		});
-		BlockEntityRendererFactories.register(PBBlockEntities.CUPCAKE, CupcakeBlockRenderer::new);
 		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.CUPCAKE, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
 			CupcakeBlockRenderer.RENDER_CUPCAKE.readComponents(stack);
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(CupcakeBlockRenderer.RENDER_CUPCAKE, matrices, vertexConsumers, light, overlay);
 		});
+
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
 			CakeTop top = stack.get(PBComponentTypes.TOP);
 			if (tintIndex > 0 || top == null) {

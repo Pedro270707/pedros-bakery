@@ -12,10 +12,11 @@ import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CupcakeTrayBatter;
 import net.pedroricardo.item.*;
 
+import java.util.Collections;
 import java.util.function.BiConsumer;
 
 public class PBBlocks {
-    public static final Block CAKE = registerWithoutItem("cake", new PBCakeBlock(AbstractBlock.Settings.copy(Blocks.CAKE).dynamicBounds().nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)));
+    public static final Block CAKE = register("cake", new PBCakeBlock(AbstractBlock.Settings.copy(Blocks.CAKE).dynamicBounds().nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)), (name, block) -> PBItems.register(name, new PBCakeBlockItem(block, new Item.Settings().component(PBComponentTypes.BATTER_LIST, Collections.singletonList(CakeBatter.getDefault().withBakeTime(2000))))));
     public static final Block CANDLE_CAKE = registerWithoutItem("candle_cake", new PBCandleCakeBlock((CandleBlock) Blocks.CANDLE, AbstractBlock.Settings.copy(Blocks.CANDLE_CAKE).dynamicBounds().nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)));
     public static final Block WHITE_CANDLE_CAKE = registerWithoutItem("white_candle_cake", new PBCandleCakeBlock((CandleBlock) Blocks.WHITE_CANDLE, AbstractBlock.Settings.copy(Blocks.WHITE_CANDLE_CAKE).dynamicBounds().nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)));
     public static final Block ORANGE_CANDLE_CAKE = registerWithoutItem("orange_candle_cake", new PBCandleCakeBlock((CandleBlock) Blocks.ORANGE_CANDLE, AbstractBlock.Settings.copy(Blocks.ORANGE_CANDLE_CAKE).dynamicBounds().nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)));

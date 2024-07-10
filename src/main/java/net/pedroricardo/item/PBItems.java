@@ -12,7 +12,6 @@ import net.pedroricardo.block.helpers.CakeBatter;
 import java.util.Collections;
 
 public class PBItems {
-    public static final Item CAKE = register("cake", new PBCakeBlockItem(PBBlocks.CAKE, new Item.Settings().component(PBComponentTypes.BATTER_LIST, Collections.singletonList(CakeBatter.getDefault().withBakeTime(2000)))));
     public static final Item FROSTING_BOTTLE = register("frosting_bottle", new FrostingBottleItem(new Item.Settings().maxCount(1).recipeRemainder(Items.GLASS_BOTTLE)));
 
     public static Item register(String id, Item item) {
