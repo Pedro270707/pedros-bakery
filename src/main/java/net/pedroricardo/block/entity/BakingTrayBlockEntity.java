@@ -56,7 +56,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         super.writeNbt(nbt, registryLookup);
         nbt.putInt("size", this.size);
         nbt.putInt("height", this.height);
-        nbt.put("batter", this.getCakeBatter().toNbt(new NbtCompound()));
+        nbt.put("batter", this.getCakeBatter().toNbt(new NbtCompound(), CakeBatter.WITH_HEIGHT_CODEC));
         nbt.put("parts", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.parts).result().orElse(new NbtList()));
     }
 

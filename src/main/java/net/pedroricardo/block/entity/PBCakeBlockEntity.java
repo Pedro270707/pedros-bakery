@@ -48,7 +48,7 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
         super.writeNbt(nbt, registryLookup);
         NbtList list = new NbtList();
         for (CakeBatter layer : this.batterList) {
-            list.add(layer.toNbt(new NbtCompound()));
+            list.add(layer.toNbt(new NbtCompound(), CakeBatter.CODEC));
         }
         nbt.put("batter", list);
         nbt.put("parts", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.parts).result().orElse(new NbtList()));

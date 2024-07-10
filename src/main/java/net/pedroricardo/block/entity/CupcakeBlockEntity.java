@@ -31,7 +31,7 @@ public class CupcakeBlockEntity extends BlockEntity {
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
         if (this.getBatter() != null) {
-            nbt.put("batter", this.getBatter().toNbt(new NbtCompound()));
+            nbt.put("batter", this.getBatter().toNbt(new NbtCompound(), CakeBatter.WITH_TOP_CODEC));
         }
     }
 

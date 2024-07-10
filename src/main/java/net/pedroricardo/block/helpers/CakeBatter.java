@@ -38,11 +38,15 @@ public class CakeBatter {
     private Map<CakeFeature, NbtCompound> features;
 
     public CakeBatter(int bakeTime, CakeFlavor cakeFlavor) {
-        this(bakeTime, 16.0f, cakeFlavor);
+        this(bakeTime, 8.0f, cakeFlavor);
+    }
+
+    public CakeBatter(int bakeTime, Optional<CakeTop> top, CakeFlavor cakeFlavor) {
+        this(bakeTime, 8.0f, 0.0f, 14.0f, cakeFlavor, top, Maps.newHashMap());
     }
 
     public CakeBatter(int bakeTime, float height, CakeFlavor cakeFlavor) {
-        this(bakeTime, height, 0.0f, 16.0f, cakeFlavor, Optional.empty(), Maps.newHashMap());
+        this(bakeTime, height, 0.0f, 14.0f, cakeFlavor, Optional.empty(), Maps.newHashMap());
     }
 
     public CakeBatter(int bakeTime, float height, float bites, float size, CakeFlavor flavor, Optional<CakeTop> top, Map<CakeFeature, NbtCompound> features) {
@@ -58,6 +62,20 @@ public class CakeBatter {
     private static final CakeBatter DEFAULT = new CakeBatter(0, 8, 0, 14, CakeFlavors.VANILLA, Optional.empty(), Map.of());
     private static final CakeBatter EMPTY = new CakeBatter(0, 0, 0, 0, CakeFlavors.VANILLA, Optional.empty(), Map.of());
 
+    public static final Codec<CakeBatter> SIMPLE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                    Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
+                    CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.getDefaultEntry().get().value()).forGetter(CakeBatter::getFlavor))
+            .apply(instance, CakeBatter::new));
+    public static final Codec<CakeBatter> WITH_TOP_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                    Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
+                    CakeTops.REGISTRY.getCodec().optionalFieldOf("top").forGetter(CakeBatter::getTop),
+                    CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.getDefaultEntry().get().value()).forGetter(CakeBatter::getFlavor))
+            .apply(instance, CakeBatter::new));
+    public static final Codec<CakeBatter> WITH_HEIGHT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                    Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
+                    Codec.FLOAT.fieldOf("height").orElse(8.0f).forGetter(CakeBatter::getHeight),
+                    CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.getDefaultEntry().get().value()).forGetter(CakeBatter::getFlavor))
+            .apply(instance, CakeBatter::new));
     public static final Codec<CakeBatter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
                     Codec.FLOAT.fieldOf("height").orElse(8.0f).forGetter(CakeBatter::getHeight),
@@ -77,8 +95,8 @@ public class CakeBatter {
         return EMPTY.copy();
     }
 
-    public NbtCompound toNbt(NbtCompound nbt) {
-        NbtElement result = CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
+    public NbtCompound toNbt(NbtCompound nbt, Codec<CakeBatter> codec) {
+        NbtElement result = codec.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
 
         if (result instanceof NbtCompound compound) {
             return compound;
