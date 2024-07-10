@@ -33,6 +33,7 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBBlocks.EXPANDABLE_BAKING_TRAY));
                 entries.add(new ItemStack(PBBlocks.CUPCAKE));
                 entries.add(new ItemStack(PBBlocks.CUPCAKE_TRAY));
+                entries.add(new ItemStack(PBBlocks.COOKIE_JAR));
                 addBakingTrays(entries);
             }).build();
 

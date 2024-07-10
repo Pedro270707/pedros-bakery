@@ -1,0 +1,40 @@
+{
+  "variants": {
+    "cookies=0": {
+      "model": "pedrosbakery:block/cookie_jar"
+    },
+    "cookies=1": {
+      "model": "pedrosbakery:block/cookie_jar_one_cookie"
+    },
+    "cookies=2": {
+      "model": "pedrosbakery:block/cookie_jar_two_cookies"
+    },
+    "cookies=3": {
+      "model": "pedrosbakery:block/cookie_jar_three_cookies"
+    },
+    "cookies=4": {
+      "model": "pedrosbakery:block/cookie_jar_four_cookies"
+    },
+    "cookies=5": {
+      "model": "pedrosbakery:block/cookie_jar_five_cookies"
+    },
+    "cookies=6": {
+      "model": "pedrosbakery:block/cookie_jar_six_cookies"
+    },
+    "cookies=7": {
+      "model": "pedrosbakery:block/cookie_jar_seven_cookies"
+    },
+    "cookies=8": {
+      "model": "pedrosbakery:block/cookie_jar_eight_cookies"
+    },
+    "cookies=9": {
+      "model": "pedrosbakery:block/cookie_jar_nine_cookies"
+    },
+    "cookies=10": {
+      "model": "pedrosbakery:block/cookie_jar_ten_cookies"
+    },
+    "cookies=11": {
+      "model": "pedrosbakery:block/cookie_jar_eleven_cookies"
+    }
+  }
+}

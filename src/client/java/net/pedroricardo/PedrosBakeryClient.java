@@ -1,6 +1,7 @@
 package net.pedroricardo;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.MinecraftClient;
@@ -70,6 +71,8 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			return stack.get(PBComponentTypes.BATTER) == null ? 1.0f : 0.0f;
 		});
 
+		BlockRenderLayerMap.INSTANCE.putBlock(PBBlocks.COOKIE_JAR, RenderLayer.getCutout());
+
 		CakeFeatureRenderer cakeLayerFeatureRenderer = (feature, entity, layer, matrices, vertexConsumers, light, overlay) -> {
 			Identifier id = CakeFeatures.REGISTRY.getId(feature);
 			if (id == null) return;
@@ -82,11 +85,9 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockFeature.getBlockState(), matrices, vertexConsumers, light, overlay);
 			matrices.pop();
 		};
-
 		CakeFeatureRendererRegistry.register(CakeFeatures.GLINT, (feature, entity, layer, matrices, vertexConsumers, light, overlay) -> {
 			PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getDirectEntityGlint()), light, overlay, 0xFFFFFFFF, PBConfigModel.CakeRenderQuality.SIMPLE);
 		});
-
 		CakeFeatureRendererRegistry.register(CakeFeatures.SWEET_BERRIES, cakeLayerFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.RED_MUSHROOM, blockOnTopFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.BROWN_MUSHROOM, blockOnTopFeatureRenderer);
