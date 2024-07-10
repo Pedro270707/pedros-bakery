@@ -128,7 +128,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         }
 
         if (bites == 0) {
-            PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 48.0f + Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
+            PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 32.0f + Math.round((16.0f - size) / 2.0f), 16.0f, light, overlay, color);
             if (quality.renderSideBorders()) {
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 16.0f + halfSizeDifference, 32.0f, light, overlay, color); // Top
                 PBRenderHelper.createFace(Direction.WEST, matrices, vertexConsumer, 8.0f - size / 2.0f, -height, -8.0f + size / 2.0f, length, height, 16.0f + halfSizeDifference, 80.0f - height, light, overlay, color); // Bottom

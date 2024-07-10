@@ -32,7 +32,7 @@ public class PBCakeBlockItem extends BlockItem {
             if (batter.getTop().isPresent()) {
                 tooltip.add(Text.translatable("block.pedrosbakery.cake.flavor_and_top", Text.translatable(batter.getFlavor().getTranslationKey()), Text.translatable(batter.getTop().get().getTranslationKey())).formatted(Formatting.GRAY));
             } else {
-                tooltip.add(Text.translatable(batter.getFlavor().getTranslationKey()).formatted(Formatting.GRAY));
+                tooltip.add(Text.translatable("block.pedrosbakery.cake.flavor", Text.translatable(batter.getFlavor().getTranslationKey())).formatted(Formatting.GRAY));
             }
         }
     }

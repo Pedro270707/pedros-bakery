@@ -47,6 +47,7 @@ public class CakeFlavors {
     });
     public static final CakeFlavor PUMPKIN = register("pumpkin", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.PUMPKIN, Items.PUMPKIN_PIE)));
     public static final CakeFlavor MELON = register("melon", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.MELON, Items.MELON_SLICE)));
+    public static final CakeFlavor BREAD = register("bread", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.BREAD)));
 
     public static Optional<CakeFlavor> from(ItemStack item) {
         if (item == null || item.getItem() == Items.AIR) {

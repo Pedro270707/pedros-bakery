@@ -33,7 +33,7 @@ public class BakingTrayItem extends BlockItem implements BatterContainerItem {
         if (batter.isEmpty()) {
             return;
         }
-        tooltip.add(Text.translatable(batter.getFlavor().getTranslationKey()).formatted(Formatting.GRAY));
+        tooltip.add(Text.translatable("block.pedrosbakery.cake.flavor", Text.translatable(batter.getFlavor().getTranslationKey())).formatted(Formatting.GRAY));
         if (batter.getHeight() != height && batter.getHeight() != 0) {
             tooltip.add(Text.translatable("block.pedrosbakery.baking_tray.full", (int)(100.0f * (float) batter.getHeight() / (float) height)).formatted(Formatting.YELLOW));
         }
