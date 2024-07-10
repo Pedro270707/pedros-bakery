@@ -31,5 +31,13 @@
       "translation": [ 0, 6, 0 ],
       "scale": [ 1, 1, 1 ]
     }
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "pedrosbakery:batter": 1
+      },
+      "model": "pedrosbakery:item/cupcake_liner"
+    }
+  ]
 }

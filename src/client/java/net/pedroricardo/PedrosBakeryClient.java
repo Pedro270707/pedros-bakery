@@ -4,6 +4,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
@@ -64,6 +65,10 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			}
 			return top.color();
 		}, PBItems.FROSTING_BOTTLE);
+		ModelPredicateProviderRegistry.register(Identifier.of(PedrosBakery.MOD_ID, "batter"), (stack, world, entity, seed) -> {
+			if (!stack.isOf(PBBlocks.CUPCAKE.asItem())) return 0.0f;
+			return stack.get(PBComponentTypes.BATTER) == null ? 1.0f : 0.0f;
+		});
 
 		CakeFeatureRenderer cakeLayerFeatureRenderer = (feature, entity, layer, matrices, vertexConsumers, light, overlay) -> {
 			Identifier id = CakeFeatures.REGISTRY.getId(feature);

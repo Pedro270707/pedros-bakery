@@ -53,4 +53,10 @@ public class CupcakeItem extends BlockItem {
         PBHelpers.decrementStackAndAdd(context.getPlayer(), context.getStack(), newStack);
         return ActionResult.SUCCESS;
     }
+
+    @Override
+    public String getTranslationKey(ItemStack stack) {
+        if (stack.get(PBComponentTypes.BATTER) == null) return super.getTranslationKey(stack) + ".empty";
+        return super.getTranslationKey(stack);
+    }
 }

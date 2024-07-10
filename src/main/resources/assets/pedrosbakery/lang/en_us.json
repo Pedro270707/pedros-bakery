@@ -54,6 +54,7 @@
   "feature.pedrosbakery.end_dust": "End Dust",
   "feature.pedrosbakery.honey": "Honey",
   "block.pedrosbakery.cupcake": "Cupcake",
+  "block.pedrosbakery.cupcake.empty": "Cupcake Liner",
   "subtitles.block.pedrosbakery.baking_tray.done": "Cake baked",
   "itemGroup.pedrosbakery": "Pedro's Bakery",
   "text.config.pedrosbakery.title": "Pedro's Bakery",
