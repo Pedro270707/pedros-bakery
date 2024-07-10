@@ -2,6 +2,7 @@ package net.pedroricardo.render;
 
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -52,6 +53,11 @@ public class CupcakeBlockRenderer implements BlockEntityRenderer<CupcakeBlockEnt
             Identifier texture = entity.getBatter().getFlavor().getCupcakeTextureLocation();
             this.liner.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, overlay);
             this.top.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, PBCakeBlockRenderer.getBakeTimeOverlay(entity.getBatter().getBakeTime(), overlay), PBCakeBlockRenderer.getBakeTimeColor(entity.getBatter().getBakeTime(), 0xFFFFFFFF));
+            entity.getBatter().getTop().ifPresent(top -> {
+                Identifier topTexture = top.getCupcakeTextureLocation();
+                this.liner.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(topTexture)), light, overlay);
+                this.top.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(topTexture)), light, overlay);
+            });
         }
         matrices.pop();
     }

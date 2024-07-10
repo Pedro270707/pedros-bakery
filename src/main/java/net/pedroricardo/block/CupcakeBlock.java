@@ -6,14 +6,13 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
+import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationPropertyHelper;
@@ -23,11 +22,14 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
+import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.CupcakeBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
+import net.pedroricardo.block.helpers.CakeTop;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
+import net.pedroricardo.item.PBItems;
 import org.jetbrains.annotations.Nullable;
 
 public class CupcakeBlock extends BlockWithEntity {
@@ -77,8 +79,9 @@ public class CupcakeBlock extends BlockWithEntity {
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!(world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake)) return ActionResult.PASS;
         if ((player.isCreative() || player.canConsume(false)) && cupcake.getBatter() != null) {
-            cupcake.getBatter().getFlavor().onTryEat(cupcake.getBatter(), world, pos, state, player);
-            if (!cupcake.getBatter().getFlavor().isIn(PBTags.Flavors.INEDIBLE)) {
+            CakeBatter batter = cupcake.getBatter();
+            batter.getFlavor().onTryEat(cupcake.getBatter(), world, pos, state, player);
+            if (!batter.getFlavor().isIn(PBTags.Flavors.INEDIBLE) && (batter.getTop().isEmpty() || !batter.getTop().get().isIn(PBTags.Tops.INEDIBLE))) {
                 cupcake.setBatter(null);
                 player.incrementStat(Stats.EAT_CAKE_SLICE);
                 world.emitGameEvent(player, GameEvent.EAT, pos);
@@ -89,6 +92,18 @@ public class CupcakeBlock extends BlockWithEntity {
             return ActionResult.SUCCESS;
         }
         return ActionResult.FAIL;
+    }
+
+    @Override
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (!(world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake)) return ItemActionResult.FAIL;
+        CakeTop top = stack.get(PBComponentTypes.TOP);
+        if (stack.isOf(PBItems.FROSTING_BOTTLE) && cupcake.getBatter() != null && cupcake.getBatter().getTop().orElse(null) != top) {
+            cupcake.setBatter(cupcake.getBatter().withTop(top));
+            PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.GLASS_BOTTLE));
+            return ItemActionResult.SUCCESS;
+        }
+        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     public static ItemStack of(CakeBatter layer) {

@@ -45,7 +45,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
 
             renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getFlavor().getCakeTextureLocation())), light, getBakeTimeOverlay(layer.getBakeTime(), overlay), getBakeTimeColor(layer.getBakeTime(), 0xFFFFFFFF));
             if (layer.getTop().isPresent()) {
-                renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getTop().get().getTextureLocation())), light, overlay, 0xFFFFFFFF);
+                renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getTop().get().getCakeTextureLocation())), light, overlay, 0xFFFFFFFF);
             }
             for (CakeFeature feature : layer.getFeatures()) {
                 if (feature == null) continue;

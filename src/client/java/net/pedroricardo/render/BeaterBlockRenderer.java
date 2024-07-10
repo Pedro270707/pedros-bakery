@@ -72,7 +72,7 @@ public class BeaterBlockRenderer implements BlockEntityRenderer<BeaterBlockEntit
         if (state.get(BeaterBlock.LIQUID) == BeaterLiquids.MILK) {
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(Identifier.of(PedrosBakery.MOD_ID, "textures/entity/beater.png"))), 4, 4, 6, 8, 8, 0, 36, 8, 44, 64, 64, light, overlay, 0xFFFFFFFF);
         } else if (state.get(BeaterBlock.LIQUID) == BeaterLiquids.FROSTING && entity.getTop() != null) {
-            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(entity.getTop().getTextureLocation())), 4, 4, 6, 8, 8, 20, 4, light, overlay, 0xFFFFFFFF);
+            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(entity.getTop().getCakeTextureLocation())), 4, 4, 6, 8, 8, 20, 4, light, overlay, 0xFFFFFFFF);
         } else if (state.get(BeaterBlock.LIQUID) == BeaterLiquids.MIXTURE && entity.getFlavor() != null) {
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(entity.getFlavor().getCakeTextureLocation())), 4, 4, 6, 8, 8, 20, 4, light, OverlayTexture.getUv(1.0f/4.0f, false), 0xFFFFFFFF);
         }

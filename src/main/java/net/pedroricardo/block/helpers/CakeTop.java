@@ -26,8 +26,13 @@ public class CakeTop {
     }
 
     @NotNull
-    public Identifier getTextureLocation() {
+    public Identifier getCakeTextureLocation() {
         return CakeTops.REGISTRY.getId(this).withPrefixedPath("textures/entity/cake/top/").withSuffixedPath(".png");
+    }
+
+    @NotNull
+    public Identifier getCupcakeTextureLocation() {
+        return CakeTops.REGISTRY.getId(this).withPrefixedPath("textures/entity/cupcake/top/").withSuffixedPath(".png");
     }
 
     @NotNull
