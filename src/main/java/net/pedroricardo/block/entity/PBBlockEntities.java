@@ -59,6 +59,10 @@ public class PBBlockEntities {
             CupcakeBlockEntity::new,
             PBBlocks.CUPCAKE), "cupcake");
 
+    public static final BlockEntityType<? extends CookieJarBlockEntity> COOKIE_JAR = register(BlockEntityType.Builder.create(
+            CookieJarBlockEntity::new,
+            PBBlocks.COOKIE_JAR), "cookie_jar");
+
     private static <T extends BlockEntity> BlockEntityType<T> register(BlockEntityType.Builder<T> builder, String id) {
         return Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of(PedrosBakery.MOD_ID, id), builder.build());
     }

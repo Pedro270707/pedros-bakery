@@ -19,6 +19,7 @@ public class PBTags {
 
     public static class Items {
         public static final TagKey<Item> CAKE_STAND_ITEM = of(RegistryKeys.ITEM, "cake_stand_item");
+        public static final TagKey<Item> COOKIES = of(RegistryKeys.ITEM, "cookies");
     }
 
     public static class Flavors {
