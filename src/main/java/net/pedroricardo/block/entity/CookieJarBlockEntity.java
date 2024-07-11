@@ -12,9 +12,10 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.pedroricardo.block.CookieJarBlock;
 
 public class CookieJarBlockEntity extends BlockEntity implements Inventory, Clearable {
-    private DefaultedList<ItemStack> stacks = DefaultedList.ofSize(12, ItemStack.EMPTY);
+    private DefaultedList<ItemStack> stacks = DefaultedList.ofSize(CookieJarBlock.MAX_COOKIES, ItemStack.EMPTY);
 
     public CookieJarBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.COOKIE_JAR, pos, state);
@@ -28,7 +29,7 @@ public class CookieJarBlockEntity extends BlockEntity implements Inventory, Clea
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
-        this.stacks = DefaultedList.ofSize(12, ItemStack.EMPTY);
+        this.stacks = DefaultedList.ofSize(CookieJarBlock.MAX_COOKIES, ItemStack.EMPTY);
         Inventories.readNbt(nbt, this.getStacks(), registryLookup);
     }
 

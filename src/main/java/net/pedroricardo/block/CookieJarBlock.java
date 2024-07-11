@@ -23,7 +23,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class CookieJarBlock extends BlockWithEntity {
     public static final MapCodec<CookieJarBlock> CODEC = createCodec(CookieJarBlock::new);
-    public static final IntProperty COOKIES = IntProperty.of("cookies", 0, 12);
+    public static final int MAX_COOKIES = 12;
+    public static final IntProperty COOKIES = IntProperty.of("cookies", 0, MAX_COOKIES);
 
     public CookieJarBlock(Settings settings) {
         super(settings);
@@ -65,7 +66,7 @@ public class CookieJarBlock extends BlockWithEntity {
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!(world.getBlockEntity(pos) instanceof CookieJarBlockEntity cookieJar) || !state.contains(COOKIES)) return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         int cookies = state.get(COOKIES);
-        if (stack.isIn(PBTags.Items.COOKIES) && cookies < 12) {
+        if (stack.isIn(PBTags.Items.COOKIES) && cookies < MAX_COOKIES) {
             cookieJar.setStack(cookies, stack.splitUnlessCreative(1, player));
             world.setBlockState(pos, state.with(COOKIES, cookies + 1), Block.NOTIFY_ALL);
             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
