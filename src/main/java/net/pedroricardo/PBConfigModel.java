@@ -1,9 +1,7 @@
 package net.pedroricardo;
 
-import io.wispforest.owo.config.annotation.Config;
-import io.wispforest.owo.config.annotation.Modmenu;
-import io.wispforest.owo.config.annotation.RangeConstraint;
-import io.wispforest.owo.config.annotation.RestartRequired;
+import io.wispforest.owo.config.Option;
+import io.wispforest.owo.config.annotation.*;
 
 @Modmenu(modId = PedrosBakery.MOD_ID)
 @Config(wrapperName = "PBConfig", name = "pedrosbakery")
@@ -37,6 +35,7 @@ public class PBConfigModel {
     @RangeConstraint(min = 1, max = Integer.MAX_VALUE)
     public int ticksUntilBaked = 2000;
 
+    @Sync(Option.SyncMode.NONE)
     public CakeRenderQuality cakeRenderQuality = CakeRenderQuality.ALL_BORDERS;
 
     @RangeConstraint(min = 1, max = 16)
