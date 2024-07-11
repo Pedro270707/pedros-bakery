@@ -35,6 +35,9 @@
     },
     "cookies=11": {
       "model": "pedrosbakery:block/cookie_jar_eleven_cookies"
+    },
+    "cookies=12": {
+      "model": "pedrosbakery:block/cookie_jar_twelve_cookies"
     }
   }
 }

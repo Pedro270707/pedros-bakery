@@ -22,7 +22,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class CookieJarBlock extends Block {
     public static final MapCodec<CookieJarBlock> CODEC = createCodec(CookieJarBlock::new);
-    public static final IntProperty COOKIES = IntProperty.of("cookies", 0, 11);
+    public static final IntProperty COOKIES = IntProperty.of("cookies", 0, 12);
 
     public CookieJarBlock(Settings settings) {
         super(settings);
@@ -60,7 +60,7 @@ public class CookieJarBlock extends Block {
 
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (stack.isOf(Items.COOKIE) && state.get(COOKIES) < 11) {
+        if (stack.isOf(Items.COOKIE) && state.get(COOKIES) < 12) {
             stack.decrementUnlessCreative(1, player);
             world.setBlockState(pos, state.with(COOKIES, state.get(COOKIES) + 1), Block.NOTIFY_ALL);
             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
