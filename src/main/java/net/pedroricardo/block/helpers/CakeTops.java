@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.EndPortalBlock;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -92,7 +93,7 @@ public class CakeTops {
         }
 
         @Override
-        public ActionResult onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
+        public ActionResult onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity cake) {
             if (world instanceof ServerWorld) {
                 RegistryKey<World> registryKey = world.getRegistryKey() == World.END ? World.OVERWORLD : World.END;
                 ServerWorld serverWorld = ((ServerWorld)world).getServer().getWorld(registryKey);

@@ -1,6 +1,7 @@
 package net.pedroricardo.block.helpers;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -20,7 +21,7 @@ public class CakeFeature {
         return "feature.pedrosbakery." + CakeFeatures.REGISTRY.getId(this).getPath();
     }
 
-    public ActionResult onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity blockEntity) {
+    public ActionResult onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity) {
         return ActionResult.PASS;
     }
 

@@ -20,6 +20,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
@@ -80,8 +81,8 @@ public class CupcakeBlock extends BlockWithEntity {
         if (!(world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake)) return ActionResult.PASS;
         if ((player.isCreative() || player.canConsume(false)) && cupcake.getBatter() != null) {
             CakeBatter batter = cupcake.getBatter();
-            batter.getFlavor().onTryEat(cupcake.getBatter(), world, pos, state, player);
-            if (!batter.getFlavor().isIn(PBTags.Flavors.INEDIBLE) && (batter.getTop().isEmpty() || !batter.getTop().get().isIn(PBTags.Tops.INEDIBLE))) {
+            ActionResult result = batter.bite(world, pos, state, player, cupcake, batter.getSize());
+            if (result.isAccepted()) {
                 cupcake.setBatter(null);
                 player.incrementStat(Stats.EAT_CAKE_SLICE);
                 world.emitGameEvent(player, GameEvent.EAT, pos);
@@ -89,7 +90,7 @@ public class CupcakeBlock extends BlockWithEntity {
                 player.playSound(SoundEvents.ENTITY_PLAYER_BURP, 0.5f, 1.0f);
                 player.getHungerManager().add(PedrosBakery.CONFIG.cupcakeFood(), PedrosBakery.CONFIG.cupcakeSaturation());
             }
-            return ActionResult.SUCCESS;
+            return result;
         }
         return ActionResult.FAIL;
     }
@@ -103,12 +104,17 @@ public class CupcakeBlock extends BlockWithEntity {
             PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.GLASS_BOTTLE));
             return ItemActionResult.SUCCESS;
         }
+        if (stack.isOf(Items.HONEYCOMB) && cupcake.getBatter() != null && cupcake.getBatter().setWaxed(true)) {
+            world.syncWorldEvent(player, WorldEvents.BLOCK_WAXED, pos, 0);
+            return ItemActionResult.SUCCESS;
+        }
+
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     public static ItemStack of(CakeBatter batter) {
         ItemStack stack = new ItemStack(PBBlocks.CUPCAKE);
-        stack.set(PBComponentTypes.BATTER, batter.copy());
+        stack.set(PBComponentTypes.BATTER, batter == null ? null : batter.copy());
         return stack;
     }
 

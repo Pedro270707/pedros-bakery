@@ -1,6 +1,7 @@
 package net.pedroricardo.block.helpers;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -28,7 +29,7 @@ public class CakeTop {
 
     @NotNull
     public Identifier getCakeTextureLocation() {
-        return CakeTops.REGISTRY.getId(this).withPrefixedPath("textures/entity/cake/top/").withSuffixedPath(".png");
+        return CakeTops.REGISTRY.getId(this).withPrefixedPath("textures/entity/blockEntity/top/").withSuffixedPath(".png");
     }
 
     @NotNull
@@ -41,7 +42,7 @@ public class CakeTop {
         return "top.pedrosbakery." + CakeTops.REGISTRY.getId(this).getPath();
     }
 
-    public ActionResult onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
+    public ActionResult onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity) {
         return ActionResult.PASS;
     }
 

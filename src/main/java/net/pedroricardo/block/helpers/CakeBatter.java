@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -132,16 +133,16 @@ public class CakeBatter {
         return this.bites;
     }
 
-    public ActionResult bite(World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake, float biteSize) {
+    public ActionResult bite(World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity, float biteSize) {
         if (this.isWaxed()) return ActionResult.FAIL;
         ActionResult tryEatFlavor = this.getFlavor().onTryEat(this, world, pos, state, player);
         ActionResult tryEatTop = ActionResult.PASS;
         if (this.getTop().isPresent()) {
-            tryEatTop = this.getTop().get().onTryEat(this, world, pos, state, player, cake);
+            tryEatTop = this.getTop().get().onTryEat(this, world, pos, state, player, blockEntity);
         }
         ActionResult tryEatFeature = ActionResult.PASS;
         for (CakeFeature feature : this.getFeatures()) {
-            tryEatFeature = feature.onTryEat(this, world, pos, state, player, cake);
+            tryEatFeature = feature.onTryEat(this, world, pos, state, player, blockEntity);
         }
         if (this.getFlavor().isIn(PBTags.Flavors.INEDIBLE) || (this.getTop().isPresent() && this.getTop().get().isIn(PBTags.Tops.INEDIBLE)) || this.getFeatures().stream().anyMatch(feature -> feature.isIn(PBTags.Features.INEDIBLE))) {
             return tryEatFlavor.isAccepted() || tryEatTop.isAccepted() || tryEatFeature.isAccepted() ? ActionResult.SUCCESS : ActionResult.PASS;
@@ -153,7 +154,7 @@ public class CakeBatter {
         player.incrementStat(Stats.EAT_CAKE_SLICE);
         world.emitGameEvent(player, GameEvent.EAT, pos);
         player.getHungerManager().add(PedrosBakery.CONFIG.cakeBiteFood(), PedrosBakery.CONFIG.cakeBiteSaturation());
-        PBHelpers.updateListeners(cake);
+        PBHelpers.updateListeners(blockEntity);
         return ActionResult.SUCCESS;
     }
 
