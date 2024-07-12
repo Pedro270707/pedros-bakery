@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -40,7 +41,8 @@ public class CakeTop {
         return "top.pedrosbakery." + CakeTops.REGISTRY.getId(this).getPath();
     }
 
-    public void onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
+    public ActionResult onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
+        return ActionResult.PASS;
     }
 
     public void onDrink(ItemStack stack, World world, LivingEntity user) {

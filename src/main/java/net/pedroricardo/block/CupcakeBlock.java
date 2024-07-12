@@ -99,16 +99,16 @@ public class CupcakeBlock extends BlockWithEntity {
         if (!(world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake)) return ItemActionResult.FAIL;
         CakeTop top = stack.get(PBComponentTypes.TOP);
         if (stack.isOf(PBItems.FROSTING_BOTTLE) && cupcake.getBatter() != null && cupcake.getBatter().getTop().orElse(null) != top) {
-            cupcake.setBatter(cupcake.getBatter().withTop(top));
+            cupcake.getBatter().withTop(top);
             PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.GLASS_BOTTLE));
             return ItemActionResult.SUCCESS;
         }
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
-    public static ItemStack of(CakeBatter layer) {
+    public static ItemStack of(CakeBatter batter) {
         ItemStack stack = new ItemStack(PBBlocks.CUPCAKE);
-        stack.set(PBComponentTypes.BATTER, layer);
+        stack.set(PBComponentTypes.BATTER, batter.copy());
         return stack;
     }
 

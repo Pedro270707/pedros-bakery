@@ -13,6 +13,7 @@ import net.minecraft.registry.DefaultedRegistry;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.SimpleDefaultedRegistry;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -33,16 +34,18 @@ public class CakeFlavors {
     public static final CakeFlavor SWEET_BERRY = register("sweet_berry", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.SWEET_BERRIES)));
     public static final CakeFlavor COAL = register("coal", new CakeFlavor(null, Ingredient.ofItems(Items.COAL)) {
         @Override
-        public void onTryEat(CakeBatter batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        public ActionResult onTryEat(CakeBatter batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
             super.onTryEat(batter, world, pos, state, player);
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 10, 2));
+            return ActionResult.SUCCESS;
         }
     });
     public static final CakeFlavor TNT = register("tnt", new CakeFlavor(null, Ingredient.ofItems(Items.TNT)) {
         @Override
-        public void onTryEat(CakeBatter batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        public ActionResult onTryEat(CakeBatter batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
             super.onTryEat(batter, world, pos, state, player);
             world.createExplosion(null, pos.toCenterPos().getX(), pos.toCenterPos().getY(), pos.toCenterPos().getZ(), batter instanceof CakeBatter layer ? (layer.getSize() * layer.getHeight()) / 64.0f : 0.5f, World.ExplosionSourceType.BLOCK);
+            return ActionResult.SUCCESS;
         }
     });
     public static final CakeFlavor PUMPKIN = register("pumpkin", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.PUMPKIN, Items.PUMPKIN_PIE)));

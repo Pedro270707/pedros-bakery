@@ -29,6 +29,7 @@ import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEntity {
     private List<CakeBatter> batterList = Lists.newArrayList();
@@ -68,13 +69,13 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     @Override
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
-        componentMapBuilder.add(PBComponentTypes.BATTER_LIST, this.getBatterList());
+        componentMapBuilder.add(PBComponentTypes.BATTER_LIST, this.getBatterList().stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
     }
 
     @Override
     protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
-        this.batterList = Lists.newArrayList(components.getOrDefault(PBComponentTypes.BATTER_LIST, List.<CakeBatter>of()).iterator());
+        this.batterList = components.getOrDefault(PBComponentTypes.BATTER_LIST, List.<CakeBatter>of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList));
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {

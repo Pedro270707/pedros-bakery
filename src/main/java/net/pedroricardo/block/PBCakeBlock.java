@@ -26,6 +26,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
@@ -46,6 +47,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCakeBlockEntity, PBCakeBlockEntityPart, PBCakeBlockPart> {
     public static final MapCodec<PBCakeBlock> CODEC = createCodec(PBCakeBlock::new);
@@ -148,7 +150,9 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
                 batterList.add(cake.getBatterList().remove(layerIndex));
             }
             ItemStack stack = of(batterList);
-            player.giveItemStack(stack);
+            if (!player.giveItemStack(stack)) {
+                player.dropItem(stack, false);
+            }
             PBHelpers.updateListeners(cake);
             return ActionResult.SUCCESS;
         }
@@ -160,13 +164,13 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             return ActionResult.PASS;
         }
         changeState(player, world, pos, state);
-        cake.getBatterList().get(layerIndex).bite(world, pos, state, player, cake, biteSize);
+        ActionResult result = cake.getBatterList().get(layerIndex).bite(world, pos, state, player, cake, biteSize);
         if (cake.getBatterList().size() == 1 && cake.getBatterList().get(layerIndex).isEmpty()) {
             cake.removeAllParts(world);
             world.removeBlock(pos, false);
             world.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);
         }
-        return ActionResult.SUCCESS;
+        return result;
     }
 
     @Override
@@ -205,21 +209,26 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             return ItemActionResult.SUCCESS;
         }
 
-        CakeBatter clickedLayer = getClickedBatter(cake.getBatterList(), hit);
+        CakeBatter clickedBatter = getClickedBatter(cake.getBatterList(), hit);
         CakeTop top = stack.get(PBComponentTypes.TOP);
-        if (stack.isOf(PBItems.FROSTING_BOTTLE) && clickedLayer.getTop().orElse(null) != top) {
-            clickedLayer.withTop(top);
+        if (stack.isOf(PBItems.FROSTING_BOTTLE) && clickedBatter.getTop().orElse(null) != top) {
+            clickedBatter.withTop(top);
             PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.GLASS_BOTTLE));
             PBHelpers.updateListeners(cake);
+            return ItemActionResult.SUCCESS;
+        }
+
+        if (stack.isOf(Items.HONEYCOMB) && clickedBatter.setWaxed(true)) {
+            world.syncWorldEvent(player, WorldEvents.BLOCK_WAXED, pos, 0);
             return ItemActionResult.SUCCESS;
         }
 
         List<CakeFeature> features = stack.getOrDefault(PBComponentTypes.FEATURES, List.of());
         boolean appliedFeature = false;
         for (CakeFeature feature : features) {
-            if (feature.canBeApplied(player, stack, clickedLayer, world, pos, state, cake)) {
-                clickedLayer.withFeature(feature);
-                feature.onPlaced(player, stack, clickedLayer, world, pos, state, cake);
+            if (feature.canBeApplied(player, stack, clickedBatter, world, pos, state, cake)) {
+                clickedBatter.withFeature(feature);
+                feature.onPlaced(player, stack, clickedBatter, world, pos, state, cake);
                 appliedFeature = true;
             }
         }
@@ -249,7 +258,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
 
     public static ItemStack of(List<CakeBatter> batterList) {
         ItemStack stack = new ItemStack(PBBlocks.CAKE);
-        stack.set(PBComponentTypes.BATTER_LIST, batterList);
+        stack.set(PBComponentTypes.BATTER_LIST, batterList.stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
         return stack;
     }
 

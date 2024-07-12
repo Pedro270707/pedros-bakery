@@ -5,6 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -36,7 +37,8 @@ public class CakeFlavor {
         return "flavor.pedrosbakery." + CakeFlavors.REGISTRY.getId(this).getPath();
     }
 
-    public void onTryEat(CakeBatter batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public ActionResult onTryEat(CakeBatter batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        return ActionResult.PASS;
     }
 
     public void bakeTick(CakeBatter batter, World world, BlockPos pos, BlockState state) {

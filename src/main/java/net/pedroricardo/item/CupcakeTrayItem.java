@@ -34,7 +34,7 @@ public class CupcakeTrayItem extends BlockItem implements BatterContainerItem {
         boolean changed = false;
         for (int i = 0; i < batter.stream().size(); i++) {
             if (batter.stream().get(i).isEmpty()) {
-                flavors.set(i, Optional.of(new CakeBatter(0, flavor)));
+                flavors.set(i, Optional.of(new CakeBatter(0, flavor, false)));
                 changed = true;
             }
         }

@@ -216,7 +216,7 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
         if (this.hasWorld()) {
-            componentMapBuilder.add(DataComponentTypes.BLOCK_STATE, new BlockStateComponent(Map.of(BeaterBlock.LIQUID.getName(), this.getWorld().getBlockState(this.getPos()).get(BeaterBlock.LIQUID).asString())));
+            componentMapBuilder.add(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(BeaterBlock.LIQUID, this.getWorld().getBlockState(this.getPos()).get(BeaterBlock.LIQUID)));
         }
     }
 }

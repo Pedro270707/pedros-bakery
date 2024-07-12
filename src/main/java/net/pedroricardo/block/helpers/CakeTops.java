@@ -20,6 +20,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -91,15 +92,16 @@ public class CakeTops {
         }
 
         @Override
-        public void onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
+        public ActionResult onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity cake) {
             if (world instanceof ServerWorld) {
                 RegistryKey<World> registryKey = world.getRegistryKey() == World.END ? World.OVERWORLD : World.END;
                 ServerWorld serverWorld = ((ServerWorld)world).getServer().getWorld(registryKey);
                 if (serverWorld == null) {
-                    return;
+                    return ActionResult.PASS;
                 }
                 player.teleportTo(((EndPortalBlock) Blocks.END_PORTAL).createTeleportTarget(serverWorld, player, pos));
             }
+            return ActionResult.SUCCESS;
         }
     });
     public static final CakeTop RED_MUSHROOM = register("red_mushroom", new CakeTop(SUGAR, Ingredient.ofItems(Items.RED_MUSHROOM), 0xFFC92B29));

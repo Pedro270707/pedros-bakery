@@ -47,14 +47,15 @@ public class CupcakeBlockEntity extends BlockEntity {
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
         if (this.getBatter() != null) {
-            componentMapBuilder.add(PBComponentTypes.BATTER, this.getBatter());
+            componentMapBuilder.add(PBComponentTypes.BATTER, this.getBatter().copy());
         }
     }
 
     @Override
     protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
-        this.setBatter(components.get(PBComponentTypes.BATTER));
+        CakeBatter batter = components.get(PBComponentTypes.BATTER);
+        this.setBatter(batter == null ? null : batter.copy());
     }
 
     public void setBatter(@Nullable CakeBatter batter) {

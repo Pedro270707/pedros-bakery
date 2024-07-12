@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
@@ -19,7 +20,8 @@ public class CakeFeature {
         return "feature.pedrosbakery." + CakeFeatures.REGISTRY.getId(this).getPath();
     }
 
-    public void onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity blockEntity) {
+    public ActionResult onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, PBCakeBlockEntity blockEntity) {
+        return ActionResult.PASS;
     }
 
     public void tick(CakeBatter layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
