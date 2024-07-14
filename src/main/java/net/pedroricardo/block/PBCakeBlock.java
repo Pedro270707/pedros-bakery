@@ -184,7 +184,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         }
 
         if (stack.isOf(PBBlocks.CAKE.asItem())) {
-            List<CakeBatter> batterList = stack.getComponents().getOrDefault(PBComponentTypes.BATTER_LIST, List.of());
+            List<CakeBatter> batterList = stack.getComponents().getOrDefault(PBComponentTypes.BATTER_LIST, List.<CakeBatter>of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList));
             if (batterList.isEmpty()) {
                 return ItemActionResult.FAIL;
             }
