@@ -29,7 +29,7 @@ public class CakeTop {
 
     @NotNull
     public Identifier getCakeTextureLocation() {
-        return CakeTops.REGISTRY.getId(this).withPrefixedPath("textures/entity/blockEntity/top/").withSuffixedPath(".png");
+        return CakeTops.REGISTRY.getId(this).withPrefixedPath("textures/entity/cake/top/").withSuffixedPath(".png");
     }
 
     @NotNull
