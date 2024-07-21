@@ -1,6 +1,5 @@
 package net.pedroricardo.render;
 
-import com.google.common.collect.Maps;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;

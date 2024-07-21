@@ -1,5 +1,6 @@
 package net.pedroricardo.item;
 
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -13,6 +14,7 @@ import java.util.Collections;
 
 public class PBItems {
     public static final Item FROSTING_BOTTLE = register("frosting_bottle", new FrostingBottleItem(new Item.Settings().maxCount(1).recipeRemainder(Items.GLASS_BOTTLE)));
+    public static final Item DONUT = register("donut", new DonutItem(new Item.Settings().food(new FoodComponent.Builder().nutrition(2).saturationModifier(0.1f).build())));
 
     public static Item register(String id, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(PedrosBakery.MOD_ID, id), item);

@@ -34,6 +34,7 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBBlocks.CUPCAKE));
                 entries.add(new ItemStack(PBBlocks.CUPCAKE_TRAY));
                 entries.add(new ItemStack(PBBlocks.COOKIE_JAR));
+                entries.add(new ItemStack(PBItems.DONUT));
                 addBakingTrays(entries);
             }).build();
 

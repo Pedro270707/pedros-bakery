@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "pedrosbakery:item/donut"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "pedrosbakery:frosted": 1
+      },
+      "model": "pedrosbakery:item/frosted_donut"
+    }
+  ]
+}
