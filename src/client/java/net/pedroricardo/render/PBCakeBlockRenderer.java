@@ -1,5 +1,7 @@
 package net.pedroricardo.render;
 
+import com.google.common.collect.Maps;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -9,12 +11,14 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.pedroricardo.PBConfigModel;
 import net.pedroricardo.PedrosBakery;
+import net.pedroricardo.PedrosBakeryClient;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.PBCandleCakeBlock;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
@@ -37,6 +41,8 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     public static void renderCake(PBCakeBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         BlockState state = entity.getCachedState();
         if (state == null || entity.isRemoved()) return; // entity.isRemoved() here seems more like a hack, because it shouldn't even be here if it is removed. TODO: investigate why removed cakes are still rendered
+
+        boolean irisFix = PedrosBakeryClient.isRenderingInWorld && FabricLoader.getInstance().isModLoaded("iris");
         for (CakeBatter layer : entity.getBatterList()) {
             matrices.push();
             matrices.translate(0.5f, 0.5f, 0.5f);
@@ -45,13 +51,24 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
 
             renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getFlavor().getCakeTextureLocation())), light, getBakeTimeOverlay(layer.getBakeTime(), overlay), getBakeTimeColor(layer.getBakeTime(), 0xFFFFFFFF));
             if (layer.getTop().isPresent()) {
-                renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getTop().get().getCakeTextureLocation())), light, overlay, 0xFFFFFFFF);
+                renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(getTopRenderLayer(layer.getTop().get().getCakeTextureLocation())), light, overlay, 0xFFFFFFFF);
             }
-            for (CakeFeature feature : layer.getFeatures()) {
+
+            for (int i = 0; i < layer.getFeatures().size(); i++) {
+                CakeFeature feature = layer.getFeatures().get(i);
                 if (feature == null) continue;
                 CakeFeatureRenderer renderer = CakeFeatureRendererRegistry.get(feature);
                 if (renderer != null) {
+                    if (irisFix) {
+                        matrices.push();
+                        matrices.translate(0.5f, layer.getHeight() / 32.0f, 0.5f);
+                        matrices.scale(1 + 1.0f / 512.0f * (i + 1), 1 + 1.0f / 512.0f * (i + 1), 1 + 1.0f / 512.0f * (i + 1)); // 1 + 0.00390625f * i
+                        matrices.translate(-0.5f, -layer.getHeight() / 32.0f, -0.5f);
+                    }
                     renderer.render(feature, entity, layer, matrices, vertexConsumers, light, overlay);
+                    if (irisFix) {
+                        matrices.pop();
+                    }
                 }
             }
 
@@ -213,5 +230,13 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     @Override
     public boolean rendersOutsideBoundingBox(PBCakeBlockEntity blockEntity) {
         return true;
+    }
+
+    public static RenderLayer getTopRenderLayer(Identifier texture) {
+        if (PedrosBakeryClient.isRenderingInWorld && FabricLoader.getInstance().isModLoaded("iris")) {
+            return RenderLayer.getEntityCutoutNoCullZOffset(texture);
+        } else {
+            return RenderLayer.getEntityCutout(texture);
+        }
     }
 }
