@@ -42,6 +42,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         if (state == null || entity.isRemoved()) return; // entity.isRemoved() here seems more like a hack, because it shouldn't even be here if it is removed. TODO: investigate why removed cakes are still rendered
 
         boolean irisFix = PedrosBakeryClient.isRenderingInWorld && FabricLoader.getInstance().isModLoaded("iris");
+        float height = 0.0f;
         for (CakeBatter layer : entity.getBatterList()) {
             matrices.push();
             matrices.translate(0.5f, 0.5f, 0.5f);
@@ -61,7 +62,8 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
                     if (irisFix) {
                         matrices.push();
                         matrices.translate(0.5f + layer.getBites() / 32.0f, layer.getHeight() / 32.0f, 0.5f);
-                        float scale = 1.0f + 1.0f / 512.0f * (i + 1);
+                        float scaleMultiplier = MinecraftClient.getInstance().player == null ? 1.0f : (float) Math.sqrt(MinecraftClient.getInstance().player.squaredDistanceTo(entity.getPos().getX() + 0.5, entity.getPos().getY() + height + layer.getHeight() / 2.0f, entity.getPos().getZ() + 0.5)) / 4.0f;
+                        float scale = 1.0f + 1.0f / 1024.0f * (i + 1) * scaleMultiplier;
                         matrices.scale(scale, scale, scale);
                         matrices.translate(-0.5f - layer.getBites() / 32.0f, -layer.getHeight() / 32.0f, -0.5f);
                     }
@@ -74,6 +76,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
 
             matrices.pop();
             matrices.translate(0.0f, layer.getHeight() / 16.0f, 0.0f);
+            height += layer.getHeight() / 16.0f;
         }
         if (entity.getCachedState().getBlock() instanceof PBCandleCakeBlock block) {
             MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(block.getCandle().getDefaultState().with(Properties.LIT, entity.getCachedState().get(Properties.LIT)), matrices, vertexConsumers, light, overlay);
