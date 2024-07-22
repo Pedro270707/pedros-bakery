@@ -61,7 +61,8 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
                     if (irisFix) {
                         matrices.push();
                         matrices.translate(0.5f + layer.getBites() / 32.0f, layer.getHeight() / 32.0f, 0.5f);
-                        matrices.scale(1 + 1.0f / 512.0f * (i + 1), 1 + 1.0f / 512.0f * (i + 1), 1 + 1.0f / 512.0f * (i + 1)); // 1 + 0.00390625f * i
+                        float scale = 1.0f + 1.0f / 512.0f * (i + 1);
+                        matrices.scale(scale, scale, scale);
                         matrices.translate(-0.5f - layer.getBites() / 32.0f, -layer.getHeight() / 32.0f, -0.5f);
                     }
                     renderer.render(feature, entity, layer, matrices, vertexConsumers, light, overlay);

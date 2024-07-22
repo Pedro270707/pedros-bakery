@@ -35,6 +35,22 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBBlocks.CUPCAKE_TRAY));
                 entries.add(new ItemStack(PBBlocks.COOKIE_JAR));
                 entries.add(new ItemStack(PBItems.DONUT));
+                entries.add(new ItemStack(PBItems.WHITE_SPRINKLES));
+                entries.add(new ItemStack(PBItems.ORANGE_SPRINKLES));
+                entries.add(new ItemStack(PBItems.MAGENTA_SPRINKLES));
+                entries.add(new ItemStack(PBItems.LIGHT_BLUE_SPRINKLES));
+                entries.add(new ItemStack(PBItems.YELLOW_SPRINKLES));
+                entries.add(new ItemStack(PBItems.LIME_SPRINKLES));
+                entries.add(new ItemStack(PBItems.PINK_SPRINKLES));
+                entries.add(new ItemStack(PBItems.GRAY_SPRINKLES));
+                entries.add(new ItemStack(PBItems.LIGHT_GRAY_SPRINKLES));
+                entries.add(new ItemStack(PBItems.CYAN_SPRINKLES));
+                entries.add(new ItemStack(PBItems.PURPLE_SPRINKLES));
+                entries.add(new ItemStack(PBItems.BLUE_SPRINKLES));
+                entries.add(new ItemStack(PBItems.BROWN_SPRINKLES));
+                entries.add(new ItemStack(PBItems.GREEN_SPRINKLES));
+                entries.add(new ItemStack(PBItems.RED_SPRINKLES));
+                entries.add(new ItemStack(PBItems.BLACK_SPRINKLES));
                 addBakingTrays(entries);
             }).build();
 

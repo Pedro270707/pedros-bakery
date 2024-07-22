@@ -9,10 +9,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.SimpleRegistry;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.helpers.features.BerriesCakeFeature;
-import net.pedroricardo.block.helpers.features.BlockCakeFeature;
-import net.pedroricardo.block.helpers.features.PaintingCakeFeature;
-import net.pedroricardo.block.helpers.features.ParticleCakeFeature;
+import net.pedroricardo.block.helpers.features.*;
 
 public class CakeFeatures {
     public static final RegistryKey<Registry<CakeFeature>> REGISTRY_KEY = RegistryKey.ofRegistry(Identifier.of(PedrosBakery.MOD_ID, "cake_feature"));
@@ -45,6 +42,22 @@ public class CakeFeatures {
     public static final CakeFeature CORNFLOWER = register("cornflower", new BlockCakeFeature(Blocks.CORNFLOWER.getDefaultState()));
     public static final CakeFeature WITHER_ROSE = register("wither_rose", new BlockCakeFeature(Blocks.WITHER_ROSE.getDefaultState()));
     public static final CakeFeature LILY_OF_THE_VALLEY = register("lily_of_the_valley", new BlockCakeFeature(Blocks.LILY_OF_THE_VALLEY.getDefaultState()));
+    public static final CakeFeature WHITE_SPRINKLES = register("white_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature ORANGE_SPRINKLES = register("orange_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature MAGENTA_SPRINKLES = register("magenta_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature LIGHT_BLUE_SPRINKLES = register("light_blue_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature YELLOW_SPRINKLES = register("yellow_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature LIME_SPRINKLES = register("lime_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature PINK_SPRINKLES = register("pink_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature GRAY_SPRINKLES = register("gray_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature LIGHT_GRAY_SPRINKLES = register("light_gray_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature CYAN_SPRINKLES = register("cyan_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature PURPLE_SPRINKLES = register("purple_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature BLUE_SPRINKLES = register("blue_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature BROWN_SPRINKLES = register("brown_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature GREEN_SPRINKLES = register("green_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature RED_SPRINKLES = register("red_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature BLACK_SPRINKLES = register("black_sprinkles", new SprinklesCakeFeature());
 
     public static void init() {
         PedrosBakery.LOGGER.debug("Initializing feature registry");

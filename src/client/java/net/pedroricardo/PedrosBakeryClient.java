@@ -133,5 +133,21 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		CakeFeatureRendererRegistry.register(CakeFeatures.CORNFLOWER, blockOnTopFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.WITHER_ROSE, blockOnTopFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.LILY_OF_THE_VALLEY, blockOnTopFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.WHITE_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.ORANGE_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.MAGENTA_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.LIGHT_BLUE_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.YELLOW_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.LIME_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.PINK_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.GRAY_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.LIGHT_GRAY_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.CYAN_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.PURPLE_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.BLUE_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.BROWN_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.GREEN_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.RED_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.BLACK_SPRINKLES, cakeLayerFeatureRenderer);
 	}
 }
