@@ -10,11 +10,11 @@ import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.helpers.CakeFlavor;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CupcakeTrayBatter;
+import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 public class CupcakeTrayItem extends BlockItem implements BatterContainerItem {
     public CupcakeTrayItem(Block block, Settings settings) {
@@ -30,16 +30,16 @@ public class CupcakeTrayItem extends BlockItem implements BatterContainerItem {
         if (flavor == null || !stack.isOf(this)) return false;
         ItemStack newStack = stack.copyWithCount(1);
         CupcakeTrayBatter batter = stack.getOrDefault(PBComponentTypes.CUPCAKE_TRAY_BATTER, CupcakeTrayBatter.getEmpty());
-        List<Optional<CakeBatter>> flavors = Lists.newArrayList(batter.stream().iterator());
+        List<CakeBatter<FixedBatterSizeContainer>> batterList = Lists.newArrayList(batter.stream().iterator());
         boolean changed = false;
         for (int i = 0; i < batter.stream().size(); i++) {
             if (batter.stream().get(i).isEmpty()) {
-                flavors.set(i, Optional.of(new CakeBatter(0, flavor, false)));
+                batterList.set(i, new CakeBatter<>(0, new FixedBatterSizeContainer(false), flavor, false));
                 changed = true;
             }
         }
         if (changed) {
-            newStack.set(PBComponentTypes.CUPCAKE_TRAY_BATTER, new CupcakeTrayBatter(flavors));
+            newStack.set(PBComponentTypes.CUPCAKE_TRAY_BATTER, new CupcakeTrayBatter(batterList));
             PBHelpers.decrementStackAndAdd(player, stack, newStack, false);
             return true;
         }

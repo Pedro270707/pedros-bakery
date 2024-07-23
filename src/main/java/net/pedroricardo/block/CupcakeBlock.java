@@ -28,7 +28,7 @@ import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.CupcakeBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CakeTop;
-import net.pedroricardo.block.tags.PBTags;
+import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import org.jetbrains.annotations.Nullable;
@@ -79,11 +79,10 @@ public class CupcakeBlock extends BlockWithEntity {
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!(world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake)) return ActionResult.PASS;
-        if ((player.isCreative() || player.canConsume(false)) && cupcake.getBatter() != null) {
-            CakeBatter batter = cupcake.getBatter();
-            ActionResult result = batter.bite(world, pos, state, player, cupcake, batter.getSize());
+        if ((player.isCreative() || player.canConsume(false)) && !cupcake.getBatter().isEmpty()) {
+            CakeBatter<FixedBatterSizeContainer> batter = cupcake.getBatter();
+            ActionResult result = batter.bite(world, pos, state, player, cupcake, 0);
             if (result.isAccepted()) {
-                cupcake.setBatter(null);
                 player.incrementStat(Stats.EAT_CAKE_SLICE);
                 world.emitGameEvent(player, GameEvent.EAT, pos);
                 world.playSound(player, pos, SoundEvents.ENTITY_GENERIC_EAT, SoundCategory.BLOCKS, 1.0f, 0.8f + world.getRandom().nextFloat() * 0.4f);
@@ -99,12 +98,12 @@ public class CupcakeBlock extends BlockWithEntity {
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!(world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake)) return ItemActionResult.FAIL;
         CakeTop top = stack.get(PBComponentTypes.TOP);
-        if (stack.isOf(PBItems.FROSTING_BOTTLE) && cupcake.getBatter() != null && cupcake.getBatter().getTop().orElse(null) != top) {
+        if (stack.isOf(PBItems.FROSTING_BOTTLE) && !cupcake.getBatter().isEmpty() && cupcake.getBatter().getTop().orElse(null) != top) {
             cupcake.getBatter().withTop(top);
             PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.GLASS_BOTTLE));
             return ItemActionResult.SUCCESS;
         }
-        if (stack.isOf(Items.HONEYCOMB) && cupcake.getBatter() != null && cupcake.getBatter().setWaxed(true)) {
+        if (stack.isOf(Items.HONEYCOMB) && !cupcake.getBatter().isEmpty() && cupcake.getBatter().setWaxed(true)) {
             world.syncWorldEvent(player, WorldEvents.BLOCK_WAXED, pos, 0);
             return ItemActionResult.SUCCESS;
         }
@@ -112,9 +111,9 @@ public class CupcakeBlock extends BlockWithEntity {
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
-    public static ItemStack of(CakeBatter batter) {
+    public static ItemStack of(CakeBatter<FixedBatterSizeContainer> batter) {
         ItemStack stack = new ItemStack(PBBlocks.CUPCAKE);
-        stack.set(PBComponentTypes.BATTER, batter == null ? null : batter.copy());
+        stack.set(PBComponentTypes.FIXED_SIZE_BATTER, batter.copy());
         return stack;
     }
 

@@ -37,6 +37,7 @@ import net.pedroricardo.block.entity.PBCakeBlockEntityPart;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CakeFeature;
 import net.pedroricardo.block.helpers.CakeTop;
+import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockPart;
 import net.pedroricardo.block.tags.PBTags;
@@ -134,7 +135,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         float currentHeight = 0;
         int layerIndex = -1;
         for (int i = 0; i < cake.getBatterList().size(); i++) {
-            currentHeight += cake.getBatterList().get(i).getHeight();
+            currentHeight += cake.getBatterList().get(i).getSizeContainer().getHeight();
             if (hit.getSide() == Direction.DOWN ? currentHeight / 16.0f > hit.getPos().subtract(hit.getBlockPos().getX(), hit.getBlockPos().getY(), hit.getBlockPos().getZ()).y : currentHeight / 16.0f >= hit.getPos().subtract(hit.getBlockPos().getX(), hit.getBlockPos().getY(), hit.getBlockPos().getZ()).y) {
                 layerIndex = i;
                 break;
@@ -145,7 +146,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         }
         if (player.isSneaking()) {
             changeState(player, world, pos, state);
-            List<CakeBatter> batterList = Lists.newArrayList();
+            List<CakeBatter<FullBatterSizeContainer>> batterList = Lists.newArrayList();
             while (cake.getBatterList().size() > layerIndex) {
                 batterList.add(cake.getBatterList().remove(layerIndex));
             }
@@ -160,7 +161,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             return ActionResult.PASS;
         }
         float biteSize = player.getUuidAsString().equals("7bb71eb9-b55e-4071-9175-8ec2f42ddd79") ? Math.min(0.125f, PedrosBakery.CONFIG.biteSize()) : PedrosBakery.CONFIG.biteSize();
-        if (!player.isCreative() && cake.getBatterList().size() > layerIndex + 1 && cake.getBatterList().get(layerIndex + 1).getSize() / 2.0f - cake.getBatterList().get(layerIndex + 1).getBites() > cake.getBatterList().get(layerIndex).getSize() / 2.0f - cake.getBatterList().get(layerIndex).getBites() - biteSize) {
+        if (!player.isCreative() && cake.getBatterList().size() > layerIndex + 1 && cake.getBatterList().get(layerIndex + 1).getSizeContainer().getSize() / 2.0f - cake.getBatterList().get(layerIndex + 1).getSizeContainer().getBites() > cake.getBatterList().get(layerIndex).getSizeContainer().getSize() / 2.0f - cake.getBatterList().get(layerIndex).getSizeContainer().getBites() - biteSize) {
             return ActionResult.PASS;
         }
         changeState(player, world, pos, state);
@@ -184,7 +185,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         }
 
         if (stack.isOf(PBBlocks.CAKE.asItem())) {
-            List<CakeBatter> batterList = stack.getComponents().getOrDefault(PBComponentTypes.BATTER_LIST, List.<CakeBatter>of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList));
+            List<CakeBatter<FullBatterSizeContainer>> batterList = stack.getComponents().getOrDefault(PBComponentTypes.BATTER_LIST, List.<CakeBatter<FullBatterSizeContainer>>of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList));
             if (batterList.isEmpty()) {
                 return ItemActionResult.FAIL;
             }
@@ -200,7 +201,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
 
         Item item = stack.getItem();
         Block block = Block.getBlockFromItem(item);
-        if (stack.isIn(ItemTags.CANDLES) && cake.getBatterList().getLast().getBites() == 0 && block instanceof CandleBlock candleBlock) {
+        if (stack.isIn(ItemTags.CANDLES) && cake.getBatterList().getLast().getSizeContainer().getBites() == 0 && block instanceof CandleBlock candleBlock) {
             stack.decrementUnlessCreative(1, player);
             world.playSound(null, pos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0f, 1.0f);
             changeState(player, world, pos, PBCandleCakeBlock.getCandleCakeFromCandle(candleBlock).with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING)));
@@ -209,7 +210,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             return ItemActionResult.SUCCESS;
         }
 
-        CakeBatter clickedBatter = getClickedBatter(cake.getBatterList(), hit);
+        CakeBatter<FullBatterSizeContainer> clickedBatter = getClickedBatter(cake.getBatterList(), hit);
         CakeTop top = stack.get(PBComponentTypes.TOP);
         if (stack.isOf(PBItems.FROSTING_BOTTLE) && clickedBatter.getTop().orElse(null) != top) {
             clickedBatter.withTop(top);
@@ -240,11 +241,11 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
-    private static CakeBatter getClickedBatter(List<CakeBatter> batterList, BlockHitResult hit) {
+    private static CakeBatter<FullBatterSizeContainer> getClickedBatter(List<CakeBatter<FullBatterSizeContainer>> batterList, BlockHitResult hit) {
         float currentHeight = 0;
         int layerIndex = -1;
         for (int i = 0; i < batterList.size(); i++) {
-            currentHeight += batterList.get(i).getHeight();
+            currentHeight += batterList.get(i).getSizeContainer().getHeight();
             if (hit.getSide() == Direction.DOWN ? currentHeight / 16.0f > hit.getPos().subtract(hit.getBlockPos().getX(), hit.getBlockPos().getY(), hit.getBlockPos().getZ()).y : currentHeight / 16.0f >= hit.getPos().subtract(hit.getBlockPos().getX(), hit.getBlockPos().getY(), hit.getBlockPos().getZ()).y) {
                 layerIndex = i;
                 break;
@@ -256,19 +257,19 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         return batterList.get(layerIndex);
     }
 
-    public static ItemStack of(List<CakeBatter> batterList) {
+    public static ItemStack of(List<CakeBatter<FullBatterSizeContainer>> batterList) {
         ItemStack stack = new ItemStack(PBBlocks.CAKE);
         stack.set(PBComponentTypes.BATTER_LIST, batterList.stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
         return stack;
     }
 
-    public static boolean tryAddBatter(PBCakeBlockEntity cake, List<CakeBatter> batterList) {
+    public static boolean tryAddBatter(PBCakeBlockEntity cake, List<CakeBatter<FullBatterSizeContainer>> batterList) {
         if (batterList.isEmpty()) {
             return true;
         }
 
-        if (batterList.getFirst().getSize() / 2.0f - batterList.getFirst().getBites() <= cake.getBatterList().getLast().getSize() / 2.0f - cake.getBatterList().getLast().getBites()) {
-            float batterListHeight = (float) batterList.stream().mapToDouble(CakeBatter::getHeight).sum();
+        if (batterList.getFirst().getSizeContainer().getSize() / 2.0f - batterList.getFirst().getSizeContainer().getBites() <= cake.getBatterList().getLast().getSizeContainer().getSize() / 2.0f - cake.getBatterList().getLast().getSizeContainer().getBites()) {
+            float batterListHeight = (float) batterList.stream().mapToDouble((batter) -> batter.getSizeContainer().getHeight()).sum();
             Direction direction = cake.getWorld().getBlockState(cake.getPos()).getOrEmpty(Properties.HORIZONTAL_FACING).orElse(Direction.NORTH);
             return cake.getHeight() + batterListHeight <= PedrosBakery.CONFIG.maxCakeHeight() && (!cake.hasWorld() || cake.getWorld().doesNotIntersectEntities(null, PBCakeBlockEntity.toShape(batterList, direction).offset(cake.getPos().getX(), cake.getPos().getY() + cake.getHeight() / 16.0f, cake.getPos().getZ()))) && cake.getBatterList().addAll(batterList);
         }
@@ -292,7 +293,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
             return of(cake.getBatterList());
         }
-        return of(Collections.singletonList(CakeBatter.getDefault()));
+        return of(Collections.singletonList(CakeBatter.getFullSizeDefault()));
     }
 
     @Override

@@ -15,10 +15,10 @@ import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.CupcakeTrayBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CupcakeTrayBatter;
+import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
 import net.pedroricardo.model.PBModelLayers;
 
 import java.util.List;
-import java.util.Optional;
 
 public class CupcakeTrayBlockRenderer implements BlockEntityRenderer<CupcakeTrayBlockEntity> {
     public static final CupcakeTrayBlockEntity RENDER_CUPCAKE_TRAY = new CupcakeTrayBlockEntity(BlockPos.ORIGIN, PBBlocks.CUPCAKE_TRAY.getDefaultState());
@@ -49,13 +49,13 @@ public class CupcakeTrayBlockRenderer implements BlockEntityRenderer<CupcakeTray
         matrices.pop();
 
         CupcakeTrayBatter trayBatter = entity.getBatter();
-        List<Optional<CakeBatter>> batterList = trayBatter.stream();
+        List<CakeBatter<FixedBatterSizeContainer>> batterList = trayBatter.stream();
 
         for (int i = 0; i < batterList.size(); i++) {
             if (batterList.get(i).isEmpty()) continue;
             float x = 3.0f + ((i >> 1 & 1) == 1 ? 6 : 0);
             float y = 3.0f + ((i & 1) == 1 ? 6 : 0);
-            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(batterList.get(i).get().getFlavor().getCupcakeTextureLocation())), x, y, 4.0f, 4.0f, 4.0f, 4.0f, 0.0f, 8.0f, 4.0f, 16.0f, 16.0f, light, PBCakeBlockRenderer.getBakeTimeOverlay(batterList.get(i).get().getBakeTime(), overlay), PBCakeBlockRenderer.getBakeTimeColor(batterList.get(i).get().getBakeTime(), 0xFFFFFFFF));
+            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(batterList.get(i).getFlavor().getCupcakeTextureLocation())), x, y, 4.0f, 4.0f, 4.0f, 4.0f, 0.0f, 8.0f, 4.0f, 16.0f, 16.0f, light, PBCakeBlockRenderer.getBakeTimeOverlay(batterList.get(i).getBakeTime(), overlay), PBCakeBlockRenderer.getBakeTimeColor(batterList.get(i).getBakeTime(), 0xFFFFFFFF));
         }
     }
 }

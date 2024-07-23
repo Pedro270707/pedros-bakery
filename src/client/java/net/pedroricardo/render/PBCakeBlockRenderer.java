@@ -23,6 +23,7 @@ import net.pedroricardo.block.PBCandleCakeBlock;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CakeFeature;
+import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
 import net.pedroricardo.registry.CakeFeatureRenderer;
 import net.pedroricardo.registry.CakeFeatureRendererRegistry;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +44,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
 
         boolean irisFix = PedrosBakeryClient.isRenderingInWorld && FabricLoader.getInstance().isModLoaded("iris");
         float height = 0.0f;
-        for (CakeBatter layer : entity.getBatterList()) {
+        for (CakeBatter<FullBatterSizeContainer> layer : entity.getBatterList()) {
             matrices.push();
             matrices.translate(0.5f, 0.5f, 0.5f);
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(state.get(Properties.HORIZONTAL_FACING).asRotation()));
@@ -61,11 +62,11 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
                 if (renderer != null) {
                     if (irisFix) {
                         matrices.push();
-                        matrices.translate(0.5f + layer.getBites() / 32.0f, layer.getHeight() / 32.0f, 0.5f);
-                        float scaleMultiplier = MinecraftClient.getInstance().cameraEntity == null || !entity.hasWorld() ? 1.0f : (float) Math.sqrt(MinecraftClient.getInstance().cameraEntity.squaredDistanceTo(entity.getPos().getX() + 0.5, entity.getPos().getY() + height + layer.getHeight() / 2.0f, entity.getPos().getZ() + 0.5));
+                        matrices.translate(0.5f + layer.getSizeContainer().getBites() / 32.0f, layer.getSizeContainer().getHeight() / 32.0f, 0.5f);
+                        float scaleMultiplier = MinecraftClient.getInstance().cameraEntity == null || !entity.hasWorld() ? 1.0f : (float) Math.sqrt(MinecraftClient.getInstance().cameraEntity.squaredDistanceTo(entity.getPos().getX() + 0.5, entity.getPos().getY() + height + layer.getSizeContainer().getHeight() / 2.0f, entity.getPos().getZ() + 0.5));
                         float scale = 1.0f + 1.0f / 1024.0f * (i + 1) * scaleMultiplier;
                         matrices.scale(scale, scale, scale);
-                        matrices.translate(-0.5f - layer.getBites() / 32.0f, -layer.getHeight() / 32.0f, -0.5f);
+                        matrices.translate(-0.5f - layer.getSizeContainer().getBites() / 32.0f, -layer.getSizeContainer().getHeight() / 32.0f, -0.5f);
                     }
                     renderer.render(feature, entity, layer, matrices, vertexConsumers, light, overlay);
                     if (irisFix) {
@@ -75,27 +76,27 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
             }
 
             matrices.pop();
-            matrices.translate(0.0f, layer.getHeight() / 16.0f, 0.0f);
-            height += layer.getHeight() / 16.0f;
+            matrices.translate(0.0f, layer.getSizeContainer().getHeight() / 16.0f, 0.0f);
+            height += layer.getSizeContainer().getHeight() / 16.0f;
         }
         if (entity.getCachedState().getBlock() instanceof PBCandleCakeBlock block) {
             MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(block.getCandle().getDefaultState().with(Properties.LIT, entity.getCachedState().get(Properties.LIT)), matrices, vertexConsumers, light, overlay);
         }
     }
 
-    public static void renderCakeBatter(List<CakeBatter> batterList, CakeBatter batter, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+    public static void renderCakeBatter(List<CakeBatter<FullBatterSizeContainer>> batterList, CakeBatter<FullBatterSizeContainer> batter, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
         renderCakeBatter(batterList, batter, matrices, vertexConsumer, light, overlay, color, PedrosBakery.CONFIG.cakeRenderQuality());
     }
 
-    public static void renderCakeBatter(List<CakeBatter> batterList, CakeBatter batter, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color, PBConfigModel.CakeRenderQuality quality) {
-        float size = batter.getSize();
-        float height = batter.getHeight();
-        float bites = batter.getBites();
+    public static void renderCakeBatter(List<CakeBatter<FullBatterSizeContainer>> batterList, CakeBatter<FullBatterSizeContainer> batter, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color, PBConfigModel.CakeRenderQuality quality) {
+        float size = batter.getSizeContainer().getSize();
+        float height = batter.getSizeContainer().getHeight();
+        float bites = batter.getSizeContainer().getBites();
 
         float length = size - bites;
         if (length == 0) return;
-        @Nullable CakeBatter layerOnTop = null;
-        @Nullable CakeBatter layerUnder = null;
+        @Nullable CakeBatter<FullBatterSizeContainer> layerOnTop = null;
+        @Nullable CakeBatter<FullBatterSizeContainer> layerUnder = null;
         int index = -1;
         for (int i = 0; i < batterList.size(); i++) {
             if (batterList.get(i) == batter) {
@@ -174,7 +175,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         }
 
 
-        if (layerOnTop == null || layerOnTop.getSize() < batter.getSize() || (layerOnTop.getSize() / 2.0f) - layerOnTop.getBites() < (batter.getSize() / 2.0f) - batter.getBites()) {
+        if (layerOnTop == null || layerOnTop.getSizeContainer().getSize() < batter.getSizeContainer().getSize() || (layerOnTop.getSizeContainer().getSize() / 2.0f) - layerOnTop.getSizeContainer().getBites() < (batter.getSizeContainer().getSize() / 2.0f) - batter.getSizeContainer().getBites()) {
             PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, (16.0f + Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
             if (quality.renderTopBorder()) {
                 PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, 8.0f - size / 2.0f, height, length, size, 16.0f + halfSizeDifference + bites, 80.0f, light, overlay, color); // Top
@@ -188,7 +189,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
             }
         }
 
-        if (layerUnder == null || layerUnder.getSize() < batter.getSize() || (layerUnder.getSize() / 2.0f) - layerUnder.getBites() < (batter.getSize() / 2.0f) - batter.getBites()) {
+        if (layerUnder == null || layerUnder.getSizeContainer().getSize() < batter.getSizeContainer().getSize() || (layerUnder.getSizeContainer().getSize() / 2.0f) - layerUnder.getSizeContainer().getBites() < (batter.getSizeContainer().getSize() / 2.0f) - batter.getSizeContainer().getBites()) {
             PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 32.0f + (Math.round(8.0f - size / 2.0f)) + bites, Math.round(8.0f - size / 2.0f), light, overlay, color);
             if (quality.renderBottomBorder()) {
                 PBRenderHelper.createFace(Direction.DOWN, matrices, vertexConsumer, 8.0f - size / 2.0f + bites, -8.0f - size / 2.0f, 0.0f, length, size, 64.0f + halfSizeDifference + bites, 80.0f, light, overlay, color); // Top

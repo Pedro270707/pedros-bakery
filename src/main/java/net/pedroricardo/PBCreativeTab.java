@@ -20,7 +20,7 @@ import java.util.Collections;
 
 public class PBCreativeTab {
     public static final ItemGroup ITEM_GROUP = FabricItemGroup.builder().icon(() -> {
-        CakeBatter layer = CakeBatter.getDefault();
+        CakeBatter layer = CakeBatter.getFullSizeDefault();
         layer.withBakeTime(PedrosBakery.CONFIG.ticksUntilBaked());
         layer.withTop(CakeTops.SUGAR);
         layer.withFeature(CakeFeatures.SWEET_BERRIES);

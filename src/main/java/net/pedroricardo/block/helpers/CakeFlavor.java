@@ -37,14 +37,14 @@ public class CakeFlavor {
         return "flavor.pedrosbakery." + CakeFlavors.REGISTRY.getId(this).getPath();
     }
 
-    public ActionResult onTryEat(CakeBatter batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public ActionResult onTryEat(CakeBatter<?> batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
         return ActionResult.PASS;
     }
 
-    public void bakeTick(CakeBatter batter, World world, BlockPos pos, BlockState state) {
+    public void bakeTick(CakeBatter<?> batter, World world, BlockPos pos, BlockState state) {
     }
 
-    public void tick(CakeBatter layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void tick(CakeBatter<?> layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
     }
 
     public final CakeFlavor base() {

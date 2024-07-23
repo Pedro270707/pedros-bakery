@@ -21,6 +21,7 @@ import net.pedroricardo.block.entity.BakingTrayBlockEntity;
 import net.pedroricardo.block.entity.BakingTrayBlockEntityPart;
 import net.pedroricardo.block.entity.PBBlockEntities;
 import net.pedroricardo.block.helpers.CakeBatter;
+import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,8 +72,8 @@ public class BakingTrayBlock extends BlockWithEntity implements MultipartBlock<B
             return ActionResult.PASS;
         }
         if (!tray.getCakeBatter().isEmpty() && tray.getCakeBatter().getBakeTime() >= PedrosBakery.CONFIG.ticksUntilBaked()) {
-            player.giveItemStack(PBCakeBlock.of(Collections.singletonList(tray.getCakeBatter().withSize(tray.getSize()))));
-            tray.setCakeBatter(CakeBatter.getEmpty());
+            player.giveItemStack(PBCakeBlock.of(Collections.singletonList(tray.getCakeBatter().copy(new FullBatterSizeContainer(tray.getSize(), tray.getCakeBatter().getSizeContainer().getHeight())))));
+            tray.setCakeBatter(CakeBatter.getHeightOnlyEmpty());
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
             world.updateListeners(pos, state, state, Block.NOTIFY_ALL_AND_REDRAW);
             return ActionResult.success(world.isClient());

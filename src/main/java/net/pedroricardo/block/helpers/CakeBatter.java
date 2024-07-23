@@ -23,6 +23,10 @@ import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
+import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
+import net.pedroricardo.block.helpers.size.BatterSizeContainer;
+import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
+import net.pedroricardo.block.helpers.size.HeightOnlyBatterSizeContainer;
 import net.pedroricardo.block.tags.PBTags;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
@@ -30,80 +34,81 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CakeBatter {
+public class CakeBatter<S extends BatterSizeContainer> {
     private int bakeTime;
-    private float height;
-    private float bites;
-    private float size;
+    private S sizeContainer;
     private CakeFlavor flavor;
     private Optional<CakeTop> top;
     private Map<CakeFeature, NbtCompound> features;
     private boolean waxed;
 
-    public CakeBatter(int bakeTime, CakeFlavor cakeFlavor, boolean waxed) {
-        this(bakeTime, 8.0f, cakeFlavor, waxed);
+    public CakeBatter(int bakeTime, S sizeContainer, Optional<CakeTop> top, CakeFlavor cakeFlavor, boolean waxed) {
+        this(bakeTime, sizeContainer, cakeFlavor, top, Maps.newHashMap(), waxed);
     }
 
-    public CakeBatter(int bakeTime, Optional<CakeTop> top, CakeFlavor cakeFlavor, boolean waxed) {
-        this(bakeTime, 8.0f, 0.0f, 14.0f, cakeFlavor, top, Maps.newHashMap(), waxed);
+    public CakeBatter(int bakeTime, S sizeContainer, CakeFlavor cakeFlavor, boolean waxed) {
+        this(bakeTime, sizeContainer, cakeFlavor, Optional.empty(), Maps.newHashMap(), waxed);
     }
 
-    public CakeBatter(int bakeTime, float height, CakeFlavor cakeFlavor, boolean waxed) {
-        this(bakeTime, height, 0.0f, 14.0f, cakeFlavor, Optional.empty(), Maps.newHashMap(), waxed);
-    }
-
-    public CakeBatter(int bakeTime, float height, float bites, float size, CakeFlavor flavor, Optional<CakeTop> top, Map<CakeFeature, NbtCompound> features, boolean waxed) {
+    public CakeBatter(int bakeTime, S sizeContainer, CakeFlavor flavor, Optional<CakeTop> top, Map<CakeFeature, NbtCompound> features, boolean waxed) {
         this.bakeTime = bakeTime;
-        this.height = height;
-        this.bites = bites;
-        this.size = size;
+        this.sizeContainer = sizeContainer;
         this.flavor = flavor;
         this.top = top;
         this.features = features;
         this.waxed = waxed;
     }
 
-    private static final CakeBatter DEFAULT = new CakeBatter(0, 8, 0, 14, CakeFlavors.VANILLA, Optional.empty(), Map.of(), false);
-    private static final CakeBatter EMPTY = new CakeBatter(0, 0, 0, 0, CakeFlavors.VANILLA, Optional.empty(), Map.of(), false);
-
-    public static final Codec<CakeBatter> SIMPLE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                    Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
-                    CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.getDefaultEntry().get().value()).forGetter(CakeBatter::getFlavor),
-                    Codec.BOOL.fieldOf("is_waxed").orElse(false).forGetter(CakeBatter::isWaxed))
-            .apply(instance, CakeBatter::new));
-    public static final Codec<CakeBatter> WITH_TOP_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                    Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
+    public static final Codec<CakeBatter<FixedBatterSizeContainer>> FIXED_SIZE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
+                    FixedBatterSizeContainer.CODEC.fieldOf("batter_size").orElse(new FixedBatterSizeContainer()).forGetter(CakeBatter::getSizeContainer),
                     CakeTops.REGISTRY.getCodec().optionalFieldOf("top").forGetter(CakeBatter::getTop),
                     CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.getDefaultEntry().get().value()).forGetter(CakeBatter::getFlavor),
                     Codec.BOOL.fieldOf("is_waxed").orElse(false).forGetter(CakeBatter::isWaxed))
             .apply(instance, CakeBatter::new));
-    public static final Codec<CakeBatter> WITH_HEIGHT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                    Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
-                    Codec.FLOAT.fieldOf("height").orElse(8.0f).forGetter(CakeBatter::getHeight),
+    public static final Codec<CakeBatter<HeightOnlyBatterSizeContainer>> WITH_HEIGHT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
+                    HeightOnlyBatterSizeContainer.CODEC.fieldOf("batter_size").orElse(new HeightOnlyBatterSizeContainer()).forGetter(CakeBatter::getSizeContainer),
                     CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.getDefaultEntry().get().value()).forGetter(CakeBatter::getFlavor),
                     Codec.BOOL.fieldOf("is_waxed").orElse(false).forGetter(CakeBatter::isWaxed))
             .apply(instance, CakeBatter::new));
-    public static final Codec<CakeBatter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final Codec<CakeBatter<FullBatterSizeContainer>> FULL_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
-                    Codec.FLOAT.fieldOf("height").orElse(8.0f).forGetter(CakeBatter::getHeight),
-                    Codec.FLOAT.fieldOf("bites").orElse(0.0f).forGetter(CakeBatter::getBites),
-                    Codec.FLOAT.fieldOf("size").orElse(14.0f).forGetter(CakeBatter::getSize),
+                    FullBatterSizeContainer.CODEC.fieldOf("batter_size").orElse(new FullBatterSizeContainer()).forGetter(CakeBatter::getSizeContainer),
                     CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.getDefaultEntry().get().value()).forGetter(CakeBatter::getFlavor),
                     CakeTops.REGISTRY.getCodec().optionalFieldOf("top").forGetter(CakeBatter::getTop),
                     Codec.unboundedMap(CakeFeatures.REGISTRY.getCodec(), NbtCompound.CODEC).fieldOf("features").orElse(Map.of()).forGetter(CakeBatter::getFeatureMap),
                     Codec.BOOL.fieldOf("is_waxed").orElse(false).forGetter(CakeBatter::isWaxed))
             .apply(instance, CakeBatter::new));
-    public static final PacketCodec<RegistryByteBuf, CakeBatter> PACKET_CODEC = PBHelpers.tuplePacketCodec(PacketCodecs.VAR_INT, CakeBatter::getBakeTime, PacketCodecs.FLOAT, CakeBatter::getHeight, PacketCodecs.FLOAT, CakeBatter::getBites, PacketCodecs.FLOAT, CakeBatter::getSize, PacketCodecs.registryValue(CakeFlavors.REGISTRY_KEY), CakeBatter::getFlavor, PacketCodecs.optional(PacketCodecs.registryValue(CakeTops.REGISTRY_KEY)), CakeBatter::getTop, PacketCodecs.map(Object2ObjectOpenHashMap::new, PacketCodecs.registryValue(CakeFeatures.REGISTRY_KEY), PacketCodecs.NBT_COMPOUND), CakeBatter::getFeatureMap, PacketCodecs.BOOL, CakeBatter::isWaxed, CakeBatter::new);
+    public static final PacketCodec<RegistryByteBuf, CakeBatter<FixedBatterSizeContainer>> FIXED_SIZE_PACKET_CODEC = PacketCodec.tuple(PacketCodecs.VAR_INT, CakeBatter::getBakeTime, FixedBatterSizeContainer.PACKET_CODEC, CakeBatter::getSizeContainer, PacketCodecs.registryValue(CakeFlavors.REGISTRY_KEY), CakeBatter::getFlavor, PacketCodecs.optional(PacketCodecs.registryValue(CakeTops.REGISTRY_KEY)), CakeBatter::getTop, PacketCodecs.map(Object2ObjectOpenHashMap::new, PacketCodecs.registryValue(CakeFeatures.REGISTRY_KEY), PacketCodecs.NBT_COMPOUND), CakeBatter::getFeatureMap, PacketCodecs.BOOL, CakeBatter::isWaxed, CakeBatter::new);
+    public static final PacketCodec<RegistryByteBuf, CakeBatter<HeightOnlyBatterSizeContainer>> HEIGHT_ONLY_PACKET_CODEC = PacketCodec.tuple(PacketCodecs.VAR_INT, CakeBatter::getBakeTime, HeightOnlyBatterSizeContainer.PACKET_CODEC, CakeBatter::getSizeContainer, PacketCodecs.registryValue(CakeFlavors.REGISTRY_KEY), CakeBatter::getFlavor, PacketCodecs.optional(PacketCodecs.registryValue(CakeTops.REGISTRY_KEY)), CakeBatter::getTop, PacketCodecs.map(Object2ObjectOpenHashMap::new, PacketCodecs.registryValue(CakeFeatures.REGISTRY_KEY), PacketCodecs.NBT_COMPOUND), CakeBatter::getFeatureMap, PacketCodecs.BOOL, CakeBatter::isWaxed, CakeBatter::new);
+    public static final PacketCodec<RegistryByteBuf, CakeBatter<FullBatterSizeContainer>> FULL_PACKET_CODEC = PacketCodec.tuple(PacketCodecs.VAR_INT, CakeBatter::getBakeTime, FullBatterSizeContainer.PACKET_CODEC, CakeBatter::getSizeContainer, PacketCodecs.registryValue(CakeFlavors.REGISTRY_KEY), CakeBatter::getFlavor, PacketCodecs.optional(PacketCodecs.registryValue(CakeTops.REGISTRY_KEY)), CakeBatter::getTop, PacketCodecs.map(Object2ObjectOpenHashMap::new, PacketCodecs.registryValue(CakeFeatures.REGISTRY_KEY), PacketCodecs.NBT_COMPOUND), CakeBatter::getFeatureMap, PacketCodecs.BOOL, CakeBatter::isWaxed, CakeBatter::new);
 
-    public static CakeBatter getDefault() {
-        return DEFAULT.copy();
+    public static CakeBatter<FixedBatterSizeContainer> getFixedSizeDefault() {
+        return new CakeBatter<>(0, new FixedBatterSizeContainer(false), CakeFlavors.VANILLA, Optional.empty(), Map.of(), false);
     }
 
-    public static CakeBatter getEmpty() {
-        return EMPTY.copy();
+    public static CakeBatter<HeightOnlyBatterSizeContainer> getHeightOnlyDefault() {
+        return new CakeBatter<>(0, new HeightOnlyBatterSizeContainer(8.0f), CakeFlavors.VANILLA, Optional.empty(), Map.of(), false);
     }
 
-    public NbtCompound toNbt(NbtCompound nbt, Codec<CakeBatter> codec) {
+    public static CakeBatter<FullBatterSizeContainer> getFullSizeDefault() {
+        return new CakeBatter<>(0, new FullBatterSizeContainer(14.0f, 8.0f), CakeFlavors.VANILLA, Optional.empty(), Map.of(), false);
+    }
+
+    public static CakeBatter<FixedBatterSizeContainer> getFixedSizeEmpty() {
+        return new CakeBatter<>(0, new FixedBatterSizeContainer(true), CakeFlavors.VANILLA, Optional.empty(), Map.of(), false);
+    }
+
+    public static CakeBatter<HeightOnlyBatterSizeContainer> getHeightOnlyEmpty() {
+        return new CakeBatter<>(0, new HeightOnlyBatterSizeContainer(), CakeFlavors.VANILLA, Optional.empty(), Map.of(), false);
+    }
+
+    public static CakeBatter<FullBatterSizeContainer> getFullSizeEmpty() {
+        return new CakeBatter<>(0, new FullBatterSizeContainer(), CakeFlavors.VANILLA, Optional.empty(), Map.of(), false);
+    }
+
+    public NbtCompound toNbt(NbtCompound nbt, Codec<CakeBatter<S>> codec) {
         NbtElement result = codec.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
 
         if (result instanceof NbtCompound compound) {
@@ -112,25 +117,21 @@ public class CakeBatter {
         return nbt;
     }
 
-    public static CakeBatter fromNbt(@Nullable NbtCompound nbt) {
+    public static <S extends BatterSizeContainer> CakeBatter<S> fromNbt(@Nullable NbtCompound nbt, Codec<CakeBatter<S>> codec, CakeBatter<S> defaultValue) {
         if (nbt == null) {
-            return DEFAULT;
+            return defaultValue;
         }
-        DataResult<CakeBatter> dataResult = CODEC.parse(NbtOps.INSTANCE, nbt);
-        return dataResult.result().orElse(DEFAULT);
+        DataResult<CakeBatter<S>> dataResult = codec.parse(NbtOps.INSTANCE, nbt);
+        return dataResult.result().orElse(defaultValue);
     }
 
-    public static List<CakeBatter> listFrom(@Nullable NbtCompound nbt) {
+    public static List<CakeBatter<FullBatterSizeContainer>> listFrom(@Nullable NbtCompound nbt) {
         if (nbt == null || !nbt.contains("batter", NbtElement.LIST_TYPE)) {
             return Collections.emptyList();
         }
         return nbt.getList("batter", NbtList.COMPOUND_TYPE).stream()
                 .filter(layer -> layer.getType() == NbtElement.COMPOUND_TYPE)
-                .map(layer -> CakeBatter.fromNbt((NbtCompound) layer)).collect(Collectors.toCollection(Lists::newArrayList));
-    }
-
-    public float getBites() {
-        return this.bites;
+                .map(layer -> CakeBatter.fromNbt((NbtCompound) layer, FULL_CODEC, getFullSizeDefault())).collect(Collectors.toCollection(Lists::newArrayList));
     }
 
     public ActionResult bite(World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity, float biteSize) {
@@ -147,15 +148,14 @@ public class CakeBatter {
         if (this.getFlavor().isIn(PBTags.Flavors.INEDIBLE) || (this.getTop().isPresent() && this.getTop().get().isIn(PBTags.Tops.INEDIBLE)) || this.getFeatures().stream().anyMatch(feature -> feature.isIn(PBTags.Features.INEDIBLE))) {
             return tryEatFlavor.isAccepted() || tryEatTop.isAccepted() || tryEatFeature.isAccepted() ? ActionResult.SUCCESS : ActionResult.PASS;
         }
-        this.bites += biteSize;
-        if (this.bites > this.getSize()) {
-            this.bites = this.getSize();
+        if (this.getSizeContainer().bite(world, pos, state, player, blockEntity, biteSize)) {
+            player.incrementStat(Stats.EAT_CAKE_SLICE);
+            world.emitGameEvent(player, GameEvent.EAT, pos);
+            player.getHungerManager().add(PedrosBakery.CONFIG.cakeBiteFood(), PedrosBakery.CONFIG.cakeBiteSaturation());
+            PBHelpers.updateListeners(blockEntity);
+            return ActionResult.SUCCESS;
         }
-        player.incrementStat(Stats.EAT_CAKE_SLICE);
-        world.emitGameEvent(player, GameEvent.EAT, pos);
-        player.getHungerManager().add(PedrosBakery.CONFIG.cakeBiteFood(), PedrosBakery.CONFIG.cakeBiteSaturation());
-        PBHelpers.updateListeners(blockEntity);
-        return ActionResult.SUCCESS;
+        return ActionResult.FAIL;
     }
 
     public void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
@@ -164,7 +164,7 @@ public class CakeBatter {
             this.getTop().get().tick(this, world, pos, state, blockEntity);
         }
         for (CakeFeature feature : this.getFeatures()) {
-            feature.tick(this, world, pos, state, blockEntity);
+            feature.tick((CakeBatter<FullBatterSizeContainer>) this, world, pos, state, blockEntity);
         }
     }
 
@@ -172,26 +172,17 @@ public class CakeBatter {
         return this.bakeTime;
     }
 
-    public CakeBatter withBakeTime(int bakeTime) {
+    public CakeBatter<S> withBakeTime(int bakeTime) {
         this.bakeTime = bakeTime;
         return this;
     }
 
-    public float getHeight() {
-        return this.height;
+    public S getSizeContainer() {
+        return this.sizeContainer;
     }
 
-    public CakeBatter withHeight(float height) {
-        this.height = height;
-        return this;
-    }
-
-    public float getSize() {
-        return this.size;
-    }
-
-    public CakeBatter withSize(float size) {
-        this.size = size;
+    public CakeBatter<S> withSizeContainer(S sizeContainer) {
+        this.sizeContainer = sizeContainer;
         return this;
     }
 
@@ -199,7 +190,7 @@ public class CakeBatter {
         return this.flavor;
     }
 
-    public CakeBatter withFlavor(CakeFlavor flavor) {
+    public CakeBatter<S> withFlavor(CakeFlavor flavor) {
         this.flavor = flavor;
         return this;
     }
@@ -208,7 +199,7 @@ public class CakeBatter {
         return this.top;
     }
 
-    public CakeBatter withTop(@Nullable CakeTop top) {
+    public CakeBatter<S> withTop(@Nullable CakeTop top) {
         this.top = Optional.ofNullable(top);
         return this;
     }
@@ -221,23 +212,23 @@ public class CakeBatter {
         return this.features;
     }
 
-    public CakeBatter withFeatures(Map<CakeFeature, NbtCompound> features) {
+    public CakeBatter<S> withFeatures(Map<CakeFeature, NbtCompound> features) {
         this.features = features;
         return this;
     }
 
-    public CakeBatter withFeature(CakeFeature feature, NbtCompound nbt) {
+    public CakeBatter<S> withFeature(CakeFeature feature, NbtCompound nbt) {
         Map<CakeFeature, NbtCompound> features = Maps.newHashMap(this.getFeatureMap());
         features.put(feature, nbt);
         return this.withFeatures(features);
     }
 
-    public CakeBatter withFeature(CakeFeature feature) {
+    public CakeBatter<S> withFeature(CakeFeature feature) {
         return this.withFeature(feature, new NbtCompound());
     }
 
     public boolean isEmpty() {
-        return this.getHeight() == 0 || this.getSize() == 0 || this.getBites() >= this.getSize();
+        return this.getSizeContainer().isEmpty();
     }
 
     public boolean isWaxed() {
@@ -263,16 +254,20 @@ public class CakeBatter {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CakeBatter layer = (CakeBatter) o;
-        return this.getBakeTime() == layer.getBakeTime() && this.getHeight() == layer.getHeight() && this.getBites() == layer.getBites() && this.getSize() == layer.getSize() && this.getFlavor() == layer.getFlavor() && Objects.equals(this.getTop(), layer.getTop()) && Objects.equals(this.getFeatureMap(), layer.getFeatureMap()) && this.isWaxed() == layer.isWaxed();
+        CakeBatter<?> batter = (CakeBatter<?>) o;
+        return getBakeTime() == batter.getBakeTime() && isWaxed() == batter.isWaxed() && Objects.equals(getSizeContainer(), batter.getSizeContainer()) && Objects.equals(getFlavor(), batter.getFlavor()) && Objects.equals(getTop(), batter.getTop()) && Objects.equals(getFeatures(), batter.getFeatures());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getBakeTime(), this.getHeight(), this.getBites(), this.getSize(), this.getFlavor(), this.getTop(), this.getFeatureMap(), this.isWaxed());
+        return Objects.hash(this.getBakeTime(), this.getSizeContainer(), this.getFlavor(), this.getTop(), this.getFeatures(), this.isWaxed());
     }
 
-    public CakeBatter copy() {
-        return new CakeBatter(this.getBakeTime(), this.getHeight(), this.getBites(), this.getSize(), this.getFlavor(), this.getTop(), Maps.newHashMap(Maps.transformValues(this.getFeatureMap(), NbtCompound::copy)), this.isWaxed());
+    public CakeBatter<S> copy() {
+        return new CakeBatter<>(this.getBakeTime(), ((S) this.getSizeContainer().copy()), this.getFlavor(), this.getTop(), Maps.newHashMap(Maps.transformValues(this.getFeatureMap(), NbtCompound::copy)), this.isWaxed());
+    }
+
+    public <T extends BatterSizeContainer> CakeBatter<T> copy(T sizeContainer) {
+        return new CakeBatter<>(this.getBakeTime(), sizeContainer, this.getFlavor(), this.getTop(), Maps.newHashMap(Maps.transformValues(this.getFeatureMap(), NbtCompound::copy)), this.isWaxed());
     }
 }

@@ -27,8 +27,6 @@ import net.pedroricardo.block.helpers.CakeTop;
 import net.pedroricardo.block.helpers.CakeTops;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-
 public class BeaterBlockEntity extends BlockEntity implements Clearable {
     private int poweredTicks;
     private int mixTime;

@@ -7,33 +7,32 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-public record CupcakeTrayBatter(Optional<CakeBatter> topLeft, Optional<CakeBatter> topRight, Optional<CakeBatter> bottomLeft, Optional<CakeBatter> bottomRight) {
+public record CupcakeTrayBatter(CakeBatter<FixedBatterSizeContainer> topLeft, CakeBatter<FixedBatterSizeContainer> topRight, CakeBatter<FixedBatterSizeContainer> bottomLeft, CakeBatter<FixedBatterSizeContainer> bottomRight) {
     public static final Codec<CupcakeTrayBatter> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CakeBatter.CODEC.optionalFieldOf("top_left").forGetter(CupcakeTrayBatter::topLeft),
-            CakeBatter.CODEC.optionalFieldOf("top_right").forGetter(CupcakeTrayBatter::topRight),
-            CakeBatter.CODEC.optionalFieldOf("bottom_left").forGetter(CupcakeTrayBatter::bottomLeft),
-            CakeBatter.CODEC.optionalFieldOf("bottom_right").forGetter(CupcakeTrayBatter::bottomRight)
+            CakeBatter.FIXED_SIZE_CODEC.fieldOf("top_left").orElse(CakeBatter.getFixedSizeEmpty()).forGetter(CupcakeTrayBatter::topLeft),
+            CakeBatter.FIXED_SIZE_CODEC.fieldOf("top_right").orElse(CakeBatter.getFixedSizeEmpty()).forGetter(CupcakeTrayBatter::topRight),
+            CakeBatter.FIXED_SIZE_CODEC.fieldOf("bottom_left").orElse(CakeBatter.getFixedSizeEmpty()).forGetter(CupcakeTrayBatter::bottomLeft),
+            CakeBatter.FIXED_SIZE_CODEC.fieldOf("bottom_right").orElse(CakeBatter.getFixedSizeEmpty()).forGetter(CupcakeTrayBatter::bottomRight)
     ).apply(instance, CupcakeTrayBatter::new));
-    public static final PacketCodec<RegistryByteBuf, CupcakeTrayBatter> PACKET_CODEC = PacketCodec.tuple(PacketCodecs.optional(CakeBatter.PACKET_CODEC), CupcakeTrayBatter::topLeft, PacketCodecs.optional(CakeBatter.PACKET_CODEC), CupcakeTrayBatter::topRight, PacketCodecs.optional(CakeBatter.PACKET_CODEC), CupcakeTrayBatter::bottomLeft, PacketCodecs.optional(CakeBatter.PACKET_CODEC), CupcakeTrayBatter::bottomRight, CupcakeTrayBatter::new);
-    private static final CupcakeTrayBatter EMPTY = new CupcakeTrayBatter(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+    public static final PacketCodec<RegistryByteBuf, CupcakeTrayBatter> PACKET_CODEC = PacketCodec.tuple(CakeBatter.FIXED_SIZE_PACKET_CODEC, CupcakeTrayBatter::topLeft, CakeBatter.FIXED_SIZE_PACKET_CODEC, CupcakeTrayBatter::topRight, CakeBatter.FIXED_SIZE_PACKET_CODEC, CupcakeTrayBatter::bottomLeft, CakeBatter.FIXED_SIZE_PACKET_CODEC, CupcakeTrayBatter::bottomRight, CupcakeTrayBatter::new);
+    private static final CupcakeTrayBatter EMPTY = new CupcakeTrayBatter(CakeBatter.getFixedSizeEmpty(), CakeBatter.getFixedSizeEmpty(), CakeBatter.getFixedSizeEmpty(), CakeBatter.getFixedSizeEmpty());
 
     public static CupcakeTrayBatter getEmpty() {
         return EMPTY.copy();
     }
 
-    public CupcakeTrayBatter(List<Optional<CakeBatter>> list) {
-        this(list.isEmpty() ? Optional.empty() : list.getFirst(), list.size() > 1 ? list.get(1) : Optional.empty(), list.size() > 2 ? list.get(2) : Optional.empty(), list.size() > 3 ? list.get(3) : Optional.empty());
+    public CupcakeTrayBatter(List<CakeBatter<FixedBatterSizeContainer>> list) {
+        this(list.isEmpty() ? CakeBatter.getFixedSizeEmpty() : list.getFirst(), list.size() > 1 ? list.get(1) : CakeBatter.getFixedSizeEmpty(), list.size() > 2 ? list.get(2) : CakeBatter.getFixedSizeEmpty(), list.size() > 3 ? list.get(3) : CakeBatter.getFixedSizeEmpty());
     }
 
-    public List<Optional<CakeBatter>> stream() {
+    public List<CakeBatter<FixedBatterSizeContainer>> stream() {
         return Stream.of(this.topLeft, this.topRight, this.bottomLeft, this.bottomRight).toList();
     }
 
@@ -64,7 +63,7 @@ public record CupcakeTrayBatter(Optional<CakeBatter> topLeft, Optional<CakeBatte
         return this.stream().equals(that.stream());
     }
 
-    public CupcakeTrayBatter withBatter(int i, @Nullable CakeBatter batter) {
+    public CupcakeTrayBatter withBatter(int i, @Nullable CakeBatter<FixedBatterSizeContainer> batter) {
         return switch (i) {
             case 0 -> this.withTopLeft(batter);
             case 1 -> this.withTopRight(batter);
@@ -74,20 +73,20 @@ public record CupcakeTrayBatter(Optional<CakeBatter> topLeft, Optional<CakeBatte
         };
     }
 
-    public CupcakeTrayBatter withTopLeft(@Nullable CakeBatter batter) {
-        return new CupcakeTrayBatter(Optional.ofNullable(batter), this.topRight(), this.bottomLeft(), this.bottomRight());
+    public CupcakeTrayBatter withTopLeft(@Nullable CakeBatter<FixedBatterSizeContainer> batter) {
+        return new CupcakeTrayBatter(batter, this.topRight(), this.bottomLeft(), this.bottomRight());
     }
 
-    public CupcakeTrayBatter withTopRight(@Nullable CakeBatter batter) {
-        return new CupcakeTrayBatter(this.topLeft(), Optional.ofNullable(batter), this.bottomLeft(), this.bottomRight());
+    public CupcakeTrayBatter withTopRight(@Nullable CakeBatter<FixedBatterSizeContainer> batter) {
+        return new CupcakeTrayBatter(this.topLeft(), batter, this.bottomLeft(), this.bottomRight());
     }
 
-    public CupcakeTrayBatter withBottomLeft(@Nullable CakeBatter batter) {
-        return new CupcakeTrayBatter(this.topLeft(), this.topRight(), Optional.ofNullable(batter), this.bottomRight());
+    public CupcakeTrayBatter withBottomLeft(@Nullable CakeBatter<FixedBatterSizeContainer> batter) {
+        return new CupcakeTrayBatter(this.topLeft(), this.topRight(), batter, this.bottomRight());
     }
 
-    public CupcakeTrayBatter withBottomRight(@Nullable CakeBatter batter) {
-        return new CupcakeTrayBatter(this.topLeft(), this.topRight(), this.bottomLeft(), Optional.ofNullable(batter));
+    public CupcakeTrayBatter withBottomRight(@Nullable CakeBatter<FixedBatterSizeContainer> batter) {
+        return new CupcakeTrayBatter(this.topLeft(), this.topRight(), this.bottomLeft(), batter);
     }
 
     @Override

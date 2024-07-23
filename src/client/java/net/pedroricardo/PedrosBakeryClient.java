@@ -17,6 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.PBBlockEntities;
+import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CakeFeatures;
 import net.pedroricardo.block.helpers.CakeTop;
 import net.pedroricardo.block.helpers.features.BlockCakeFeature;
@@ -74,7 +75,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		}, PBItems.FROSTING_BOTTLE);
 		ModelPredicateProviderRegistry.register(Identifier.of(PedrosBakery.MOD_ID, "empty"), (stack, world, entity, seed) -> {
 			if (!stack.isOf(PBBlocks.CUPCAKE.asItem())) return 0.0f;
-			return stack.get(PBComponentTypes.BATTER) == null ? 1.0f : 0.0f;
+			return stack.getOrDefault(PBComponentTypes.FIXED_SIZE_BATTER, CakeBatter.getFixedSizeEmpty()).isEmpty() ? 1.0f : 0.0f;
 		});
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
 			CakeTop top = stack.get(PBComponentTypes.TOP);
@@ -96,9 +97,9 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(PBCakeBlockRenderer.getTopRenderLayer(Identifier.of(id.getNamespace(), "textures/entity/cake/feature/" + id.getPath() + ".png"))), light, overlay, 0xFFFFFFFF);
 		};
 		CakeFeatureRenderer blockOnTopFeatureRenderer = (feature, entity, layer, matrices, vertexConsumers, light, overlay) -> {
-			if (layer.getBites() >= layer.getSize() / 2.0f || !(feature instanceof BlockCakeFeature blockFeature)) return;
+			if (layer.getSizeContainer().getBites() >= layer.getSizeContainer().getSize() / 2.0f || !(feature instanceof BlockCakeFeature blockFeature)) return;
 			matrices.push();
-			matrices.translate(0.0f, layer.getHeight() / 16.0f, 0.0f);
+			matrices.translate(0.0f, layer.getSizeContainer().getHeight() / 16.0f, 0.0f);
 			MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockFeature.getBlockState(), matrices, vertexConsumers, light, overlay);
 			matrices.pop();
 		};
@@ -117,7 +118,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			if (painting == null) return;
 			Sprite sprite = MinecraftClient.getInstance().getPaintingManager().getPaintingSprite(painting.value());
 
-			PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(PBCakeBlockRenderer.getTopRenderLayer(sprite.getAtlasId())), (16.0f - layer.getSize()) / 2.0f + layer.getBites(), (16.0f - layer.getSize()) / 2.0f, layer.getHeight(), layer.getSize() - layer.getBites(), layer.getSize(), sprite.getMinU() + (layer.getBites() / layer.getSize()) * (sprite.getMaxU() - sprite.getMinU()), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV(), 1.0f, 1.0f, light, overlay, 0xFFFFFFFF);
+			PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(PBCakeBlockRenderer.getTopRenderLayer(sprite.getAtlasId())), (16.0f - layer.getSizeContainer().getSize()) / 2.0f + layer.getSizeContainer().getBites(), (16.0f - layer.getSizeContainer().getSize()) / 2.0f, layer.getSizeContainer().getHeight(), layer.getSizeContainer().getSize() - layer.getSizeContainer().getBites(), layer.getSizeContainer().getSize(), sprite.getMinU() + (layer.getSizeContainer().getBites() / layer.getSizeContainer().getSize()) * (sprite.getMaxU() - sprite.getMinU()), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV(), 1.0f, 1.0f, light, overlay, 0xFFFFFFFF);
 		});
 		CakeFeatureRendererRegistry.register(CakeFeatures.DANDELION, blockOnTopFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.TORCHFLOWER, blockOnTopFeatureRenderer);

@@ -14,6 +14,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
+import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
 
 import java.util.List;
 
@@ -24,11 +25,11 @@ public class PBCakeBlockItem extends BlockItem {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        List<CakeBatter> batterList = stack.getOrDefault(PBComponentTypes.BATTER_LIST, List.of());
+        List<CakeBatter<FullBatterSizeContainer>> batterList = stack.getOrDefault(PBComponentTypes.BATTER_LIST, List.of());
         if (batterList.isEmpty()) {
             return;
         }
-        for (CakeBatter batter : batterList.reversed()) {
+        for (CakeBatter<FullBatterSizeContainer> batter : batterList.reversed()) {
             if (batter.getTop().isPresent()) {
                 tooltip.add(Text.translatable("block.pedrosbakery.cake.flavor_and_top", Text.translatable(batter.getFlavor().getTranslationKey()), Text.translatable(batter.getTop().get().getTranslationKey())).formatted(batter.isWaxed() ? Formatting.GOLD : Formatting.GRAY));
             } else {

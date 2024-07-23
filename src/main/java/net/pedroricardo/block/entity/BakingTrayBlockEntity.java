@@ -26,6 +26,7 @@ import net.pedroricardo.PBSounds;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.helpers.CakeBatter;
+import net.pedroricardo.block.helpers.size.HeightOnlyBatterSizeContainer;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockEntity;
 import net.pedroricardo.block.tags.PBTags;
@@ -39,7 +40,7 @@ import java.util.List;
 public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlockEntity {
     private int size = PedrosBakery.CONFIG.bakingTrayDefaultSize();
     private int height = PedrosBakery.CONFIG.bakingTrayDefaultHeight();
-    private CakeBatter cakeBatter = CakeBatter.getEmpty();
+    private CakeBatter<HeightOnlyBatterSizeContainer> cakeBatter = CakeBatter.getHeightOnlyEmpty();
     private List<BlockPos> parts = Lists.newArrayList();
 
     public BakingTrayBlockEntity(BlockPos pos, BlockState state) {
@@ -70,7 +71,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
             this.height = nbt.getInt("height");
         }
         if (nbt.contains("batter", NbtElement.COMPOUND_TYPE)) {
-            this.cakeBatter = CakeBatter.fromNbt(nbt.getCompound("batter"));
+            this.cakeBatter = CakeBatter.fromNbt(nbt.getCompound("batter"), CakeBatter.WITH_HEIGHT_CODEC, CakeBatter.getHeightOnlyEmpty());
         }
         this.parts = Lists.newArrayList(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(Lists.newArrayList()).iterator());
     }
@@ -92,7 +93,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     @Override
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
-        componentMapBuilder.add(PBComponentTypes.BATTER, this.getCakeBatter().copy());
+        componentMapBuilder.add(PBComponentTypes.HEIGHT_ONLY_BATTER, this.getCakeBatter().copy());
         componentMapBuilder.add(PBComponentTypes.SIZE, this.getSize());
         componentMapBuilder.add(PBComponentTypes.HEIGHT, this.getHeight());
     }
@@ -100,7 +101,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     @Override
     protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
-        this.cakeBatter = components.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty()).copy();
+        this.cakeBatter = components.getOrDefault(PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty()).copy();
         this.size = components.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize());
         this.height = components.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight());
     }
@@ -114,22 +115,21 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         nbt.remove("parts");
     }
 
-    public CakeBatter getCakeBatter() {
+    public CakeBatter<HeightOnlyBatterSizeContainer> getCakeBatter() {
         return this.cakeBatter;
     }
 
-    public void setCakeBatter(@NotNull CakeBatter cakeBatter) {
+    public void setCakeBatter(@NotNull CakeBatter<HeightOnlyBatterSizeContainer> cakeBatter) {
         this.cakeBatter = cakeBatter;
-        if (this.cakeBatter.getHeight() > this.getHeight()) {
-            this.cakeBatter.withHeight(this.getHeight());
+        if (this.cakeBatter.getSizeContainer().getHeight() > this.getHeight()) {
+            this.cakeBatter.getSizeContainer().setHeight(this.getHeight());
         }
-        this.cakeBatter.withSize(this.getSize());
         this.markDirty();
     }
 
     public ItemStack toStack() {
         ItemStack stack = new ItemStack(PBBlocks.BAKING_TRAY.asItem());
-        stack.set(PBComponentTypes.BATTER, this.getCakeBatter().copy());
+        stack.set(PBComponentTypes.HEIGHT_ONLY_BATTER, this.getCakeBatter().copy());
         stack.set(PBComponentTypes.SIZE, this.getSize());
         stack.set(PBComponentTypes.HEIGHT, this.getHeight());
         return stack;

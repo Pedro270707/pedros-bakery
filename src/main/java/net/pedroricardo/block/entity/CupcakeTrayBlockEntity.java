@@ -49,8 +49,8 @@ public class CupcakeTrayBlockEntity extends BlockEntity {
         if (world.getBlockState(pos.down()).isIn(PBTags.Blocks.BAKES_CAKE)) {
             blockEntity.getBatter().stream().forEach(batter -> {
                 if (batter.isEmpty()) return;
-                batter.get().bakeTick(world, pos, state);
-                if (batter.get().getBakeTime() == PedrosBakery.CONFIG.ticksUntilBaked()) {
+                batter.bakeTick(world, pos, state);
+                if (batter.getBakeTime() == PedrosBakery.CONFIG.ticksUntilBaked()) {
                     world.playSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.BAKING_TRAY_DONE, SoundCategory.BLOCKS, 1.25f, 1.0f, true);
                 }
             });

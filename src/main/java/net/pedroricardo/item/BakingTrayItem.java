@@ -14,6 +14,7 @@ import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CakeFlavor;
+import net.pedroricardo.block.helpers.size.HeightOnlyBatterSizeContainer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -27,15 +28,15 @@ public class BakingTrayItem extends BlockItem implements BatterContainerItem {
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         int size = stack.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize());
         int height = stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight());
-        CakeBatter batter = stack.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty());
+        CakeBatter<HeightOnlyBatterSizeContainer> batter = stack.getOrDefault(PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty());
 
         tooltip.add(Text.translatable("block.pedrosbakery.baking_tray.size", size, size, height));
         if (batter.isEmpty()) {
             return;
         }
         tooltip.add(Text.translatable("block.pedrosbakery.cake.flavor", Text.translatable(batter.getFlavor().getTranslationKey())).formatted(batter.isWaxed() ? Formatting.GOLD : Formatting.GRAY));
-        if (batter.getHeight() != height && batter.getHeight() != 0) {
-            tooltip.add(Text.translatable("block.pedrosbakery.baking_tray.full", (int)(100.0f * batter.getHeight() / (float) height)).formatted(Formatting.YELLOW));
+        if (batter.getSizeContainer().getHeight() != height && batter.getSizeContainer().getHeight() != 0) {
+            tooltip.add(Text.translatable("block.pedrosbakery.baking_tray.full", (int)(100.0f * batter.getSizeContainer().getHeight() / (float) height)).formatted(Formatting.YELLOW));
         }
     }
 
@@ -48,14 +49,14 @@ public class BakingTrayItem extends BlockItem implements BatterContainerItem {
     public boolean addBatter(PlayerEntity player, ItemStack stack, @Nullable CakeFlavor flavor, int amount) {
         if (flavor == null || !stack.isOf(this)) return false;
         ItemStack newStack = stack.copyWithCount(1);
-        CakeBatter batter = stack.getOrDefault(PBComponentTypes.BATTER, CakeBatter.getEmpty());
+        CakeBatter<HeightOnlyBatterSizeContainer> batter = stack.getOrDefault(PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty());
         if (batter.isEmpty()) {
-            newStack.set(PBComponentTypes.BATTER, new CakeBatter(0, Math.min(amount, stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight())), flavor, false));
+            newStack.set(PBComponentTypes.HEIGHT_ONLY_BATTER, new CakeBatter<>(0, new HeightOnlyBatterSizeContainer(Math.min(amount, stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()))), flavor, false));
             PBHelpers.decrementStackAndAdd(player, stack, newStack, false);
             return true;
-        } else if (batter.getBakeTime() < 200 && batter.getHeight() < stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) && flavor == batter.getFlavor()) {
-            batter.withHeight(Math.min(batter.getHeight() + amount, stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight())));
-            newStack.set(PBComponentTypes.BATTER, batter);
+        } else if (batter.getBakeTime() < 200 && batter.getSizeContainer().getHeight() < stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) && flavor == batter.getFlavor()) {
+            batter.getSizeContainer().setHeight(Math.min(batter.getSizeContainer().getHeight() + amount, stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight())));
+            newStack.set(PBComponentTypes.HEIGHT_ONLY_BATTER, batter);
             PBHelpers.decrementStackAndAdd(player, stack, newStack, false);
             return true;
         }

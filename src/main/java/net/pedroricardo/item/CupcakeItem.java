@@ -16,9 +16,9 @@ import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.CupcakeTrayBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CupcakeTrayBatter;
+import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
 
 import java.util.List;
-import java.util.Optional;
 
 public class CupcakeItem extends BlockItem {
     public CupcakeItem(Block block, Settings settings) {
@@ -27,8 +27,8 @@ public class CupcakeItem extends BlockItem {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        CakeBatter batter = stack.get(PBComponentTypes.BATTER);
-        if (batter == null) {
+        CakeBatter<FixedBatterSizeContainer> batter = stack.getOrDefault(PBComponentTypes.FIXED_SIZE_BATTER, CakeBatter.getFixedSizeEmpty());
+        if (batter.isEmpty()) {
             return;
         }
         if (batter.getTop().isPresent()) {
@@ -40,23 +40,23 @@ public class CupcakeItem extends BlockItem {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        if (context.getStack().get(PBComponentTypes.BATTER) != null || !(context.getWorld().getBlockEntity(context.getBlockPos()) instanceof CupcakeTrayBlockEntity tray)) return super.useOnBlock(context);
+        if (!context.getStack().getOrDefault(PBComponentTypes.FIXED_SIZE_BATTER, CakeBatter.getFixedSizeEmpty()).isEmpty() || !(context.getWorld().getBlockEntity(context.getBlockPos()) instanceof CupcakeTrayBlockEntity tray)) return super.useOnBlock(context);
         Vec3d hitVector = context.getHitPos().subtract(context.getBlockPos().getX(), context.getBlockPos().getY(), context.getBlockPos().getZ());
         int i = (hitVector.getX() > 0.5 ? 2 : 0) | (hitVector.getZ() > 0.5 ? 1 : 0);
         CupcakeTrayBatter trayBatter = tray.getBatter();
-        Optional<CakeBatter> batter = trayBatter.stream().get(i);
-        if (batter.isEmpty() || batter.get().getBakeTime() < PedrosBakery.CONFIG.ticksUntilBaked()) return super.useOnBlock(context);
-        tray.setBatter(trayBatter.withBatter(i, null));
+        CakeBatter<FixedBatterSizeContainer> batter = trayBatter.stream().get(i);
+        if (batter.isEmpty() || batter.getBakeTime() < PedrosBakery.CONFIG.ticksUntilBaked()) return super.useOnBlock(context);
+        tray.setBatter(trayBatter.withBatter(i, CakeBatter.getFixedSizeEmpty()));
         context.getWorld().emitGameEvent(context.getPlayer(), GameEvent.FLUID_PICKUP, context.getBlockPos());
         ItemStack newStack = new ItemStack(PBBlocks.CUPCAKE);
-        newStack.set(PBComponentTypes.BATTER, batter.get());
+        newStack.set(PBComponentTypes.FIXED_SIZE_BATTER, batter);
         PBHelpers.decrementStackAndAdd(context.getPlayer(), context.getStack(), newStack);
         return ActionResult.SUCCESS;
     }
 
     @Override
     public String getTranslationKey(ItemStack stack) {
-        if (stack.get(PBComponentTypes.BATTER) == null) return super.getTranslationKey(stack) + ".empty";
+        if (stack.getOrDefault(PBComponentTypes.FIXED_SIZE_BATTER, CakeBatter.getFixedSizeEmpty()).isEmpty()) return super.getTranslationKey(stack) + ".empty";
         return super.getTranslationKey(stack);
     }
 }

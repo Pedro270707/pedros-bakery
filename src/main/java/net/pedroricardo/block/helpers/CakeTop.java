@@ -42,14 +42,14 @@ public class CakeTop {
         return "top.pedrosbakery." + CakeTops.REGISTRY.getId(this).getPath();
     }
 
-    public ActionResult onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity) {
+    public ActionResult onTryEat(CakeBatter<?> layer, World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity) {
         return ActionResult.PASS;
     }
 
     public void onDrink(ItemStack stack, World world, LivingEntity user) {
     }
 
-    public void tick(CakeBatter layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void tick(CakeBatter<?> layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
     }
 
     public final CakeTop base() {

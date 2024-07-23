@@ -124,7 +124,7 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
         if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
             return PBCakeBlock.of(cake.getBatterList());
         }
-        return PBCakeBlock.of(Collections.singletonList(CakeBatter.getDefault()));
+        return PBCakeBlock.of(Collections.singletonList(CakeBatter.getFullSizeDefault()));
     }
 
     @Override

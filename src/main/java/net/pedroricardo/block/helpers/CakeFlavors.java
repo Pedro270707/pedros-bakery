@@ -18,6 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pedroricardo.PedrosBakery;
+import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
 
 import java.util.Optional;
 
@@ -34,7 +35,7 @@ public class CakeFlavors {
     public static final CakeFlavor SWEET_BERRY = register("sweet_berry", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.SWEET_BERRIES)));
     public static final CakeFlavor COAL = register("coal", new CakeFlavor(null, Ingredient.ofItems(Items.COAL)) {
         @Override
-        public ActionResult onTryEat(CakeBatter batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        public ActionResult onTryEat(CakeBatter<?> batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
             super.onTryEat(batter, world, pos, state, player);
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 10, 2));
             return ActionResult.SUCCESS;
@@ -42,9 +43,13 @@ public class CakeFlavors {
     });
     public static final CakeFlavor TNT = register("tnt", new CakeFlavor(null, Ingredient.ofItems(Items.TNT)) {
         @Override
-        public ActionResult onTryEat(CakeBatter batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        public ActionResult onTryEat(CakeBatter<?> batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
             super.onTryEat(batter, world, pos, state, player);
-            world.createExplosion(null, pos.toCenterPos().getX(), pos.toCenterPos().getY(), pos.toCenterPos().getZ(), batter instanceof CakeBatter layer ? (layer.getSize() * layer.getHeight()) / 64.0f : 0.5f, World.ExplosionSourceType.BLOCK);
+            try {
+                world.createExplosion(null, pos.toCenterPos().getX(), pos.toCenterPos().getY(), pos.toCenterPos().getZ(), (((CakeBatter<FullBatterSizeContainer>)batter).getSizeContainer().getSize() * ((CakeBatter<FullBatterSizeContainer>)batter).getSizeContainer().getHeight()) / 64.0f, World.ExplosionSourceType.BLOCK);
+            } catch (ClassCastException ignored) {
+                world.createExplosion(null, pos.toCenterPos().getX(), pos.toCenterPos().getY(), pos.toCenterPos().getZ(), 0.5f, World.ExplosionSourceType.BLOCK);
+            }
             return ActionResult.SUCCESS;
         }
     });

@@ -11,11 +11,12 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.pedroricardo.block.helpers.CakeBatter;
+import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
 import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.Nullable;
 
 public class CupcakeBlockEntity extends BlockEntity {
-    private CakeBatter batter;
+    private CakeBatter<FixedBatterSizeContainer> batter;
 
     public CupcakeBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.CUPCAKE, pos, state);
@@ -31,7 +32,7 @@ public class CupcakeBlockEntity extends BlockEntity {
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
         if (this.getBatter() != null) {
-            nbt.put("batter", this.getBatter().toNbt(new NbtCompound(), CakeBatter.WITH_TOP_CODEC));
+            nbt.put("batter", this.getBatter().toNbt(new NbtCompound(), CakeBatter.FIXED_SIZE_CODEC));
         }
     }
 
@@ -39,7 +40,7 @@ public class CupcakeBlockEntity extends BlockEntity {
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
         if (nbt.contains("batter", NbtElement.COMPOUND_TYPE)) {
-            this.batter = CakeBatter.fromNbt(nbt.getCompound("batter"));
+            this.batter = CakeBatter.fromNbt(nbt.getCompound("batter"), CakeBatter.FIXED_SIZE_CODEC, CakeBatter.getFixedSizeEmpty());
         }
     }
 
@@ -47,24 +48,23 @@ public class CupcakeBlockEntity extends BlockEntity {
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
         if (this.getBatter() != null) {
-            componentMapBuilder.add(PBComponentTypes.BATTER, this.getBatter().copy());
+            componentMapBuilder.add(PBComponentTypes.FIXED_SIZE_BATTER, this.getBatter().copy());
         }
     }
 
     @Override
     protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
-        CakeBatter batter = components.get(PBComponentTypes.BATTER);
-        this.setBatter(batter == null ? null : batter.copy());
+        CakeBatter<FixedBatterSizeContainer> batter = components.getOrDefault(PBComponentTypes.FIXED_SIZE_BATTER, CakeBatter.getFixedSizeEmpty());
+        this.setBatter(batter.copy());
     }
 
-    public void setBatter(@Nullable CakeBatter batter) {
+    public void setBatter(@Nullable CakeBatter<FixedBatterSizeContainer> batter) {
         this.batter = batter;
         this.markDirty();
     }
 
-    @Nullable
-    public CakeBatter getBatter() {
+    public CakeBatter<FixedBatterSizeContainer> getBatter() {
         return this.batter;
     }
 
