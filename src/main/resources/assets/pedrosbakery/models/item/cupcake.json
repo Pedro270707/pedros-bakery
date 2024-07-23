@@ -35,7 +35,7 @@
   "overrides": [
     {
       "predicate": {
-        "pedrosbakery:batter": 0
+        "pedrosbakery:empty": 1
       },
       "model": "pedrosbakery:item/cupcake_liner"
     }

@@ -62,7 +62,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
                     if (irisFix) {
                         matrices.push();
                         matrices.translate(0.5f + layer.getBites() / 32.0f, layer.getHeight() / 32.0f, 0.5f);
-                        float scaleMultiplier = MinecraftClient.getInstance().player == null ? 1.0f : (float) Math.sqrt(MinecraftClient.getInstance().player.squaredDistanceTo(entity.getPos().getX() + 0.5, entity.getPos().getY() + height + layer.getHeight() / 2.0f, entity.getPos().getZ() + 0.5)) / 4.0f;
+                        float scaleMultiplier = MinecraftClient.getInstance().cameraEntity == null || !entity.hasWorld() ? 1.0f : (float) Math.sqrt(MinecraftClient.getInstance().cameraEntity.squaredDistanceTo(entity.getPos().getX() + 0.5, entity.getPos().getY() + height + layer.getHeight() / 2.0f, entity.getPos().getZ() + 0.5));
                         float scale = 1.0f + 1.0f / 1024.0f * (i + 1) * scaleMultiplier;
                         matrices.scale(scale, scale, scale);
                         matrices.translate(-0.5f - layer.getBites() / 32.0f, -layer.getHeight() / 32.0f, -0.5f);

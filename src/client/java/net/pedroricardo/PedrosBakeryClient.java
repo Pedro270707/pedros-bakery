@@ -72,9 +72,9 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			}
 			return top.color();
 		}, PBItems.FROSTING_BOTTLE);
-		ModelPredicateProviderRegistry.register(Identifier.of(PedrosBakery.MOD_ID, "batter"), (stack, world, entity, seed) -> {
+		ModelPredicateProviderRegistry.register(Identifier.of(PedrosBakery.MOD_ID, "empty"), (stack, world, entity, seed) -> {
 			if (!stack.isOf(PBBlocks.CUPCAKE.asItem())) return 0.0f;
-			return stack.get(PBComponentTypes.BATTER) == null ? 0.0f : 1.0f;
+			return stack.get(PBComponentTypes.BATTER) == null ? 1.0f : 0.0f;
 		});
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
 			CakeTop top = stack.get(PBComponentTypes.TOP);
