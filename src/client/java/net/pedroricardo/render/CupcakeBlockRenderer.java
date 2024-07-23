@@ -47,7 +47,7 @@ public class CupcakeBlockRenderer implements BlockEntityRenderer<CupcakeBlockEnt
         matrices.scale(-1.0f, -1.0f, 1.0f);
         matrices.translate(-0.5f, -1.5f, 0.5f);
         this.setAngles(matrices, RotationPropertyHelper.toDegrees(entity.getCachedState().get(Properties.ROTATION)));
-        if (entity.getBatter() == null) {
+        if (entity.getBatter().isEmpty()) {
             this.liner.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(EMPTY_TEXTURE)), light, overlay);
         } else {
             Identifier texture = entity.getBatter().getFlavor().getCupcakeTextureLocation();

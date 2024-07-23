@@ -15,7 +15,7 @@
             {
               "function": "minecraft:copy_components",
               "include": [
-                "pedrosbakery:batter"
+                "pedrosbakery:fixed_size_batter"
               ],
               "source": "block_entity"
             }

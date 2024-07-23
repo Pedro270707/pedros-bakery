@@ -10,7 +10,7 @@
             {
               "function": "minecraft:copy_components",
               "include": [
-                "pedrosbakery:batter",
+                "pedrosbakery:full_batter",
                 "pedrosbakery:size",
                 "pedrosbakery:height"
               ],
