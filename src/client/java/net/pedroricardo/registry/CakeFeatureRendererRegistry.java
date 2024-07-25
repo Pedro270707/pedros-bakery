@@ -9,6 +9,10 @@ public class CakeFeatureRendererRegistry {
     private static final Map<CakeFeature, CakeFeatureRenderer> RENDERERS = Maps.newHashMap();
 
     public static void register(CakeFeature feature, CakeFeatureRenderer renderer) {
+        register(feature, renderer, true);
+    }
+
+    public static void register(CakeFeature feature, CakeFeatureRenderer renderer, boolean needsIrisFix) {
         RENDERERS.put(feature, renderer);
     }
 

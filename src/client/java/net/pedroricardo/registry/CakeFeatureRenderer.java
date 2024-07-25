@@ -9,4 +9,7 @@ import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
 
 public interface CakeFeatureRenderer {
     void render(CakeFeature feature, PBCakeBlockEntity entity, CakeBatter<FullBatterSizeContainer> layer, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay);
+    default boolean needsIrisFix() {
+        return true;
+    };
 }

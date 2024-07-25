@@ -60,7 +60,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
                 if (feature == null) continue;
                 CakeFeatureRenderer renderer = CakeFeatureRendererRegistry.get(feature);
                 if (renderer != null) {
-                    if (irisFix) {
+                    if (irisFix && renderer.needsIrisFix()) {
                         matrices.push();
                         matrices.translate(0.5f + layer.getSizeContainer().getBites() / 32.0f, layer.getSizeContainer().getHeight() / 32.0f, 0.5f);
                         float scaleMultiplier = MinecraftClient.getInstance().cameraEntity == null || !entity.hasWorld() ? 1.0f : (float) Math.sqrt(MinecraftClient.getInstance().cameraEntity.squaredDistanceTo(entity.getPos().getX() + 0.5, entity.getPos().getY() + height + layer.getSizeContainer().getHeight() / 2.0f, entity.getPos().getZ() + 0.5));
@@ -69,7 +69,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
                         matrices.translate(-0.5f - layer.getSizeContainer().getBites() / 32.0f, -layer.getSizeContainer().getHeight() / 32.0f, -0.5f);
                     }
                     renderer.render(feature, entity, layer, matrices, vertexConsumers, light, overlay);
-                    if (irisFix) {
+                    if (irisFix && renderer.needsIrisFix()) {
                         matrices.pop();
                     }
                 }
