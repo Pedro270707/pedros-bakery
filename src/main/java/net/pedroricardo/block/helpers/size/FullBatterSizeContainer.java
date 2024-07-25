@@ -2,13 +2,20 @@ package net.pedroricardo.block.helpers.size;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 import java.util.Objects;
@@ -40,10 +47,7 @@ public class FullBatterSizeContainer extends BatterSizeContainer {
     @Override
     public boolean bite(World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity, float biteSize) {
         if (this.isEmpty()) return false;
-        this.bites += biteSize;
-        if (this.bites > this.getSize()) {
-            this.bites = this.getSize();
-        }
+        this.setBites(this.getBites() + biteSize);
         return true;
     }
 
@@ -73,12 +77,24 @@ public class FullBatterSizeContainer extends BatterSizeContainer {
     }
 
     public void setBites(float bites) {
-        this.bites = bites;
+        this.bites = Math.min(bites, this.getSize());
     }
 
     @Override
     public FullBatterSizeContainer copy() {
         return new FullBatterSizeContainer(this.getSize(), this.getHeight(), this.getBites());
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        if (this.isEmpty()) return VoxelShapes.empty();
+        Direction direction = state.getOrEmpty(Properties.HORIZONTAL_FACING).orElse(Direction.NORTH);
+        return switch (direction) {
+            default -> Block.createCuboidShape(8 - this.getSize() / 2.0, 0, 8 - this.getSize() / 2.0, 8 + this.getSize() / 2.0 - this.getBites(), this.getHeight(), 8 + this.getSize() / 2.0);
+            case SOUTH -> Block.createCuboidShape(8 - this.getSize() / 2.0 + this.getBites(), 0, 8 - this.getSize() / 2.0, 8 + this.getSize() / 2.0, this.getHeight(), 8 + this.getSize() / 2.0);
+            case WEST -> Block.createCuboidShape(8 - this.getSize() / 2.0, 0, 8 - this.getSize() / 2.0 + this.getBites(), 8 + this.getSize() / 2.0, this.getHeight(), 8 + this.getSize() / 2.0);
+            case EAST -> Block.createCuboidShape(8 - this.getSize() / 2.0, 0, 8 - this.getSize() / 2.0, 8 + this.getSize() / 2.0, this.getHeight(), 8 + this.getSize() / 2.0 - this.getBites());
+        };
     }
 
     @Override

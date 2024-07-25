@@ -1,15 +1,20 @@
 package net.pedroricardo.block.helpers.features;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.helpers.CakeFeature;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
+
+import java.util.List;
 
 public class ParticleCakeFeature extends CakeFeature {
     private final ParticleEffect effect;
@@ -21,19 +26,18 @@ public class ParticleCakeFeature extends CakeFeature {
     }
 
     @Override
-    public void tick(CakeBatter<FullBatterSizeContainer> layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void tick(CakeBatter<?> batter, List<? extends CakeBatter<?>> batterList, World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
         float height = 0;
-        for (CakeBatter<FullBatterSizeContainer> layer1 : blockEntity.getBatterList()) {
-            height += layer1.getSizeContainer().getHeight();
-            if (layer1 == layer) {
+        for (CakeBatter<?> layer1 : batterList) {
+            height += (float) layer1.getShape(state, world, pos, ShapeContext.absent()).getMax(Direction.Axis.Y);
+            if (layer1 == batter) {
                 break;
             }
         }
         if (!state.contains(Properties.HORIZONTAL_FACING)) return;
-        Direction direction = state.get(Properties.HORIZONTAL_FACING);
         if (world.isClient() && world.getRandom().nextFloat() < this.chance) {
-            // maybe use bounding box later?
-            world.addParticle(this.effect, pos.getX() + world.getRandom().nextFloat() * (layer.getSizeContainer().getSize() - (direction.getAxis() == Direction.Axis.Z ? layer.getSizeContainer().getBites() : 0)) / 16.0f + 0.5f - (layer.getSizeContainer().getSize()) / 32.0f + (direction == Direction.SOUTH ? layer.getSizeContainer().getBites() / 16.0f : 0.0f), pos.getY() + height / 16.0f, pos.getZ() + world.getRandom().nextFloat() * (layer.getSizeContainer().getSize() - (direction.getAxis() == Direction.Axis.X ? layer.getSizeContainer().getBites() : 0)) / 16.0f + 0.5f - layer.getSizeContainer().getSize() / 32.0f + (direction == Direction.WEST ? layer.getSizeContainer().getBites() / 16.0f : 0.0f), 0.0, 0.06125, 0.0);
+            VoxelShape shape = batter.getShape(state, world, pos, ShapeContext.absent());
+            world.addParticle(this.effect, pos.getX() + shape.getMin(Direction.Axis.X) + (shape.getMax(Direction.Axis.X) - shape.getMin(Direction.Axis.X)) * world.getRandom().nextFloat(), pos.getY() + height / 16.0f, pos.getZ() + shape.getMin(Direction.Axis.Z) + (shape.getMax(Direction.Axis.Z) - shape.getMin(Direction.Axis.Z)) * world.getRandom().nextFloat(), 0.0, 0.06125, 0.0);
         }
     }
 }

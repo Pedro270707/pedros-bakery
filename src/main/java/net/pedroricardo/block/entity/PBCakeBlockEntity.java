@@ -87,7 +87,7 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
             world.emitGameEvent(null, GameEvent.BLOCK_DESTROY, pos);
             PBHelpers.updateListeners(world, pos, state, blockEntity);
         } else {
-            blockEntity.getBatterList().forEach(layer -> layer.tick(world, pos, state, blockEntity));
+            blockEntity.getBatterList().forEach(batter -> CakeBatter.tick(batter, blockEntity.getBatterList(), world, pos, state, blockEntity));
             blockEntity.markDirty();
         }
         if (!world.isClient()) {
@@ -129,21 +129,17 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
         return (float) this.batterList.stream().mapToDouble((batter) -> batter.getSizeContainer().getHeight()).sum();
     }
 
-    public VoxelShape toShape(Direction direction) {
-        return toShape(this.getBatterList(), direction);
+    public VoxelShape toShape() {
+        return toShape(this.getBatterList(), this.getCachedState(), this.getWorld(), this.getPos());
     }
 
-    public static VoxelShape toShape(List<CakeBatter<FullBatterSizeContainer>> batterList, Direction direction) {
+    public static VoxelShape toShape(List<CakeBatter<FullBatterSizeContainer>> batterList, BlockState state, World world, BlockPos pos) {
         VoxelShape shape = VoxelShapes.empty();
         float currentHeight = 0;
-        for (CakeBatter<FullBatterSizeContainer> cakeBatter : batterList) {
-            shape = switch (direction) {
-                default -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeBatter.getSizeContainer().getSize() / 2.0, currentHeight, 8 - cakeBatter.getSizeContainer().getSize() / 2.0, 8 + cakeBatter.getSizeContainer().getSize() / 2.0 - cakeBatter.getSizeContainer().getBites(), currentHeight + cakeBatter.getSizeContainer().getHeight(), 8 + cakeBatter.getSizeContainer().getSize() / 2.0));
-                case SOUTH -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeBatter.getSizeContainer().getSize() / 2.0 + cakeBatter.getSizeContainer().getBites(), currentHeight, 8 - cakeBatter.getSizeContainer().getSize() / 2.0, 8 + cakeBatter.getSizeContainer().getSize() / 2.0, currentHeight + cakeBatter.getSizeContainer().getHeight(), 8 + cakeBatter.getSizeContainer().getSize() / 2.0));
-                case WEST -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeBatter.getSizeContainer().getSize() / 2.0, currentHeight, 8 - cakeBatter.getSizeContainer().getSize() / 2.0 + cakeBatter.getSizeContainer().getBites(), 8 + cakeBatter.getSizeContainer().getSize() / 2.0, currentHeight + cakeBatter.getSizeContainer().getHeight(), 8 + cakeBatter.getSizeContainer().getSize() / 2.0));
-                case EAST -> VoxelShapes.union(shape, Block.createCuboidShape(8 - cakeBatter.getSizeContainer().getSize() / 2.0, currentHeight, 8 - cakeBatter.getSizeContainer().getSize() / 2.0, 8 + cakeBatter.getSizeContainer().getSize() / 2.0, currentHeight + cakeBatter.getSizeContainer().getHeight(), 8 + cakeBatter.getSizeContainer().getSize() / 2.0 - cakeBatter.getSizeContainer().getBites()));
-            };
-            currentHeight += cakeBatter.getSizeContainer().getHeight();
+        for (CakeBatter<FullBatterSizeContainer> batter : batterList) {
+            VoxelShape batterShape = batter.getShape(state, world, pos, ShapeContext.absent());
+            shape = VoxelShapes.union(shape, batterShape.offset(0.0, currentHeight, 0.0));
+            currentHeight += (float) batterShape.getMax(Direction.Axis.Y);
         }
         return shape;
     }

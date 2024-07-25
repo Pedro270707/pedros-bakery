@@ -42,7 +42,7 @@ public class PBCakeBlockItem extends BlockItem {
     protected boolean canPlace(ItemPlacementContext context, BlockState state) {
         PBCakeBlockEntity blockEntity = new PBCakeBlockEntity(context.getBlockPos(), state);
         blockEntity.readComponents(context.getStack());
-        VoxelShape shape = blockEntity.toShape(state.get(Properties.HORIZONTAL_FACING));
+        VoxelShape shape = blockEntity.toShape();
         if (!context.getWorld().doesNotIntersectEntities(null, shape.offset(context.getBlockPos().getX(), context.getBlockPos().getY(), context.getBlockPos().getZ()))) return false;
         if (shape.isEmpty()) return false;
         Box box = shape.getBoundingBox().offset(context.getBlockPos());

@@ -137,7 +137,7 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
         if (!(world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake)) {
             return VoxelShapes.fullCube();
         }
-        return VoxelShapes.union(cake.toShape(state.get(Properties.HORIZONTAL_FACING)), Block.createCuboidShape(7.0f, cake.getHeight(), 7.0f, 9.0f, cake.getHeight() + 6.0f, 9.0f));
+        return VoxelShapes.union(cake.toShape(), Block.createCuboidShape(7.0f, cake.getHeight(), 7.0f, 9.0f, cake.getHeight() + 6.0f, 9.0f));
     }
 
     @Override

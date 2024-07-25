@@ -73,7 +73,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         if (!(world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake)) {
             return Blocks.CAKE.getDefaultState().getOutlineShape(world, pos, context);
         }
-        return cake.toShape(state.get(Properties.HORIZONTAL_FACING));
+        return cake.toShape();
     }
 
     @Override
@@ -270,8 +270,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
 
         if (batterList.getFirst().getSizeContainer().getSize() / 2.0f - batterList.getFirst().getSizeContainer().getBites() <= cake.getBatterList().getLast().getSizeContainer().getSize() / 2.0f - cake.getBatterList().getLast().getSizeContainer().getBites()) {
             float batterListHeight = (float) batterList.stream().mapToDouble((batter) -> batter.getSizeContainer().getHeight()).sum();
-            Direction direction = cake.getWorld().getBlockState(cake.getPos()).getOrEmpty(Properties.HORIZONTAL_FACING).orElse(Direction.NORTH);
-            return cake.getHeight() + batterListHeight <= PedrosBakery.CONFIG.maxCakeHeight() && (!cake.hasWorld() || cake.getWorld().doesNotIntersectEntities(null, PBCakeBlockEntity.toShape(batterList, direction).offset(cake.getPos().getX(), cake.getPos().getY() + cake.getHeight() / 16.0f, cake.getPos().getZ()))) && cake.getBatterList().addAll(batterList);
+            return cake.getHeight() + batterListHeight <= PedrosBakery.CONFIG.maxCakeHeight() && (!cake.hasWorld() || cake.getWorld().doesNotIntersectEntities(null, PBCakeBlockEntity.toShape(batterList, cake.getCachedState(), cake.getWorld(), cake.getPos()).offset(cake.getPos().getX(), cake.getPos().getY() + cake.getHeight() / 16.0f, cake.getPos().getZ()))) && cake.getBatterList().addAll(batterList);
         }
 
         return false;

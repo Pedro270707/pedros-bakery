@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -18,11 +19,12 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
 import net.pedroricardo.block.helpers.size.BatterSizeContainer;
 import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
@@ -158,13 +160,13 @@ public class CakeBatter<S extends BatterSizeContainer> {
         return ActionResult.FAIL;
     }
 
-    public void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
-        this.getFlavor().tick(this, world, pos, state, blockEntity);
-        if (this.getTop().isPresent()) {
-            this.getTop().get().tick(this, world, pos, state, blockEntity);
+    public static void tick(CakeBatter<?> batter, List<? extends CakeBatter<?>> batterList, World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+        batter.getFlavor().tick(batter, batterList, world, pos, state, blockEntity);
+        if (batter.getTop().isPresent()) {
+            batter.getTop().get().tick(batter, batterList, world, pos, state, blockEntity);
         }
-        for (CakeFeature feature : this.getFeatures()) {
-            feature.tick((CakeBatter<FullBatterSizeContainer>) this, world, pos, state, blockEntity);
+        for (CakeFeature feature : batter.getFeatures()) {
+            feature.tick(batter, batterList, world, pos, state, blockEntity);
         }
     }
 
@@ -225,6 +227,10 @@ public class CakeBatter<S extends BatterSizeContainer> {
 
     public CakeBatter<S> withFeature(CakeFeature feature) {
         return this.withFeature(feature, new NbtCompound());
+    }
+
+    public VoxelShape getShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return this.getSizeContainer().getShape(state, world, pos, context);
     }
 
     public boolean isEmpty() {

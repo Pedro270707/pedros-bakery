@@ -14,6 +14,8 @@ import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class CakeFeature {
     private final RegistryEntry.Reference<CakeFeature> registryEntry = CakeFeatures.REGISTRY.createEntry(this);
 
@@ -26,7 +28,7 @@ public class CakeFeature {
         return ActionResult.PASS;
     }
 
-    public void tick(CakeBatter<FullBatterSizeContainer> layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void tick(CakeBatter<?> batter, List<? extends CakeBatter<?>> batterList, World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
     }
 
     public boolean canBeApplied(PlayerEntity player, ItemStack stack, CakeBatter<FullBatterSizeContainer> layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {

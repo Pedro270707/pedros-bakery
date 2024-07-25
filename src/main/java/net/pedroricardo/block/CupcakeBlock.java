@@ -63,7 +63,13 @@ public class CupcakeBlock extends BlockWithEntity {
 
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return createCuboidShape(5.5, 0.0, 5.5, 10.5, 6.5, 10.5);
+        VoxelShape shape;
+        if (world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake) {
+            shape = cupcake.getBatter().getShape(state, world, pos, context).offset(0.0, 0.15625, 0.0);
+        } else {
+            shape = VoxelShapes.empty();
+        }
+        return VoxelShapes.union(createCuboidShape(6.0, 0.0, 6.0, 10.0, 4.0, 10.0), shape);
     }
 
     @Override

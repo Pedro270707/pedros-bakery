@@ -2,13 +2,17 @@ package net.pedroricardo.block.helpers.size;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 import java.util.Objects;
@@ -49,6 +53,11 @@ public class HeightOnlyBatterSizeContainer extends BatterSizeContainer {
     @Override
     public HeightOnlyBatterSizeContainer copy() {
         return new HeightOnlyBatterSizeContainer(this.getHeight());
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, this.getHeight(), 16.0);
     }
 
     @Override

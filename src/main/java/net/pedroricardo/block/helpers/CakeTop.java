@@ -12,8 +12,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class CakeTop {
     private final CakeTop base;
@@ -49,7 +50,7 @@ public class CakeTop {
     public void onDrink(ItemStack stack, World world, LivingEntity user) {
     }
 
-    public void tick(CakeBatter<?> layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void tick(CakeBatter<?> batter, List<? extends CakeBatter<?>> batterList, World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
     }
 
     public final CakeTop base() {
