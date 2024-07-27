@@ -164,8 +164,10 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         if (!player.isCreative() && cake.getBatterList().size() > layerIndex + 1 && cake.getBatterList().get(layerIndex + 1).getSizeContainer().getSize() / 2.0f - cake.getBatterList().get(layerIndex + 1).getSizeContainer().getBites() > cake.getBatterList().get(layerIndex).getSizeContainer().getSize() / 2.0f - cake.getBatterList().get(layerIndex).getSizeContainer().getBites() - biteSize) {
             return ActionResult.PASS;
         }
-        changeState(player, world, pos, state);
         ActionResult result = cake.getBatterList().get(layerIndex).bite(world, pos, state, player, cake, biteSize);
+        if (result.isAccepted()) {
+            changeState(player, world, pos, state);
+        }
         if (cake.getBatterList().size() == 1 && cake.getBatterList().get(layerIndex).isEmpty()) {
             cake.removeAllParts(world);
             world.removeBlock(pos, false);
