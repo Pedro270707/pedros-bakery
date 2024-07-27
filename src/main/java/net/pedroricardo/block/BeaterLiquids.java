@@ -46,6 +46,7 @@ public enum BeaterLiquids implements StringIdentifiable {
             return ItemActionResult.SUCCESS;
         } else if (stack.isOf(PBItems.FROSTING_BOTTLE)) {
             if (player instanceof ServerPlayerEntity serverPlayer) {
+                Criteria.CONSUME_ITEM.trigger(serverPlayer, stack);
                 serverPlayer.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
             }
             beater.setTop(stack.get(PBComponentTypes.TOP));

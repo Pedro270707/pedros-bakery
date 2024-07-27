@@ -1,6 +1,7 @@
 package net.pedroricardo.block;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -12,6 +13,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -48,6 +50,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCakeBlockEntity, PBCakeBlockEntityPart, PBCakeBlockPart> {
@@ -215,6 +218,10 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         CakeBatter<FullBatterSizeContainer> clickedBatter = getClickedBatter(cake.getBatterList(), hit);
         CakeTop top = stack.get(PBComponentTypes.TOP);
         if (stack.isOf(PBItems.FROSTING_BOTTLE) && clickedBatter.getTop().orElse(null) != top) {
+            if (player instanceof ServerPlayerEntity serverPlayer) {
+                Criteria.CONSUME_ITEM.trigger(serverPlayer, stack);
+                serverPlayer.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+            }
             clickedBatter.withTop(top);
             PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.GLASS_BOTTLE));
             PBHelpers.updateListeners(cake);
@@ -222,7 +229,30 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         }
 
         if (stack.isOf(Items.HONEYCOMB) && clickedBatter.setWaxed(true)) {
+            if (player instanceof ServerPlayerEntity serverPlayer) {
+                Criteria.CONSUME_ITEM.trigger(serverPlayer, stack);
+                serverPlayer.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+            }
+            stack.decrementUnlessCreative(1, player);
             world.syncWorldEvent(player, WorldEvents.BLOCK_WAXED, pos, 0);
+            PBHelpers.updateListeners(cake);
+            return ItemActionResult.SUCCESS;
+        }
+
+        if (stack.isOf(Items.MILK_BUCKET) && !clickedBatter.isWaxed()) {
+            if (player instanceof ServerPlayerEntity serverPlayer) {
+                Criteria.CONSUME_ITEM.trigger(serverPlayer, stack);
+                serverPlayer.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+            }
+            clickedBatter.withTop(null);
+            clickedBatter.withFeatures(Map.of());
+            world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+            world.playSound(player, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            if (!player.isInCreativeMode()) {
+                PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.BUCKET), false);
+            }
+            PBHelpers.updateListeners(cake);
+
             return ItemActionResult.SUCCESS;
         }
 
