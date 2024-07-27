@@ -131,6 +131,10 @@ public class PedrosBakery implements ModInitializer {
 			ctx.modify(Items.LILY_OF_THE_VALLEY, builder ->
 					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.LILY_OF_THE_VALLEY))
 			);
+
+			ctx.modify(Items.GLASS, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GLASS))
+			);
 		});
 	}
 }

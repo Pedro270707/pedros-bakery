@@ -171,5 +171,6 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		CakeFeatureRendererRegistry.register(CakeFeatures.GREEN_SPRINKLES, cakeLayerFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.RED_SPRINKLES, cakeLayerFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.BLACK_SPRINKLES, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.GLASS, cakeLayerFeatureRenderer);
 	}
 }

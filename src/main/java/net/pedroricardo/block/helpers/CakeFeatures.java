@@ -58,6 +58,7 @@ public class CakeFeatures {
     public static final CakeFeature GREEN_SPRINKLES = register("green_sprinkles", new SprinklesCakeFeature());
     public static final CakeFeature RED_SPRINKLES = register("red_sprinkles", new SprinklesCakeFeature());
     public static final CakeFeature BLACK_SPRINKLES = register("black_sprinkles", new SprinklesCakeFeature());
+    public static final CakeFeature GLASS = register("glass", new CakeFeature());
 
     public static void init() {
         PedrosBakery.LOGGER.debug("Initializing feature registry");
