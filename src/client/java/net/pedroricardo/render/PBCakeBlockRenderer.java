@@ -66,12 +66,13 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
                         float scaleMultiplier = 1.0f;
                         if (MinecraftClient.getInstance().cameraEntity != null && entity.hasWorld()) {
                             double d = MinecraftClient.getInstance().cameraEntity.getX() - (entity.getPos().getX() + 0.5);
-                            double e = MinecraftClient.getInstance().cameraEntity.getEyeY() - (entity.getPos().getY() + height + layer.getSizeContainer().getHeight() / 2.0f);
+                            double e = MinecraftClient.getInstance().cameraEntity.getY() - (entity.getPos().getY() + height + layer.getSizeContainer().getHeight() / 2.0f);
                             double f = MinecraftClient.getInstance().cameraEntity.getZ() - (entity.getPos().getZ() + 0.5);
                             scaleMultiplier = MathHelper.sqrt((float) (d * d + e * e + f * f));
                         }
-                        float scale = 1.0f / 1024.0f * (i + 1) * scaleMultiplier;
-                        matrices.scale(1.0f + scale / (layer.getSizeContainer().getSize()), 1.0f + scale / (layer.getSizeContainer().getHeight()), 1.0f + scale / (layer.getSizeContainer().getSize()));
+                        float scaleWidth = 1.0f / 1024.0f * (i + 1) * scaleMultiplier / (layer.getSizeContainer().getSize());
+                        float scaleHeight = 1.0f / 1024.0f * (i + 1) * scaleMultiplier / (layer.getSizeContainer().getHeight() / 4.0f);
+                        matrices.scale(1.0f + scaleWidth, 1.0f + scaleHeight, 1.0f + scaleWidth);
                         matrices.translate(-0.5f - layer.getSizeContainer().getBites() / 32.0f, -layer.getSizeContainer().getHeight() / 32.0f, -0.5f);
                     }
                     renderer.render(feature, entity, layer, matrices, vertexConsumers, light, overlay);
