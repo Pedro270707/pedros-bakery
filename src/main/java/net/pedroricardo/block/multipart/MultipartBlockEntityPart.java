@@ -10,7 +10,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.pedroricardo.PBHelpers;
 import net.pedroricardo.mixin.ReadComponentsAccessor;
 import org.jetbrains.annotations.Nullable;
 

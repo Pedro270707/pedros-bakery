@@ -29,7 +29,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class CakeTops {

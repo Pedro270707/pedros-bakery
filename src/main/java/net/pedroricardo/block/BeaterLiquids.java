@@ -22,7 +22,6 @@ import net.pedroricardo.block.helpers.CakeFlavor;
 import net.pedroricardo.block.helpers.CakeFlavors;
 import net.pedroricardo.block.helpers.CakeTop;
 import net.pedroricardo.block.helpers.CakeTops;
-import net.pedroricardo.item.BakingTrayItem;
 import net.pedroricardo.item.BatterContainerItem;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;

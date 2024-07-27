@@ -10,8 +10,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import net.minecraft.block.Block;
-import net.minecraft.block.AbstractBlock;
 
 import java.util.List;
 
