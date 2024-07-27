@@ -99,7 +99,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		CakeFeatureRenderer cakeLayerFeatureRenderer = (feature, entity, layer, matrices, vertexConsumers, light, overlay) -> {
 			Identifier id = CakeFeatures.REGISTRY.getId(feature);
 			if (id == null) return;
-			PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(PBCakeBlockRenderer.getTopRenderLayer(Identifier.of(id.getNamespace(), "textures/entity/cake/feature/" + id.getPath() + ".png"))), light, overlay, 0xFFFFFFFF);
+			PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(Identifier.of(id.getNamespace(), "textures/entity/cake/feature/" + id.getPath() + ".png"))), light, overlay, 0xFFFFFFFF);
 		};
 		CakeFeatureRenderer blockOnTopFeatureRenderer = new CakeFeatureRenderer() {
 			@Override
@@ -139,7 +139,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			if (painting == null) return;
 			Sprite sprite = MinecraftClient.getInstance().getPaintingManager().getPaintingSprite(painting.value());
 
-			PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(PBCakeBlockRenderer.getTopRenderLayer(sprite.getAtlasId())), (16.0f - layer.getSizeContainer().getSize()) / 2.0f + layer.getSizeContainer().getBites(), (16.0f - layer.getSizeContainer().getSize()) / 2.0f, layer.getSizeContainer().getHeight(), layer.getSizeContainer().getSize() - layer.getSizeContainer().getBites(), layer.getSizeContainer().getSize(), sprite.getMinU() + (layer.getSizeContainer().getBites() / layer.getSizeContainer().getSize()) * (sprite.getMaxU() - sprite.getMinU()), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV(), 1.0f, 1.0f, light, overlay, 0xFFFFFFFF);
+			PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(sprite.getAtlasId())), (16.0f - layer.getSizeContainer().getSize()) / 2.0f + layer.getSizeContainer().getBites(), (16.0f - layer.getSizeContainer().getSize()) / 2.0f, layer.getSizeContainer().getHeight(), layer.getSizeContainer().getSize() - layer.getSizeContainer().getBites(), layer.getSizeContainer().getSize(), sprite.getMinU() + (layer.getSizeContainer().getBites() / layer.getSizeContainer().getSize()) * (sprite.getMaxU() - sprite.getMinU()), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV(), 1.0f, 1.0f, light, overlay, 0xFFFFFFFF);
 		});
 		CakeFeatureRendererRegistry.register(CakeFeatures.DANDELION, blockOnTopFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.TORCHFLOWER, blockOnTopFeatureRenderer);

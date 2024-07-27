@@ -52,7 +52,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
 
             renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getFlavor().getCakeTextureLocation())), light, getBakeTimeOverlay(layer.getBakeTime(), overlay), getBakeTimeColor(layer.getBakeTime(), 0xFFFFFFFF));
             if (layer.getTop().isPresent()) {
-                renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(getTopRenderLayer(layer.getTop().get().getCakeTextureLocation())), light, overlay, 0xFFFFFFFF);
+                renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(layer.getTop().get().getCakeTextureLocation())), light, overlay, 0xFFFFFFFF);
             }
 
             for (int i = 0; i < layer.getFeatures().size(); i++) {
@@ -240,13 +240,5 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     @Override
     public boolean rendersOutsideBoundingBox(PBCakeBlockEntity blockEntity) {
         return true;
-    }
-
-    public static RenderLayer getTopRenderLayer(Identifier texture) {
-        if (PedrosBakeryClient.isRenderingInWorld && FabricLoader.getInstance().isModLoaded("iris")) {
-            return RenderLayer.getEntityCutoutNoCullZOffset(texture);
-        } else {
-            return RenderLayer.getEntityCutout(texture);
-        }
     }
 }
