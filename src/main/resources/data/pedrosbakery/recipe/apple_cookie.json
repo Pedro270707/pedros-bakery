@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "w": {
+      "item": "minecraft:wheat"
+    },
+    "a": {
+      "item": "minecraft:apple"
+    }
+  },
+  "pattern": [
+    "waw"
+  ],
+  "result": {
+    "count": 8,
+    "id": "pedrosbakery:apple_cookie"
+  }
+}
