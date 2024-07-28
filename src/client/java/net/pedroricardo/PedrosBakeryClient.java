@@ -1,5 +1,7 @@
 package net.pedroricardo;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
@@ -7,12 +9,16 @@ import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
+import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
@@ -26,6 +32,7 @@ import net.pedroricardo.block.helpers.CakeFeatures;
 import net.pedroricardo.block.helpers.CakeTop;
 import net.pedroricardo.block.helpers.features.BlockCakeFeature;
 import net.pedroricardo.block.helpers.features.PaintingCakeFeature;
+import net.pedroricardo.block.helpers.features.PlayerHeadCakeFeature;
 import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
@@ -96,17 +103,17 @@ public class PedrosBakeryClient implements ClientModInitializer {
 
 		BlockRenderLayerMap.INSTANCE.putBlock(PBBlocks.COOKIE_JAR, RenderLayer.getCutout());
 
-		CakeFeatureRenderer cakeLayerFeatureRenderer = (feature, entity, layer, matrices, vertexConsumers, light, overlay) -> {
+		CakeFeatureRenderer cakeLayerFeatureRenderer = (feature, entity, batter, matrices, vertexConsumers, light, overlay) -> {
 			Identifier id = CakeFeatures.REGISTRY.getId(feature);
 			if (id == null) return;
-			PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(Identifier.of(id.getNamespace(), "textures/entity/cake/feature/" + id.getPath() + ".png"))), light, overlay, 0xFFFFFFFF);
+			PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), batter, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(Identifier.of(id.getNamespace(), "textures/entity/cake/feature/" + id.getPath() + ".png"))), light, overlay, 0xFFFFFFFF);
 		};
 		CakeFeatureRenderer blockOnTopFeatureRenderer = new CakeFeatureRenderer() {
 			@Override
-			public void render(CakeFeature feature, PBCakeBlockEntity entity, CakeBatter<FullBatterSizeContainer> layer, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-				if (layer.getSizeContainer().getBites() >= layer.getSizeContainer().getSize() / 2.0f || !(feature instanceof BlockCakeFeature blockFeature)) return;
+			public void render(CakeFeature feature, PBCakeBlockEntity entity, CakeBatter<FullBatterSizeContainer> batter, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+				if (batter.getSizeContainer().getBites() >= batter.getSizeContainer().getSize() / 2.0f || !(feature instanceof BlockCakeFeature blockFeature)) return;
 				matrices.push();
-				matrices.translate(0.0f, layer.getSizeContainer().getHeight() / 16.0f, 0.0f);
+				matrices.translate(0.0f, batter.getSizeContainer().getHeight() / 16.0f, 0.0f);
 				MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockFeature.getBlockState(), matrices, vertexConsumers, light, overlay);
 				matrices.pop();
 			}
@@ -118,8 +125,8 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		};
 		CakeFeatureRendererRegistry.register(CakeFeatures.GLINT, new CakeFeatureRenderer() {
 			@Override
-			public void render(CakeFeature feature, PBCakeBlockEntity entity, CakeBatter<FullBatterSizeContainer> layer, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-				PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getDirectEntityGlint()), light, overlay, 0xFFFFFFFF, PBConfigModel.CakeRenderQuality.SIMPLE);
+			public void render(CakeFeature feature, PBCakeBlockEntity entity, CakeBatter<FullBatterSizeContainer> batter, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+				PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), batter, matrices, vertexConsumers.getBuffer(RenderLayer.getDirectEntityGlint()), light, overlay, 0xFFFFFFFF, PBConfigModel.CakeRenderQuality.SIMPLE);
 			}
 
 			@Override
@@ -130,16 +137,16 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		CakeFeatureRendererRegistry.register(CakeFeatures.SWEET_BERRIES, cakeLayerFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.RED_MUSHROOM, blockOnTopFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.BROWN_MUSHROOM, blockOnTopFeatureRenderer);
-		CakeFeatureRendererRegistry.register(CakeFeatures.GLOW_BERRIES, (feature, entity, layer, matrices, vertexConsumers, light, overlay) ->
-			cakeLayerFeatureRenderer.render(feature, entity, layer, matrices, vertexConsumers, LightmapTextureManager.MAX_LIGHT_COORDINATE, overlay)
+		CakeFeatureRendererRegistry.register(CakeFeatures.GLOW_BERRIES, (feature, entity, batter, matrices, vertexConsumers, light, overlay) ->
+			cakeLayerFeatureRenderer.render(feature, entity, batter, matrices, vertexConsumers, LightmapTextureManager.MAX_LIGHT_COORDINATE, overlay)
 		);
 		CakeFeatureRendererRegistry.register(CakeFeatures.HONEY, cakeLayerFeatureRenderer);
-		CakeFeatureRendererRegistry.register(CakeFeatures.PAINTING, (feature, entity, layer, matrices, vertexConsumers, light, overlay) -> {
-			RegistryEntry<PaintingVariant> painting = ((PaintingCakeFeature) feature).getPainting(layer, entity.hasWorld() ? entity.getWorld().getRegistryManager() : null);
+		CakeFeatureRendererRegistry.register(CakeFeatures.PAINTING, (feature, entity, batter, matrices, vertexConsumers, light, overlay) -> {
+			RegistryEntry<PaintingVariant> painting = ((PaintingCakeFeature) feature).getPainting(batter, entity.hasWorld() ? entity.getWorld().getRegistryManager() : null);
 			if (painting == null) return;
 			Sprite sprite = MinecraftClient.getInstance().getPaintingManager().getPaintingSprite(painting.value());
 
-			PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(sprite.getAtlasId())), (16.0f - layer.getSizeContainer().getSize()) / 2.0f + layer.getSizeContainer().getBites(), (16.0f - layer.getSizeContainer().getSize()) / 2.0f, layer.getSizeContainer().getHeight(), layer.getSizeContainer().getSize() - layer.getSizeContainer().getBites(), layer.getSizeContainer().getSize(), sprite.getMinU() + (layer.getSizeContainer().getBites() / layer.getSizeContainer().getSize()) * (sprite.getMaxU() - sprite.getMinU()), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV(), 1.0f, 1.0f, light, overlay, 0xFFFFFFFF);
+			PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(sprite.getAtlasId())), (16.0f - batter.getSizeContainer().getSize()) / 2.0f + batter.getSizeContainer().getBites(), (16.0f - batter.getSizeContainer().getSize()) / 2.0f, batter.getSizeContainer().getHeight(), batter.getSizeContainer().getSize() - batter.getSizeContainer().getBites(), batter.getSizeContainer().getSize(), sprite.getMinU() + (batter.getSizeContainer().getBites() / batter.getSizeContainer().getSize()) * (sprite.getMaxU() - sprite.getMinU()), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV(), 1.0f, 1.0f, light, overlay, 0xFFFFFFFF);
 		});
 		CakeFeatureRendererRegistry.register(CakeFeatures.DANDELION, blockOnTopFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.TORCHFLOWER, blockOnTopFeatureRenderer);
@@ -172,5 +179,25 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		CakeFeatureRendererRegistry.register(CakeFeatures.RED_SPRINKLES, cakeLayerFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.BLACK_SPRINKLES, cakeLayerFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.GLASS, cakeLayerFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.PLAYER_HEAD, (feature, entity, batter, matrices, vertexConsumers, light, overlay) -> {
+			ProfileComponent component = ((PlayerHeadCakeFeature) feature).getProfileComponent(batter);
+			GameProfile profile = component == null ? null : component.gameProfile();
+			drawPlayerHead(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(MinecraftClient.getInstance().getSkinProvider().getSkinTextures(profile).texture())), batter, light, overlay, MinecraftClient.getInstance().world != null && profile != null && LivingEntityRenderer.shouldFlipUpsideDown(new OtherClientPlayerEntity(MinecraftClient.getInstance().world, profile)));
+		});
+	}
+
+	public static void drawPlayerHead(MatrixStack matrices, VertexConsumer vertexConsumer, CakeBatter<FullBatterSizeContainer> batter, int light, int overlay, boolean upsideDown) {
+		int i = 8 + (upsideDown ? 8 : 0);
+		int j = 8 + (upsideDown ? 0 : 8);
+		PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, (8.0f - batter.getSizeContainer().getSize() / 2.0f) + batter.getSizeContainer().getBites(), (8.0f - batter.getSizeContainer().getSize() / 2.0f), batter.getSizeContainer().getHeight(), batter.getSizeContainer().getSize() - batter.getSizeContainer().getBites(), batter.getSizeContainer().getSize(), 8 + (batter.getSizeContainer().getBites() / batter.getSizeContainer().getSize()) * 8, i, 16, j, 64, 64, light, overlay, 0xFFFFFFFF);
+		drawPlayerHat(matrices, vertexConsumer, batter, light, overlay, upsideDown);
+	}
+
+	private static void drawPlayerHat(MatrixStack matrices, VertexConsumer vertexConsumer, CakeBatter<FullBatterSizeContainer> batter, int light, int overlay, boolean upsideDown) {
+		int i = 8 + (upsideDown ? 8 : 0);
+		int j = 8 + (upsideDown ? 0 : 8);
+		RenderSystem.enableBlend();
+		PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumer, (8.0f - batter.getSizeContainer().getSize() / 2.0f) + batter.getSizeContainer().getBites(), (8.0f - batter.getSizeContainer().getSize() / 2.0f), batter.getSizeContainer().getHeight(), batter.getSizeContainer().getSize() - batter.getSizeContainer().getBites(), batter.getSizeContainer().getSize(), 40 + (batter.getSizeContainer().getBites() / batter.getSizeContainer().getSize()) * 8, i, 48, j, 64, 64, light, overlay, 0xFFFFFFFF);
+		RenderSystem.disableBlend();
 	}
 }

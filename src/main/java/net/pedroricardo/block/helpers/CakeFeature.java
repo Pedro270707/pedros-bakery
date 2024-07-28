@@ -24,7 +24,7 @@ public class CakeFeature {
         return "feature.pedrosbakery." + CakeFeatures.REGISTRY.getId(this).getPath();
     }
 
-    public ActionResult onTryEat(CakeBatter<?> layer, World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity) {
+    public ActionResult onTryEat(CakeBatter<?> batter, World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity) {
         return ActionResult.PASS;
     }
 
@@ -46,13 +46,13 @@ public class CakeFeature {
         return this.getRegistryEntry().isIn(tag);
     }
 
-    public NbtCompound getData(CakeBatter<?> layer) {
-        return layer.getFeatureMap().get(this);
+    public NbtCompound getNbt(CakeBatter<?> batter) {
+        return batter.getFeatureMap().get(this);
     }
 
-    public void saveData(CakeBatter<?> layer, NbtCompound data) {
-        if (layer.getFeatureMap().containsKey(this)) {
-            layer.getFeatureMap().put(this, data);
+    public void writeNbt(CakeBatter<?> batter, NbtCompound data) {
+        if (batter.getFeatureMap().containsKey(this)) {
+            batter.getFeatureMap().put(this, data);
         }
     }
 }

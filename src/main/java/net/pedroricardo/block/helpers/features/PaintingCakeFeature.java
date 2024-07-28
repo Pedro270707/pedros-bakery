@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CakeFeature;
+import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
 import org.apache.commons.compress.utils.Lists;
 
 import java.util.List;
@@ -26,11 +27,11 @@ import java.util.Optional;
 
 public class PaintingCakeFeature extends CakeFeature {
     @Override
-    public void onPlaced(PlayerEntity player, ItemStack stack, CakeBatter layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void onPlaced(PlayerEntity player, ItemStack stack, CakeBatter<FullBatterSizeContainer> layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         if (world.isClient()) return;
         NbtComponent nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
         nbt.get(world.getRegistryManager().getOps(NbtOps.INSTANCE), PaintingEntity.VARIANT_MAP_CODEC).result().ifPresentOrElse(variant ->
-                this.saveData(layer, (NbtCompound) PaintingEntity.VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, variant).result().orElse(new NbtCompound())), () -> {
+                this.writeNbt(layer, (NbtCompound) PaintingEntity.VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, variant).result().orElse(new NbtCompound())), () -> {
             List<RegistryEntry<PaintingVariant>> list = Lists.newArrayList();
             world.getRegistryManager().get(RegistryKeys.PAINTING_VARIANT).iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
             if (list.isEmpty()) {
@@ -40,20 +41,20 @@ public class PaintingCakeFeature extends CakeFeature {
             if (optional.isEmpty()) {
                 return;
             }
-            this.saveData(layer, (NbtCompound) PaintingEntity.VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, optional.get()).result().orElse(new NbtCompound()));
+            this.writeNbt(layer, (NbtCompound) PaintingEntity.VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, optional.get()).result().orElse(new NbtCompound()));
         });
     }
 
     @Override
-    public boolean canBeApplied(PlayerEntity player, ItemStack stack, CakeBatter layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public boolean canBeApplied(PlayerEntity player, ItemStack stack, CakeBatter<FullBatterSizeContainer> layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         if (super.canBeApplied(player, stack, layer, world, pos, state, blockEntity)) return true;
         RegistryEntry<PaintingVariant> registryEntry = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT).get(world.getRegistryManager().getOps(NbtOps.INSTANCE), PaintingEntity.VARIANT_MAP_CODEC).result().orElse(null);
         if (registryEntry == null) return true;
-        RegistryEntry<PaintingVariant> entryOnLayer = PaintingEntity.VARIANT_ENTRY_CODEC.parse(NbtOps.INSTANCE, this.getData(layer)).result().orElse(null);
+        RegistryEntry<PaintingVariant> entryOnLayer = PaintingEntity.VARIANT_ENTRY_CODEC.parse(NbtOps.INSTANCE, this.getNbt(layer)).result().orElse(null);
         return entryOnLayer == null || !entryOnLayer.value().equals(registryEntry.value());
     }
 
-    public RegistryEntry<PaintingVariant> getPainting(CakeBatter layer, DynamicRegistryManager registry) {
-        return PaintingEntity.VARIANT_ENTRY_CODEC.parse(NbtOps.INSTANCE, this.getData(layer)).result().orElse(registry == null ? null : registry.get(RegistryKeys.PAINTING_VARIANT).getDefaultEntry().orElseThrow());
+    public RegistryEntry<PaintingVariant> getPainting(CakeBatter<?> layer, DynamicRegistryManager registry) {
+        return PaintingEntity.VARIANT_ENTRY_CODEC.parse(NbtOps.INSTANCE, this.getNbt(layer)).result().orElse(registry == null ? null : registry.get(RegistryKeys.PAINTING_VARIANT).getDefaultEntry().orElseThrow());
     }
 }
