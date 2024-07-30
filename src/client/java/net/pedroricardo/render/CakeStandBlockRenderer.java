@@ -15,6 +15,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.BlockItem;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import net.pedroricardo.PedrosBakery;
@@ -48,6 +49,12 @@ public class CakeStandBlockRenderer implements BlockEntityRenderer<ItemStandBloc
 
     @Override
     public void render(ItemStandBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        BlockState state = entity.getCachedState();
+        matrices.translate(0.5f, 0.5f, 0.5f);
+        if (state.contains(Properties.HORIZONTAL_FACING)) {
+            matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(state.get(Properties.HORIZONTAL_FACING).asRotation()));
+        }
+        matrices.translate(-0.5f, -0.5f, -0.5f);
         matrices.push();
         matrices.scale(-1.0f, -1.0f, 1.0f);
         matrices.translate(-0.5f, -1.5f, 0.5f);
@@ -59,16 +66,16 @@ public class CakeStandBlockRenderer implements BlockEntityRenderer<ItemStandBloc
             matrices.translate(0.5f, 0.0625f, 0.5f);
             matrices.scale(0.75f, 0.75f, 0.75f);
             matrices.translate(-0.5f, 0.0f, -0.5f);
-            BlockState state = blockItem.getBlock().getDefaultState();
-            if (state.hasBlockEntity()) {
-                BlockEntity blockEntity = ((BlockEntityProvider) blockItem.getBlock()).createBlockEntity(entity.getPos(), state);
+            BlockState itemState = blockItem.getBlock().getDefaultState();
+            if (itemState.hasBlockEntity()) {
+                BlockEntity blockEntity = ((BlockEntityProvider) blockItem.getBlock()).createBlockEntity(entity.getPos(), itemState);
                 if (blockEntity != null) {
                     blockEntity.readComponents(entity.getStack());
                     this.blockEntityRenderer.renderEntity(blockEntity, matrices, vertexConsumers, light, overlay);
                 }
             }
-            if (state.getRenderType() == BlockRenderType.MODEL) {
-                this.blockRenderer.renderBlockAsEntity(state, matrices, vertexConsumers, light, overlay);
+            if (itemState.getRenderType() == BlockRenderType.MODEL) {
+                this.blockRenderer.renderBlockAsEntity(itemState, matrices, vertexConsumers, light, overlay);
             }
         } else {
             matrices.translate(0.5f, 0.0859375f, 0.5f);

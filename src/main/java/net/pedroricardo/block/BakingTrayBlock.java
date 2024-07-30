@@ -30,6 +30,7 @@ import java.util.List;
 
 public class BakingTrayBlock extends BlockWithEntity implements MultipartBlock<BakingTrayBlockEntity, BakingTrayBlockEntityPart, BakingTrayBlockPart> {
     public static final MapCodec<BakingTrayBlock> CODEC = createCodec(BakingTrayBlock::new);
+
     protected BakingTrayBlock(Settings settings) {
         super(settings);
     }

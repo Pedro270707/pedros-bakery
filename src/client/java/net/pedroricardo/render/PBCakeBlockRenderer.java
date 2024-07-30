@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntity> {
-    public static final PBCakeBlockEntity RENDER_CAKE = new PBCakeBlockEntity(BlockPos.ORIGIN, PBBlocks.CAKE.getDefaultState());
+    public static final PBCakeBlockEntity RENDER_CAKE = new PBCakeBlockEntity(BlockPos.ORIGIN, PBBlocks.CAKE.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.SOUTH));
 
     @Override
     public void render(PBCakeBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -38,16 +38,20 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     }
 
     public static void renderCake(PBCakeBlockEntity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        BlockState state = entity.getCachedState();
+        BlockState state = entity.hasWorld() ? entity.getCachedState() : PBBlocks.CAKE.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.SOUTH);
         if (state == null || entity.isRemoved()) return; // entity.isRemoved() here seems more like a hack, because it shouldn't even be here if it is removed. TODO: investigate why removed cakes are still rendered
+
+
+        matrices.translate(0.5f, 0.5f, 0.5f);
+        if (state.contains(Properties.HORIZONTAL_FACING)) {
+            matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(state.get(Properties.HORIZONTAL_FACING).asRotation()));
+        }
+        matrices.translate(-0.5f, -0.5f, -0.5f);
 
         boolean irisFix = PedrosBakeryClient.isRenderingInWorld && FabricLoader.getInstance().isModLoaded("iris");
         float height = 0.0f;
         for (CakeBatter<FullBatterSizeContainer> layer : entity.getBatterList()) {
             matrices.push();
-            matrices.translate(0.5f, 0.5f, 0.5f);
-            matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(state.get(Properties.HORIZONTAL_FACING).asRotation()));
-            matrices.translate(-0.5f, -0.5f, -0.5f);
 
             renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getFlavor().getCakeTextureLocation())), light, getBakeTimeOverlay(layer.getBakeTime(), overlay), getBakeTimeColor(layer.getBakeTime(), 0xFFFFFFFF));
             if (layer.getTop().isPresent()) {
