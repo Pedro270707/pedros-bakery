@@ -21,25 +21,22 @@ import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.ItemStandBlockEntity;
 import net.pedroricardo.model.PBModelLayers;
 
-public class CakeStandBlockRenderer implements BlockEntityRenderer<ItemStandBlockEntity> {
+public class PlateBlockRenderer implements BlockEntityRenderer<ItemStandBlockEntity> {
     private final ItemRenderer itemRenderer;
     private final BlockRenderManager blockRenderer;
     private final BlockEntityRenderDispatcher blockEntityRenderer;
-    private final ModelPart dome;
     private final ModelPart plate;
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        ModelPartData dome = modelPartData.addChild("dome", ModelPartBuilder.create().uv(0, 16).cuboid(-15.0F, -16.0F, 1.0F, 14.0F, 15.0F, 14.0F, new Dilation(0.0F)), ModelTransform.pivot(8.0F, 24.0F, -8.0F));
         ModelPartData plate = modelPartData.addChild("plate", ModelPartBuilder.create().uv(-16, 0).cuboid(-16.0F, -1.0F, 0.0F, 16.0F, 0.0F, 16.0F, new Dilation(0.0F))
                 .uv(0, 53).cuboid(-13.0F, -1.0F, 3.0F, 10.0F, 1.0F, 10.0F, new Dilation(0.0F)), ModelTransform.pivot(8.0F, 24.0F, -8.0F));
         return TexturedModelData.of(modelData, 64, 64);
     }
 
-    public CakeStandBlockRenderer(BlockEntityRendererFactory.Context ctx) {
-        ModelPart modelPart = ctx.getLayerModelPart(PBModelLayers.CAKE_STAND);
-        this.dome = modelPart.getChild("dome");
+    public PlateBlockRenderer(BlockEntityRendererFactory.Context ctx) {
+        ModelPart modelPart = ctx.getLayerModelPart(PBModelLayers.PLATE);
         this.plate = modelPart.getChild("plate");
         this.itemRenderer = ctx.getItemRenderer();
         this.blockRenderer = ctx.getRenderManager();
@@ -51,8 +48,7 @@ public class CakeStandBlockRenderer implements BlockEntityRenderer<ItemStandBloc
         matrices.push();
         matrices.scale(-1.0f, -1.0f, 1.0f);
         matrices.translate(-0.5f, -1.5f, 0.5f);
-        this.dome.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(Identifier.of(PedrosBakery.MOD_ID, "textures/entity/cake_stand.png"))), light, overlay);
-        this.plate.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(Identifier.of(PedrosBakery.MOD_ID, "textures/entity/cake_stand.png"))), light, overlay);
+        this.plate.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(Identifier.of(PedrosBakery.MOD_ID, "textures/entity/plate.png"))), light, overlay);
         matrices.pop();
 
         if (entity.getStack().getItem() instanceof BlockItem blockItem) {

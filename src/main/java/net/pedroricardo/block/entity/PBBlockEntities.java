@@ -51,6 +51,10 @@ public class PBBlockEntities {
             CakeStandBlockEntity::new,
             PBBlocks.CAKE_STAND), "cake_stand");
 
+    public static final BlockEntityType<? extends PlateBlockEntity> PLATE = register(BlockEntityType.Builder.create(
+            PlateBlockEntity::new,
+            PBBlocks.PLATE), "plate");
+
     public static final BlockEntityType<? extends CupcakeTrayBlockEntity> CUPCAKE_TRAY = register(BlockEntityType.Builder.create(
             CupcakeTrayBlockEntity::new,
             PBBlocks.CUPCAKE_TRAY), "cupcake_tray");

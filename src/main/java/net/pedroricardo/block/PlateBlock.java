@@ -12,17 +12,17 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.pedroricardo.block.entity.CakeStandBlockEntity;
+import net.pedroricardo.block.entity.PlateBlockEntity;
 import net.pedroricardo.block.tags.PBTags;
 import org.jetbrains.annotations.Nullable;
 
-public class CakeStandBlock extends ItemStandBlock<CakeStandBlockEntity> {
-    public static final MapCodec<CakeStandBlock> CODEC = createCodec(CakeStandBlock::new);
+public class PlateBlock extends ItemStandBlock<CakeStandBlockEntity> {
+    public static final MapCodec<PlateBlock> CODEC = createCodec(PlateBlock::new);
 
-    protected CakeStandBlock(Settings settings) {
+    protected PlateBlock(Settings settings) {
         super(settings);
     }
 
@@ -33,17 +33,17 @@ public class CakeStandBlock extends ItemStandBlock<CakeStandBlockEntity> {
 
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return VoxelShapes.union(Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0), Block.createCuboidShape(1.0, 1.0, 1.0, 15.0, 16.0, 15.0));
+        return Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
     }
 
     @Override
     public boolean canContain(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        return stack.isIn(PBTags.Items.CAKE_STAND_ITEM);
+        return true;
     }
 
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new CakeStandBlockEntity(pos, state);
+        return new PlateBlockEntity(pos, state);
     }
 }

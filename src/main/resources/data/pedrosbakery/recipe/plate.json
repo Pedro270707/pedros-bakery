@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "q": {
+      "item": "minecraft:quartz"
+    }
+  },
+  "pattern": [
+    "qqq"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pedrosbakery:plate"
+  }
+}

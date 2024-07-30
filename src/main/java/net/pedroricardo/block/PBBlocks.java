@@ -1,16 +1,32 @@
 package net.pedroricardo.block;
 
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.pedroricardo.PedrosBakery;
+import net.pedroricardo.block.entity.CakeStandBlockEntity;
+import net.pedroricardo.block.entity.ItemStandBlockEntity;
+import net.pedroricardo.block.entity.PBBlockEntities;
+import net.pedroricardo.block.entity.PlateBlockEntity;
 import net.pedroricardo.block.helpers.CakeBatter;
 import net.pedroricardo.block.helpers.CupcakeTrayBatter;
+import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.function.BiConsumer;
@@ -39,6 +55,7 @@ public class PBBlocks {
     public static final Block BAKING_TRAY = register("baking_tray", new BakingTrayBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.METAL).solid().hardness(1.0f).resistance(1.0f).mapColor(MapColor.OFF_WHITE).requiresTool().dynamicBounds().nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)), (name, block) -> PBItems.register(name, new BakingTrayItem(block, new Item.Settings().maxCount(1).component(PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty()).component(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()).component(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()))));
     public static final Block BAKING_TRAY_PART = registerWithoutItem("baking_tray_part", new BakingTrayBlockPart(AbstractBlock.Settings.copy(BAKING_TRAY)));
     public static final Block CAKE_STAND = register("cake_stand", new CakeStandBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.GLASS).solid().hardness(0.4f).mapColor(MapColor.OFF_WHITE).dynamicBounds().nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)));
+    public static final Block PLATE = register("plate", new PlateBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.GLASS).solid().hardness(0.4f).mapColor(MapColor.OFF_WHITE).dynamicBounds().nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)));
     public static final Block EXPANDABLE_BAKING_TRAY = register("expandable_baking_tray", new BakingTrayBlock(AbstractBlock.Settings.copy(BAKING_TRAY)), (name, block) -> PBItems.register(name, new ExpandableBakingTrayItem(block, new Item.Settings().maxCount(1).component(PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty()).component(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()).component(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()))));
     public static final Block CUPCAKE_TRAY = register("cupcake_tray", new CupcakeTrayBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.METAL).solid().hardness(1.0f).resistance(1.0f).mapColor(MapColor.OFF_WHITE).requiresTool().dynamicBounds().nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)), (name, block) -> PBItems.register(name, new CupcakeTrayItem(block, new Item.Settings().maxCount(1).component(PBComponentTypes.CUPCAKE_TRAY_BATTER, CupcakeTrayBatter.getEmpty()))));
     public static final Block CUPCAKE = register("cupcake", new CupcakeBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.WOOL).hardness(0.5f).resistance(0.5f).mapColor(MapColor.OFF_WHITE).dynamicBounds().nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)), (name, block) -> PBItems.register(name, new CupcakeItem(block, new Item.Settings())));

@@ -3,16 +3,15 @@
   "category": "misc",
   "key": {
     "g": {
-      "item": "minecraft:glass"
+      "item": "minecraft:glass_pane"
     },
-    "w": {
-      "item": "minecraft:white_stained_glass"
+    "p": {
+      "item": "pedrosbakery:plate"
     }
   },
   "pattern": [
     "ggg",
-    "g g",
-    "www"
+    "gpg"
   ],
   "result": {
     "count": 1,
