@@ -80,6 +80,7 @@ public class CakeStandBlockRenderer implements BlockEntityRenderer<ItemStandBloc
         } else {
             matrices.translate(0.5f, 0.0859375f, 0.5f);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0f));
             matrices.scale(0.5f, 0.5f, 0.5f);
             this.itemRenderer.renderItem(entity.getStack(), ModelTransformationMode.FIXED, light, overlay, matrices, vertexConsumers, entity.getWorld(), (int) entity.getPos().asLong());
         }

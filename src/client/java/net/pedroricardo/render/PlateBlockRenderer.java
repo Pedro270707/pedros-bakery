@@ -61,9 +61,6 @@ public class PlateBlockRenderer implements BlockEntityRenderer<ItemStandBlockEnt
         if (entity.getStack().getItem() instanceof BlockItem blockItem) {
             matrices.translate(0.5f, 0.0625f, 0.5f);
             matrices.scale(0.75f, 0.75f, 0.75f);
-//            if (state.contains(Properties.HORIZONTAL_FACING)) {
-//                matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(state.get(Properties.HORIZONTAL_FACING).asRotation()));
-//            }
             matrices.translate(-0.5f, 0.0f, -0.5f);
             BlockState itemState = blockItem.getBlock().getDefaultState();
             if (itemState.hasBlockEntity()) {
@@ -78,10 +75,8 @@ public class PlateBlockRenderer implements BlockEntityRenderer<ItemStandBlockEnt
             }
         } else {
             matrices.translate(0.5f, 0.0859375f, 0.5f);
-//            if (state.contains(Properties.HORIZONTAL_FACING)) {
-//                matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(state.get(Properties.HORIZONTAL_FACING).asRotation() + 180.0f));
-//            }
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0f));
             matrices.scale(0.5f, 0.5f, 0.5f);
             this.itemRenderer.renderItem(entity.getStack(), ModelTransformationMode.FIXED, light, overlay, matrices, vertexConsumers, entity.getWorld(), (int) entity.getPos().asLong());
         }

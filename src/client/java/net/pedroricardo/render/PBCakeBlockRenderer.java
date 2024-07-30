@@ -41,7 +41,6 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         BlockState state = entity.hasWorld() ? entity.getCachedState() : PBBlocks.CAKE.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.SOUTH);
         if (state == null || entity.isRemoved()) return; // entity.isRemoved() here seems more like a hack, because it shouldn't even be here if it is removed. TODO: investigate why removed cakes are still rendered
 
-
         matrices.translate(0.5f, 0.5f, 0.5f);
         if (state.contains(Properties.HORIZONTAL_FACING)) {
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(state.get(Properties.HORIZONTAL_FACING).asRotation()));
