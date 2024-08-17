@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -19,12 +20,21 @@ import org.jetbrains.annotations.Nullable;
 public class PlayerHeadCakeFeature extends CakeFeature {
     @Nullable
     public ProfileComponent getProfileComponent(CakeBatter<?> batter) {
-        return ProfileComponent.CODEC.parse(NbtOps.INSTANCE, this.getNbt(batter)).result().orElse(null);
+        if (!this.getNbt(batter).contains("profile", NbtElement.COMPOUND_TYPE)) {
+            return null;
+        }
+        return ProfileComponent.CODEC.parse(NbtOps.INSTANCE, this.getNbt(batter).getCompound("profile")).result().orElse(null);
     }
 
     public void setProfileComponent(CakeBatter<?> batter, @Nullable ProfileComponent component) {
-        if (component == null) return;
-        this.writeNbt(batter, (NbtCompound) ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, component).result().orElse(new NbtCompound()));
+        NbtCompound nbt = this.getNbt(batter);
+        if (component == null) {
+            nbt.remove("profile");
+        } else {
+            NbtCompound profileNbt = (NbtCompound) ProfileComponent.CODEC.encodeStart(NbtOps.INSTANCE, component).result().orElse(new NbtCompound());
+            nbt.put("profile", profileNbt);
+        }
+        this.writeNbt(batter, nbt);
     }
 
     @Override

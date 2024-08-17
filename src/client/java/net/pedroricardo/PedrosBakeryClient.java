@@ -17,6 +17,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
@@ -183,7 +184,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		CakeFeatureRendererRegistry.register(CakeFeatures.PLAYER_HEAD, (feature, entity, batter, matrices, vertexConsumers, light, overlay) -> {
 			ProfileComponent component = ((PlayerHeadCakeFeature) feature).getProfileComponent(batter);
 			GameProfile profile = component == null ? null : component.gameProfile();
-			drawPlayerHead(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(MinecraftClient.getInstance().getSkinProvider().getSkinTextures(profile).texture())), batter, light, overlay, MinecraftClient.getInstance().world != null && profile != null && LivingEntityRenderer.shouldFlipUpsideDown(new OtherClientPlayerEntity(MinecraftClient.getInstance().world, profile)));
+			drawPlayerHead(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(profile == null ? DefaultSkinHelper.getTexture() : MinecraftClient.getInstance().getSkinProvider().getSkinTextures(profile).texture())), batter, light, overlay, MinecraftClient.getInstance().world != null && profile != null && LivingEntityRenderer.shouldFlipUpsideDown(new OtherClientPlayerEntity(MinecraftClient.getInstance().world, profile)));
 		});
 	}
 
