@@ -105,6 +105,7 @@ public class CakeTops {
         }
     });
     public static final CakeTop RED_MUSHROOM = register("red_mushroom", new CakeTop(SUGAR, Ingredient.ofItems(Items.RED_MUSHROOM), 0xFFC92B29));
+    public static final CakeTop BROWN_MUSHROOM = register("brown_mushroom", new CakeTop(SUGAR, Ingredient.ofItems(Items.BROWN_MUSHROOM), 0xFF977251));
     public static final CakeTop SWEET_BERRY = register("sweet_berry", new CakeTop(SUGAR, Ingredient.ofItems(Items.SWEET_BERRIES), 0xFFF6C9BD));
     public static final CakeTop DIRT = register("dirt", new CakeTop(SUGAR, Ingredient.ofItems(Items.DIRT), 0xFF79553A));
     public static final CakeTop GRASS = register("grass", new CakeTop(SUGAR, Ingredient.ofItems(Items.SHORT_GRASS, Items.TALL_GRASS), 0xFF486E3E));
