@@ -34,10 +34,6 @@ public abstract class PBAbstractCandleCakeBlock extends BlockWithEntity {
 
     protected abstract Iterable<Vec3d> getParticleOffsets(BlockState state, WorldAccess world, BlockPos pos);
 
-    public static boolean isLitCandle(BlockState state) {
-        return state.contains(LIT) && (state.isIn(BlockTags.CANDLES) || state.isIn(BlockTags.CANDLE_CAKES)) && state.get(LIT);
-    }
-
     @Override
     protected void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
         if (!world.isClient && projectile.isOnFire() && this.isNotLit(state)) {
