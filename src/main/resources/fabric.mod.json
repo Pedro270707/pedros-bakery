@@ -16,10 +16,13 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-          "net.pedroricardo.PedrosBakery"
+          	"net.pedroricardo.PedrosBakery"
 		],
 		"client": [
-          "net.pedroricardo.PedrosBakeryClient"
+			"net.pedroricardo.PedrosBakeryClient"
+		],
+		"fabric-datagen": [
+			"net.pedroricardo.datagen.PedrosBakeryDatagen"
 		]
 	},
 	"mixins": [
