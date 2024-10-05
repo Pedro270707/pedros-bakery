@@ -9,7 +9,7 @@ import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.block.helpers.CakeBatter;
+import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.item.PBComponentTypes;
 
 public class ExpandableBakingTrayRecipe extends SpecialCraftingRecipe {

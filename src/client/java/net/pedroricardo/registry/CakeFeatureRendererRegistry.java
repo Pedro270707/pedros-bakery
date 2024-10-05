@@ -1,7 +1,7 @@
 package net.pedroricardo.registry;
 
 import com.google.common.collect.Maps;
-import net.pedroricardo.block.helpers.CakeFeature;
+import net.pedroricardo.block.extras.CakeFeature;
 
 import java.util.Map;
 

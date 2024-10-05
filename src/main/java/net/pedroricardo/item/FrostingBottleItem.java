@@ -17,7 +17,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import net.pedroricardo.block.helpers.CakeTop;
+import net.pedroricardo.block.extras.CakeTop;
 import net.pedroricardo.block.tags.PBTags;
 
 import java.util.List;

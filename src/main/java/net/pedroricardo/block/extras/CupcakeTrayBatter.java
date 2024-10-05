@@ -1,4 +1,4 @@
-package net.pedroricardo.block.helpers;
+package net.pedroricardo.block.extras;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -7,7 +7,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
+import net.pedroricardo.block.extras.size.FixedBatterSizeContainer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

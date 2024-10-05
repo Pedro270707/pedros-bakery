@@ -21,10 +21,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.BeaterBlock;
-import net.pedroricardo.block.helpers.CakeFlavor;
-import net.pedroricardo.block.helpers.CakeFlavors;
-import net.pedroricardo.block.helpers.CakeTop;
-import net.pedroricardo.block.helpers.CakeTops;
+import net.pedroricardo.block.extras.CakeFlavor;
+import net.pedroricardo.block.extras.CakeFlavors;
+import net.pedroricardo.block.extras.CakeTop;
+import net.pedroricardo.block.extras.CakeTops;
 import org.jetbrains.annotations.Nullable;
 
 public class BeaterBlockEntity extends BlockEntity implements Clearable {

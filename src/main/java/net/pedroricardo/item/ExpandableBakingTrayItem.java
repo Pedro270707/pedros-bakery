@@ -8,8 +8,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.helpers.CakeBatter;
-import net.pedroricardo.block.helpers.size.HeightOnlyBatterSizeContainer;
+import net.pedroricardo.block.extras.CakeBatter;
+import net.pedroricardo.block.extras.size.HeightOnlyBatterSizeContainer;
 
 public class ExpandableBakingTrayItem extends BakingTrayItem {
     public ExpandableBakingTrayItem(Block block, Settings settings) {

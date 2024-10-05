@@ -12,8 +12,8 @@ import net.minecraft.util.math.Direction;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
-import net.pedroricardo.block.helpers.CakeBatter;
-import net.pedroricardo.block.helpers.size.HeightOnlyBatterSizeContainer;
+import net.pedroricardo.block.extras.CakeBatter;
+import net.pedroricardo.block.extras.size.HeightOnlyBatterSizeContainer;
 
 public class BakingTrayBlockRenderer implements BlockEntityRenderer<BakingTrayBlockEntity> {
     public static final BakingTrayBlockEntity RENDER_TRAY = new BakingTrayBlockEntity(BlockPos.ORIGIN, PBBlocks.BAKING_TRAY.getDefaultState());

@@ -3,8 +3,8 @@ package net.pedroricardo.datagen;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.registry.RegistryWrapper;
-import net.pedroricardo.block.helpers.CakeTop;
-import net.pedroricardo.block.helpers.CakeTops;
+import net.pedroricardo.block.extras.CakeTop;
+import net.pedroricardo.block.extras.CakeTops;
 import net.pedroricardo.block.tags.PBTags;
 
 import java.util.concurrent.CompletableFuture;

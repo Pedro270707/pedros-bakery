@@ -20,8 +20,8 @@ import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
 import net.pedroricardo.block.entity.BakingTrayBlockEntityPart;
 import net.pedroricardo.block.entity.PBBlockEntities;
-import net.pedroricardo.block.helpers.CakeBatter;
-import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
+import net.pedroricardo.block.extras.CakeBatter;
+import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import org.jetbrains.annotations.Nullable;
 

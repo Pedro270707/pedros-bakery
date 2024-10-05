@@ -10,7 +10,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.block.helpers.CakeBatter;
+import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.item.PBComponentTypes;
 
 import java.util.OptionalInt;

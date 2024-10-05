@@ -8,10 +8,10 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.helpers.*;
-import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
-import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
-import net.pedroricardo.block.helpers.size.HeightOnlyBatterSizeContainer;
+import net.pedroricardo.block.extras.*;
+import net.pedroricardo.block.extras.size.FixedBatterSizeContainer;
+import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
+import net.pedroricardo.block.extras.size.HeightOnlyBatterSizeContainer;
 
 import java.util.List;
 import java.util.function.UnaryOperator;

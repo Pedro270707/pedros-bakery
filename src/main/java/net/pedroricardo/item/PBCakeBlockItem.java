@@ -12,8 +12,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
-import net.pedroricardo.block.helpers.CakeBatter;
-import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
+import net.pedroricardo.block.extras.CakeBatter;
+import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 
 import java.util.List;
 

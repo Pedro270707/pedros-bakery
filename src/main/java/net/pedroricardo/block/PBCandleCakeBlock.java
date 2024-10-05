@@ -31,7 +31,7 @@ import net.minecraft.world.WorldView;
 import net.pedroricardo.block.entity.PBBlockEntities;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.entity.PBCakeBlockEntityPart;
-import net.pedroricardo.block.helpers.CakeBatter;
+import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockPart;
 import net.pedroricardo.block.tags.PBTags;

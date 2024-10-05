@@ -5,9 +5,9 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.registry.RegistryWrapper;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.block.helpers.CakeFeatures;
-import net.pedroricardo.block.helpers.CakeFlavors;
-import net.pedroricardo.block.helpers.CakeTops;
+import net.pedroricardo.block.extras.CakeFeatures;
+import net.pedroricardo.block.extras.CakeFlavors;
+import net.pedroricardo.block.extras.CakeTops;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBItems;
 
@@ -42,11 +42,14 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBBlocks.BEATER, "Beater");
         builder.add(PBBlocks.BAKING_TRAY, "Baking Tray");
         builder.add(PBBlocks.BAKING_TRAY_PART, "Baking Tray Part");
+        builder.add(PBBlocks.BAKING_TRAY.getTranslationKey() + ".size", "%sx%sx%s");
+        builder.add(PBBlocks.BAKING_TRAY.getTranslationKey() + ".full", "%s%% full");
         builder.add(PBBlocks.CAKE_STAND, "Cake Stand");
         builder.add(PBBlocks.PLATE, "Plate");
         builder.add(PBBlocks.EXPANDABLE_BAKING_TRAY, "Expandable Baking Tray");
         builder.add(PBBlocks.CUPCAKE_TRAY, "Cupcake Tray");
         builder.add(PBBlocks.CUPCAKE, "Cupcake");
+        builder.add(PBBlocks.CUPCAKE.getTranslationKey() + ".empty", "Cupcake Liner");
         builder.add(PBBlocks.COOKIE_JAR, "Cookie Jar");
         builder.add(PBItems.FROSTING_BOTTLE, "Cookie Jar");
         builder.add(PBItems.DONUT, "Donut");

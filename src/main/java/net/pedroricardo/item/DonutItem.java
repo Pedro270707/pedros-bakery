@@ -9,7 +9,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import net.pedroricardo.block.helpers.CakeTop;
+import net.pedroricardo.block.extras.CakeTop;
 import net.pedroricardo.block.tags.PBTags;
 
 import java.util.List;

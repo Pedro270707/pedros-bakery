@@ -9,8 +9,8 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
-import net.pedroricardo.block.helpers.CakeBatter;
-import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
+import net.pedroricardo.block.extras.CakeBatter;
+import net.pedroricardo.block.extras.size.FixedBatterSizeContainer;
 import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.Nullable;
 

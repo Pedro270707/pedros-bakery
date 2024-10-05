@@ -15,7 +15,7 @@ import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PBSounds;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.helpers.CupcakeTrayBatter;
+import net.pedroricardo.block.extras.CupcakeTrayBatter;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.Nullable;

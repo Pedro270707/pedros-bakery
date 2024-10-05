@@ -1,4 +1,4 @@
-package net.pedroricardo.block.helpers;
+package net.pedroricardo.block.extras;
 
 import com.mojang.serialization.Lifecycle;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;

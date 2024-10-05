@@ -1,4 +1,4 @@
-package net.pedroricardo.block.helpers.features;
+package net.pedroricardo.block.extras.features;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.component.DataComponentTypes;
@@ -12,9 +12,9 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
-import net.pedroricardo.block.helpers.CakeBatter;
-import net.pedroricardo.block.helpers.CakeFeature;
-import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
+import net.pedroricardo.block.extras.CakeBatter;
+import net.pedroricardo.block.extras.CakeFeature;
+import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 import org.jetbrains.annotations.Nullable;
 
 public class PlayerHeadCakeFeature extends CakeFeature {

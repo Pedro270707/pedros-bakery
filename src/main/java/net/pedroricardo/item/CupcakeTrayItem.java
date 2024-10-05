@@ -7,10 +7,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.pedroricardo.PBHelpers;
-import net.pedroricardo.block.helpers.CakeBatter;
-import net.pedroricardo.block.helpers.CakeFlavor;
-import net.pedroricardo.block.helpers.CupcakeTrayBatter;
-import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
+import net.pedroricardo.block.extras.CakeBatter;
+import net.pedroricardo.block.extras.CakeFlavor;
+import net.pedroricardo.block.extras.CupcakeTrayBatter;
+import net.pedroricardo.block.extras.size.FixedBatterSizeContainer;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 

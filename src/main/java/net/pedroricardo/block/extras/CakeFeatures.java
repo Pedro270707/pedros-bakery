@@ -1,4 +1,4 @@
-package net.pedroricardo.block.helpers;
+package net.pedroricardo.block.extras;
 
 import com.mojang.serialization.Lifecycle;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
@@ -9,7 +9,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.SimpleRegistry;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.helpers.features.*;
+import net.pedroricardo.block.extras.features.*;
 
 public class CakeFeatures {
     public static final RegistryKey<Registry<CakeFeature>> REGISTRY_KEY = RegistryKey.ofRegistry(Identifier.of(PedrosBakery.MOD_ID, "cake_feature"));

@@ -1,4 +1,4 @@
-package net.pedroricardo.block.helpers.features;
+package net.pedroricardo.block.extras.features;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -9,8 +9,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
-import net.pedroricardo.block.helpers.CakeBatter;
-import net.pedroricardo.block.helpers.CakeFeature;
+import net.pedroricardo.block.extras.CakeBatter;
+import net.pedroricardo.block.extras.CakeFeature;
 
 import java.util.List;
 

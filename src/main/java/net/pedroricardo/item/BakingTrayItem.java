@@ -12,9 +12,9 @@ import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
-import net.pedroricardo.block.helpers.CakeBatter;
-import net.pedroricardo.block.helpers.CakeFlavor;
-import net.pedroricardo.block.helpers.size.HeightOnlyBatterSizeContainer;
+import net.pedroricardo.block.extras.CakeBatter;
+import net.pedroricardo.block.extras.CakeFlavor;
+import net.pedroricardo.block.extras.size.HeightOnlyBatterSizeContainer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package net.pedroricardo.block.helpers;
+package net.pedroricardo.block.extras;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;

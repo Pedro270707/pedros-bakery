@@ -1,4 +1,4 @@
-package net.pedroricardo.block.helpers.size;
+package net.pedroricardo.block.extras.size;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;

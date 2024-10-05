@@ -1,4 +1,4 @@
-package net.pedroricardo.block.helpers;
+package net.pedroricardo.block.extras;
 
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
@@ -25,10 +25,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.helpers.size.BatterSizeContainer;
-import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
-import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
-import net.pedroricardo.block.helpers.size.HeightOnlyBatterSizeContainer;
+import net.pedroricardo.block.extras.size.BatterSizeContainer;
+import net.pedroricardo.block.extras.size.FixedBatterSizeContainer;
+import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
+import net.pedroricardo.block.extras.size.HeightOnlyBatterSizeContainer;
 import net.pedroricardo.block.tags.PBTags;
 import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;

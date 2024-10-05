@@ -8,7 +8,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.helpers.*;
+import net.pedroricardo.block.extras.*;
 
 public class PBTags {
     public static class Blocks {

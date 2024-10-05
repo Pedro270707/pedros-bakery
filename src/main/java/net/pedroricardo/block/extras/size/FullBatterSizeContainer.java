@@ -1,4 +1,4 @@
-package net.pedroricardo.block.helpers.size;
+package net.pedroricardo.block.extras.size;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

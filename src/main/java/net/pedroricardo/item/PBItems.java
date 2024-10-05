@@ -7,7 +7,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.helpers.CakeFeatures;
+import net.pedroricardo.block.extras.CakeFeatures;
 
 import java.util.List;
 

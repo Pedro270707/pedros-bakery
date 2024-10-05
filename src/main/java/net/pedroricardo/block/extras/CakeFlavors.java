@@ -1,4 +1,4 @@
-package net.pedroricardo.block.helpers;
+package net.pedroricardo.block.extras;
 
 import com.mojang.serialization.Lifecycle;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.helpers.size.FullBatterSizeContainer;
+import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 
 import java.util.Optional;
 

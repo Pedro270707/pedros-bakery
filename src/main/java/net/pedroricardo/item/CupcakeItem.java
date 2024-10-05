@@ -14,9 +14,9 @@ import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.CupcakeTrayBlockEntity;
-import net.pedroricardo.block.helpers.CakeBatter;
-import net.pedroricardo.block.helpers.CupcakeTrayBatter;
-import net.pedroricardo.block.helpers.size.FixedBatterSizeContainer;
+import net.pedroricardo.block.extras.CakeBatter;
+import net.pedroricardo.block.extras.CupcakeTrayBatter;
+import net.pedroricardo.block.extras.size.FixedBatterSizeContainer;
 
 import java.util.List;
 

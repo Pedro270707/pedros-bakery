@@ -9,10 +9,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.PBCakeBlock;
-import net.pedroricardo.block.helpers.CakeBatter;
-import net.pedroricardo.block.helpers.CakeFeatures;
-import net.pedroricardo.block.helpers.CakeTop;
-import net.pedroricardo.block.helpers.CakeTops;
+import net.pedroricardo.block.extras.CakeBatter;
+import net.pedroricardo.block.extras.CakeFeatures;
+import net.pedroricardo.block.extras.CakeTop;
+import net.pedroricardo.block.extras.CakeTops;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 
