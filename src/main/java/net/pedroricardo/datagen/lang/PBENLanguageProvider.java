@@ -128,6 +128,10 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(CakeFeatures.GREEN_SPRINKLES.getTranslationKey(), "Green Sprinkles");
         builder.add(CakeFeatures.RED_SPRINKLES.getTranslationKey(), "Red Sprinkles");
         builder.add(CakeFeatures.BLACK_SPRINKLES.getTranslationKey(), "Black Sprinkles");
+        builder.add(CakeFeatures.GLASS.getTranslationKey(), "Glass");
+        builder.add(CakeFeatures.PLAYER_HEAD.getTranslationKey(), "Player Head");
+        builder.add(CakeFeatures.SHORT_GRASS.getTranslationKey(), "Short Grass");
+        builder.add(CakeFeatures.FERN.getTranslationKey(), "Fern");
         builder.add(PBTags.Blocks.BAKES_CAKE, "Bakes Cake");
         builder.add(PBTags.Blocks.CAKES, "Cakes");
         builder.add(PBTags.Blocks.CANDLE_CAKES, "Candle Cakes");

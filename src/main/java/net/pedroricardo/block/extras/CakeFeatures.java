@@ -15,8 +15,8 @@ public class CakeFeatures {
     public static final RegistryKey<Registry<CakeFeature>> REGISTRY_KEY = RegistryKey.ofRegistry(Identifier.of(PedrosBakery.MOD_ID, "cake_feature"));
     public static SimpleRegistry<CakeFeature> REGISTRY = FabricRegistryBuilder.from(new SimpleRegistry<>(REGISTRY_KEY, Lifecycle.stable(), true)).buildAndRegister();
 
-    private static CakeFeature register(String name, CakeFeature top) {
-        return Registry.register(REGISTRY, Identifier.of(PedrosBakery.MOD_ID, name), top);
+    private static CakeFeature register(String name, CakeFeature feature) {
+        return Registry.register(REGISTRY, Identifier.of(PedrosBakery.MOD_ID, name), feature);
     }
 
     public static final CakeFeature GLINT = register("glint", new CakeFeature());
@@ -60,6 +60,8 @@ public class CakeFeatures {
     public static final CakeFeature BLACK_SPRINKLES = register("black_sprinkles", new SprinklesCakeFeature());
     public static final CakeFeature GLASS = register("glass", new CakeFeature());
     public static final CakeFeature PLAYER_HEAD = register("player_head", new PlayerHeadCakeFeature());
+    public static final CakeFeature SHORT_GRASS = register("short_grass", new BlockCakeFeature(Blocks.SHORT_GRASS.getDefaultState()));
+    public static final CakeFeature FERN = register("fern", new BlockCakeFeature(Blocks.FERN.getDefaultState()));
 
     public static void init() {
         PedrosBakery.LOGGER.debug("Initializing feature registry");
