@@ -10,10 +10,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.network.OtherClientPlayerEntity;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.texture.Sprite;
@@ -186,6 +183,8 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			GameProfile profile = component == null ? null : component.gameProfile();
 			drawPlayerHead(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(profile == null ? DefaultSkinHelper.getTexture() : MinecraftClient.getInstance().getSkinProvider().getSkinTextures(profile).texture())), batter, light, overlay, MinecraftClient.getInstance().world != null && profile != null && LivingEntityRenderer.shouldFlipUpsideDown(new OtherClientPlayerEntity(MinecraftClient.getInstance().world, profile)));
 		});
+		CakeFeatureRendererRegistry.register(CakeFeatures.SHORT_GRASS, blockOnTopFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.FERN, blockOnTopFeatureRenderer);
 	}
 
 	public static void drawPlayerHead(MatrixStack matrices, VertexConsumer vertexConsumer, CakeBatter<FullBatterSizeContainer> batter, int light, int overlay, boolean upsideDown) {

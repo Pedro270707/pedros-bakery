@@ -139,6 +139,14 @@ public class PedrosBakery implements ModInitializer {
 			ctx.modify(Items.PLAYER_HEAD, builder ->
 					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.PLAYER_HEAD))
 			);
+
+			ctx.modify(Items.SHORT_GRASS, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.SHORT_GRASS))
+			);
+
+			ctx.modify(Items.FERN, builder ->
+					builder.add(PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.FERN))
+			);
 		});
 	}
 }
