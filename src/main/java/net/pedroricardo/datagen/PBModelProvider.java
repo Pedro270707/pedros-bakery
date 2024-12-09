@@ -53,7 +53,7 @@ public class PBModelProvider extends FabricModelProvider {
         blockStateModelGenerator.registerBuiltinWithParticle(PBBlocks.PLATE, TextureMap.getId(Blocks.GLASS));
         blockStateModelGenerator.registerBuiltinWithParticle(PBBlocks.EXPANDABLE_BAKING_TRAY, TextureMap.getId(Blocks.IRON_BLOCK));
         blockStateModelGenerator.registerBuiltinWithParticle(PBBlocks.CUPCAKE_TRAY, TextureMap.getId(Blocks.ANVIL));
-        blockStateModelGenerator.registerBuiltinWithParticle(PBBlocks.CUPCAKE, Identifier.of(PedrosBakery.MOD_ID, "cupcake_liner"));
+        blockStateModelGenerator.registerBuiltinWithParticle(PBBlocks.CUPCAKE, Identifier.of(PedrosBakery.MOD_ID, "item/cupcake_liner"));
         blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier.create(PBBlocks.COOKIE_JAR).coordinate(BlockStateVariantMap.create(CookieJarBlock.COOKIES)
                 .register(0, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockModelId(PBBlocks.COOKIE_JAR)))
                 .register(1, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(PBBlocks.COOKIE_JAR, "_one_cookie")))
