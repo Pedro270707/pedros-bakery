@@ -3,6 +3,7 @@
 
 ## Baking
 To bake a cake or a cupcake, you will first need a beater:
+
 ![Beater crafting recipe](beater_crafting_recipe.png)
 
 The base of any beater mixture is milk. Let's make the batter first.
