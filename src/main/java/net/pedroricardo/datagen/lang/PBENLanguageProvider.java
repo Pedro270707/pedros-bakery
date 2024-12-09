@@ -51,7 +51,7 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBBlocks.CUPCAKE, "Cupcake");
         builder.add(PBBlocks.CUPCAKE.getTranslationKey() + ".empty", "Cupcake Liner");
         builder.add(PBBlocks.COOKIE_JAR, "Cookie Jar");
-        builder.add(PBItems.FROSTING_BOTTLE, "Cookie Jar");
+        builder.add(PBItems.FROSTING_BOTTLE, "Frosting Bottle");
         builder.add(PBItems.DONUT, "Donut");
         builder.add(PBItems.WHITE_SPRINKLES, "White Sprinkles");
         builder.add(PBItems.ORANGE_SPRINKLES, "Orange Sprinkles");
