@@ -76,7 +76,7 @@ public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
                 if (i < (trayIndex - trayIndex % inventory.getWidth()) || i > trayIndex - trayIndex % inventory.getWidth() + 2) {
                     trayStack.set(PBComponentTypes.HEIGHT, Math.min(trayStack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) + 2, 16));
                 } else {
-                    trayStack.set(PBComponentTypes.SIZE, Math.min(trayStack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultSize()) + 2, 16));
+                    trayStack.set(PBComponentTypes.SIZE, Math.min(trayStack.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()) + 2, 16));
                 }
             }
         }
