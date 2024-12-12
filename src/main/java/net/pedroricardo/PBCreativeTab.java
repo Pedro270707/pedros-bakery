@@ -53,6 +53,7 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBItems.BLACK_SPRINKLES));
                 entries.add(new ItemStack(PBItems.DONUT));
                 entries.add(new ItemStack(PBItems.APPLE_COOKIE));
+                entries.add(new ItemStack(PBItems.BUTTER));
                 addBakingTrays(entries);
             }).build();
 

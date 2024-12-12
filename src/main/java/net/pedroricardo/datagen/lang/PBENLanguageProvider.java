@@ -70,6 +70,7 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBItems.RED_SPRINKLES, "Red Sprinkles");
         builder.add(PBItems.BLACK_SPRINKLES, "Black Sprinkles");
         builder.add(PBItems.APPLE_COOKIE, "Apple Cookie");
+        builder.add(PBItems.BUTTER, "Butter");
         builder.add(PBBlocks.CAKE.getTranslationKey() + ".flavor_and_top", "%s, %s");
         builder.add(PBBlocks.CAKE.getTranslationKey() + ".flavor", "%s");
         builder.add(CakeFlavors.VANILLA.getTranslationKey(), "Vanilla");
