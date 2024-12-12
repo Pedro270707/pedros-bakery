@@ -32,6 +32,7 @@ public class PBItems {
     public static final Item BLACK_SPRINKLES = register("black_sprinkles", new Item(new Item.Settings().component(PBComponentTypes.FEATURES, List.of(CakeFeatures.BLACK_SPRINKLES))));
     public static final Item APPLE_COOKIE = register("apple_cookie", new Item(new Item.Settings().food(new FoodComponent.Builder().nutrition(2).saturationModifier(0.1f).build())));
     public static final Item BUTTER = register("butter", new Item(new Item.Settings().food(new FoodComponent.Builder().nutrition(1).saturationModifier(0.1f).build())));
+    public static final Item BUTTER_CHURN_STAFF = register("butter_churn_staff", new Item(new Item.Settings().maxCount(1).maxDamage(64)));
 
     public static Item register(String id, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(PedrosBakery.MOD_ID, id), item);

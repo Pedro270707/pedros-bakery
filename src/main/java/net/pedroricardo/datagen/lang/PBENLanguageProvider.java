@@ -51,6 +51,7 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBBlocks.CUPCAKE, "Cupcake");
         builder.add(PBBlocks.CUPCAKE.getTranslationKey() + ".empty", "Cupcake Liner");
         builder.add(PBBlocks.COOKIE_JAR, "Cookie Jar");
+        builder.add(PBBlocks.BUTTER_CHURN, "Butter Churn");
         builder.add(PBItems.FROSTING_BOTTLE, "Frosting Bottle");
         builder.add(PBItems.DONUT, "Donut");
         builder.add(PBItems.WHITE_SPRINKLES, "White Sprinkles");
@@ -71,6 +72,7 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBItems.BLACK_SPRINKLES, "Black Sprinkles");
         builder.add(PBItems.APPLE_COOKIE, "Apple Cookie");
         builder.add(PBItems.BUTTER, "Butter");
+        builder.add(PBItems.BUTTER_CHURN_STAFF, "Butter Churn Staff");
         builder.add(PBBlocks.CAKE.getTranslationKey() + ".flavor_and_top", "%s, %s");
         builder.add(PBBlocks.CAKE.getTranslationKey() + ".flavor", "%s");
         builder.add(CakeFlavors.VANILLA.getTranslationKey(), "Vanilla");

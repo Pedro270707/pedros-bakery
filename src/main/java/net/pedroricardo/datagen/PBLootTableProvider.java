@@ -6,10 +6,13 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
+import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.function.CopyComponentsLootFunction;
+import net.minecraft.predicate.StatePredicate;
 import net.minecraft.registry.RegistryWrapper;
+import net.pedroricardo.block.ButterChurnBlock;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
@@ -51,5 +54,12 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
         this.addDrop(PBBlocks.CUPCAKE_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.CUPCAKE_TRAY).apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).include(PBComponentTypes.CUPCAKE_TRAY_BATTER))).build()));
         this.addDrop(PBBlocks.CUPCAKE);
         this.addDrop(PBBlocks.COOKIE_JAR);
+        this.addDrop(PBBlocks.BUTTER_CHURN, LootTable.builder()
+                .pool(LootPool.builder()
+                        .with(ItemEntry.builder(PBBlocks.BUTTER_CHURN)))
+                .pool(LootPool.builder()
+                        .with(ItemEntry.builder(PBItems.BUTTER)
+                                .conditionally(BlockStatePropertyLootCondition.builder(PBBlocks.BUTTER_CHURN)
+                                        .properties(StatePredicate.Builder.create().exactMatch(ButterChurnBlock.CHURN_STATE, ButterChurnBlock.ChurnState.BUTTER))))));
     }
 }

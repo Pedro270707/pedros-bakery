@@ -100,7 +100,9 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			return stack.get(PBComponentTypes.TOP) == null ? 0.0f : 1.0f;
 		});
 
-		BlockRenderLayerMap.INSTANCE.putBlock(PBBlocks.COOKIE_JAR, RenderLayer.getCutout());
+		BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(),
+				PBBlocks.COOKIE_JAR,
+				PBBlocks.BUTTER_CHURN);
 
 		CakeFeatureRenderer cakeLayerFeatureRenderer = (feature, entity, batter, matrices, vertexConsumers, light, overlay) -> {
 			Identifier id = CakeFeatures.REGISTRY.getId(feature);

@@ -2,6 +2,7 @@ package net.pedroricardo.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.server.recipe.ComplexRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.RecipeExporter;
@@ -55,6 +56,9 @@ public class PBRecipeProvider extends FabricRecipeProvider {
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBBlocks.CUPCAKE_TRAY).input('i', Items.IRON_INGOT).input('c', Items.COPPER_INGOT).pattern("iii").pattern("ccc").criterion(hasItem(Items.IRON_INGOT), conditionsFromItem(Items.IRON_INGOT)).criterion(hasItem(Items.COPPER_INGOT), conditionsFromItem(Items.COPPER_INGOT)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBBlocks.CUPCAKE).input('p', Items.PAPER).pattern("p p").pattern("ppp").criterion(hasItem(Items.PAPER), conditionsFromItem(Items.PAPER)).offerTo(exporter, getRecipeIdentifier(Identifier.of(PedrosBakery.MOD_ID, "cupcake_liner")));
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBBlocks.COOKIE_JAR).input('s', ItemTags.WOODEN_SLABS).input('g', Blocks.GLASS).pattern("s").pattern("g").criterion("has_cookie", conditionsFromTag(PBTags.Items.COOKIES)).offerTo(exporter);
+
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBItems.BUTTER_CHURN_STAFF).input('|', Items.STICK).input('s', ItemTags.WOODEN_SLABS).pattern("|").pattern("|").pattern("s").criterion("has_milk_bucket", conditionsFromItem(Items.MILK_BUCKET)).offerTo(exporter);
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBBlocks.BUTTER_CHURN).input('l', ItemTags.LOGS).pattern("l").pattern("l").criterion("has_milk_bucket", conditionsFromItem(Items.MILK_BUCKET)).offerTo(exporter);
 
         ComplexRecipeJsonBuilder.create(BakingTrayIncreaseRecipe::new).offerTo(exporter, "baking_tray_increase");
         ComplexRecipeJsonBuilder.create(ExpandableBakingTrayRecipe::new).offerTo(exporter, "expandable_baking_tray");

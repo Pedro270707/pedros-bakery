@@ -11,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.PedrosBakery;
+import net.pedroricardo.block.ButterChurnBlock;
 import net.pedroricardo.block.CookieJarBlock;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.item.PBItems;
@@ -69,6 +70,11 @@ public class PBModelProvider extends FabricModelProvider {
                 .register(11, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(PBBlocks.COOKIE_JAR, "_eleven_cookies")))
                 .register(12, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(PBBlocks.COOKIE_JAR, "_twelve_cookies")))
         ));
+        blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier.create(PBBlocks.BUTTER_CHURN).coordinate(BlockStateVariantMap.create(ButterChurnBlock.CHURN_STATE)
+                .register(ButterChurnBlock.ChurnState.EMPTY, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockModelId(PBBlocks.BUTTER_CHURN)))
+                .register(ButterChurnBlock.ChurnState.MILK, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(PBBlocks.BUTTER_CHURN, "_with_milk")))
+                .register(ButterChurnBlock.ChurnState.BUTTER, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(PBBlocks.BUTTER_CHURN, "_with_butter")))
+        ));
 
         blockStateModelGenerator.excludeFromSimpleItemModelGeneration(PBBlocks.CAKE);
         blockStateModelGenerator.excludeFromSimpleItemModelGeneration(PBBlocks.CUPCAKE_TRAY);
@@ -102,8 +108,10 @@ public class PBModelProvider extends FabricModelProvider {
         itemModelGenerator.register(PBItems.BLACK_SPRINKLES, Models.GENERATED);
         itemModelGenerator.register(PBItems.APPLE_COOKIE, Models.GENERATED);
         itemModelGenerator.register(PBItems.BUTTER, Models.GENERATED);
+        itemModelGenerator.register(PBItems.BUTTER_CHURN_STAFF, Models.HANDHELD);
         registerParentedItemModel(itemModelGenerator, PBBlocks.EXPANDABLE_BAKING_TRAY.asItem(), Identifier.of(PedrosBakery.MOD_ID, "item/template_baking_tray"));
         registerParentedItemModel(itemModelGenerator, PBBlocks.BAKING_TRAY.asItem(), Identifier.of(PedrosBakery.MOD_ID, "item/template_baking_tray"));
+        registerParentedItemModel(itemModelGenerator, PBBlocks.BUTTER_CHURN.asItem(), ModelIds.getBlockModelId(PBBlocks.BUTTER_CHURN));
     }
 
     private static void registerDonut(ItemModelGenerator itemModelGenerator, Item donut) {

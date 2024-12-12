@@ -35,6 +35,7 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBBlocks.CUPCAKE));
                 entries.add(new ItemStack(PBBlocks.CUPCAKE_TRAY));
                 entries.add(new ItemStack(PBBlocks.COOKIE_JAR));
+                entries.add(new ItemStack(PBBlocks.BUTTER_CHURN));
                 entries.add(new ItemStack(PBItems.WHITE_SPRINKLES));
                 entries.add(new ItemStack(PBItems.ORANGE_SPRINKLES));
                 entries.add(new ItemStack(PBItems.MAGENTA_SPRINKLES));
@@ -54,6 +55,7 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBItems.DONUT));
                 entries.add(new ItemStack(PBItems.APPLE_COOKIE));
                 entries.add(new ItemStack(PBItems.BUTTER));
+                entries.add(new ItemStack(PBItems.BUTTER_CHURN_STAFF));
                 addBakingTrays(entries);
             }).build();
 
