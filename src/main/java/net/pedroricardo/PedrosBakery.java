@@ -1,14 +1,20 @@
 package net.pedroricardo;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.item.Items;
+import net.minecraft.resource.ResourceType;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.extras.CakeFeatures;
 import net.pedroricardo.block.extras.CakeFlavors;
 import net.pedroricardo.block.extras.CakeTops;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
+import net.pedroricardo.item.recipes.MixingPattern;
+import net.pedroricardo.item.recipes.MixingPatternManager;
+import net.pedroricardo.item.recipes.MixingPatterns;
 import net.pedroricardo.item.recipes.PBRecipeSerializers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +36,8 @@ public class PedrosBakery implements ModInitializer {
 		PBComponentTypes.init();
 		PBCreativeTab.init();
 		PBRecipeSerializers.init();
+
+		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new MixingPatternManager());
 
 		DefaultItemComponentEvents.MODIFY.register((ctx) -> {
 			ctx.modify(Items.ENCHANTED_GOLDEN_APPLE, builder ->

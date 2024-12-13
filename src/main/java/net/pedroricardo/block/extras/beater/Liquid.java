@@ -32,6 +32,7 @@ import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public interface Liquid {
@@ -113,6 +114,18 @@ public interface Liquid {
         public Type getType() {
             return Type.MIXTURE;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            Mixture mixture = (Mixture) o;
+            return Objects.equals(flavor(), mixture.flavor());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(flavor());
+        }
     }
 
     record Frosting(CakeTop top) implements Liquid {
@@ -144,6 +157,18 @@ public interface Liquid {
         @Override
         public Type getType() {
             return Type.FROSTING;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            Frosting frosting = (Frosting) o;
+            return Objects.equals(top(), frosting.top());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(top());
         }
     }
 
@@ -201,6 +226,11 @@ public interface Liquid {
                 return true;
             }
             return false;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o != null && getClass() == o.getClass();
         }
     }
 }
