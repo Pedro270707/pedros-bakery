@@ -17,7 +17,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
@@ -28,7 +27,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.entity.BeaterBlockEntity;
 import net.pedroricardo.block.entity.PBBlockEntities;
 import net.pedroricardo.block.extras.beater.Liquid;
@@ -111,16 +109,19 @@ public class BeaterBlock extends BlockWithEntity {
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (!state.contains(HAS_LIQUID) || !state.get(HAS_LIQUID) || !(world.getBlockEntity(pos) instanceof BeaterBlockEntity beater) || beater.getItem().isEmpty()) return ActionResult.FAIL;
-        else {
-            player.giveItemStack(beater.getItem().copyAndEmpty());
-            return ActionResult.SUCCESS;
+        if (!state.contains(HAS_LIQUID) || !state.get(HAS_LIQUID) || !(world.getBlockEntity(pos) instanceof BeaterBlockEntity beater) || beater.getItems().isEmpty()) return ActionResult.FAIL;
+        else if (!world.isClient()) {
+            ItemStack stack = beater.getItems().getLast();
+            player.giveItemStack(stack);
+            beater.getItems().removeLast();
+            world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
         }
+        return ActionResult.success(world.isClient());
     }
 
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!(world.getBlockEntity(pos) instanceof BeaterBlockEntity beater)) return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        if (!(world.getBlockEntity(pos) instanceof BeaterBlockEntity beater) || stack.isEmpty()) return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         if (!beater.updateLiquid()) {
             BlockState newState = state;
             if (stack.isOf(Items.MILK_BUCKET)) {
@@ -173,5 +174,13 @@ public class BeaterBlock extends BlockWithEntity {
     @Override
     protected BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(Properties.HORIZONTAL_FACING)));
+    }
+
+    @Override
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!state.isOf(newState.getBlock()) && world.getBlockEntity(pos) instanceof BeaterBlockEntity beater) {
+            beater.getItems().forEach(stack -> ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), stack));
+        }
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 }

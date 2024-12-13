@@ -15,8 +15,10 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -30,18 +32,15 @@ import net.pedroricardo.block.extras.*;
 import net.pedroricardo.item.BatterContainerItem;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
+import net.pedroricardo.item.recipes.MixingPatternEntry;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 public interface Liquid {
     Codec<Liquid> CODEC = Type.CODEC.dispatch(Liquid::getType, Type::getCodec);
-
-    // TODO: get rid of this and move to data-driven recipes
-    default boolean onMix(World world, BlockState state, BlockPos pos, BeaterBlockEntity beater) {
-        return false;
-    }
 
     ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, BeaterBlockEntity beater);
 
@@ -97,17 +96,14 @@ public interface Liquid {
                 BlockState newState = state.with(BeaterBlock.HAS_LIQUID, false);
                 world.setBlockState(pos, newState);
                 beater.setLiquid(null);
+                beater.getItems().forEach(beaterStack -> ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), beaterStack));
+                beater.setItems(List.of());
                 world.emitGameEvent(GameEvent.FLUID_PICKUP, pos, GameEvent.Emitter.of(player, newState));
                 return ItemActionResult.SUCCESS;
             }
-            Optional<CakeFlavor> flavor = CakeFlavors.from(stack);
-            if (flavor.isPresent() && flavor.get().base() == this.flavor() && beater.getItem().isEmpty()) {
-                beater.setItem(stack.copyWithCount(1));
-                stack.decrementUnlessCreative(1, player);
-                world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-                return ItemActionResult.SUCCESS;
-            }
-            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            beater.addItem(stack.splitUnlessCreative(1, player));
+            world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+            return ItemActionResult.SUCCESS;
         }
 
         @Override
@@ -136,22 +132,21 @@ public interface Liquid {
             if (stack.isOf(Items.GLASS_BOTTLE)) {
                 ItemStack frostingStack = new ItemStack(PBItems.FROSTING_BOTTLE);
                 frostingStack.set(PBComponentTypes.TOP, this.top());
-                PBHelpers.decrementStackAndAdd(player, stack, frostingStack);
+                player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, frostingStack));
+                player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+
                 BlockState newState = state.with(BeaterBlock.HAS_LIQUID, false);
                 world.setBlockState(pos, newState);
                 beater.setLiquid(null);
+                beater.getItems().forEach(beaterStack -> ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), beaterStack));
+                beater.setItems(List.of());
                 world.emitGameEvent(GameEvent.FLUID_PICKUP, pos, GameEvent.Emitter.of(player, newState));
                 world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 return ItemActionResult.SUCCESS;
             }
-            CakeTop top = CakeTops.from(stack);
-            if (top != null && top.base() == this.top() && beater.getItem().isEmpty()) {
-                beater.setItem(stack.copyWithCount(1));
-                stack.decrementUnlessCreative(1, player);
-                world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-                return ItemActionResult.SUCCESS;
-            }
-            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            beater.addItem(stack.splitUnlessCreative(1, player));
+            world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+            return ItemActionResult.SUCCESS;
         }
 
         @Override
@@ -177,55 +172,26 @@ public interface Liquid {
 
         @Override
         public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, BeaterBlockEntity beater) {
-            Optional<CakeFlavor> flavor = CakeFlavors.from(stack);
             if (stack.isOf(Items.BUCKET)) {
                 if (!world.isClient()) {
                     player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.MILK_BUCKET)));
                     world.setBlockState(pos, state.with(BeaterBlock.HAS_LIQUID, false));
                     beater.setLiquid(null);
+                    beater.getItems().forEach(beaterStack -> ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), beaterStack));
+                    beater.setItems(List.of());
                     world.emitGameEvent(player, GameEvent.FLUID_PICKUP, pos);
                     world.playSound(null, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 }
                 return ItemActionResult.success(world.isClient());
             }
-            if (CakeTops.from(stack) != null || (flavor.isPresent() && flavor.get().base() == null)) {
-                if (!world.isClient()) {
-                    if (!beater.getItem().isEmpty()) {
-                        player.giveItemStack(beater.getItem());
-                        beater.setItem(ItemStack.EMPTY);
-                        world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-                    } else {
-                        beater.setItem(stack.copyWithCount(1));
-                        stack.decrementUnlessCreative(1, player);
-                        world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-                    }
-                }
-                return ItemActionResult.success(world.isClient());
-            }
-            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            beater.addItem(stack.splitUnlessCreative(1, player));
+            world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+            return ItemActionResult.SUCCESS;
         }
 
         @Override
         public Type getType() {
             return Type.MILK;
-        }
-
-        @Override
-        public boolean onMix(World world, BlockState state, BlockPos pos, BeaterBlockEntity beater) {
-            if (beater.getMixTime() <= 200) return false;
-            CakeTop top = CakeTops.from(beater.getItem());
-            if (top != null) {
-                beater.setItem(ItemStack.EMPTY);
-                beater.setLiquid(new Frosting(top));
-                return true;
-            }
-            Optional<CakeFlavor> flavor = CakeFlavors.from(beater.getItem());
-            if (flavor.isPresent() && flavor.get().base() == null) {
-                beater.setItem(ItemStack.EMPTY);
-                beater.setLiquid(new Mixture(flavor.get()));
-                return true;
-            }
-            return false;
         }
 
         @Override

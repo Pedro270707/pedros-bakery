@@ -26,6 +26,8 @@ public class PedrosBakery implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static final net.pedroricardo.PBConfig CONFIG = net.pedroricardo.PBConfig.createAndLoad();
 
+	public static final MixingPatternManager MIXING_PATTERN_MANAGER = new MixingPatternManager();
+
 	@Override
 	public void onInitialize() {
 		PBSounds.init();
@@ -37,7 +39,7 @@ public class PedrosBakery implements ModInitializer {
 		PBCreativeTab.init();
 		PBRecipeSerializers.init();
 
-		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new MixingPatternManager());
+		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(MIXING_PATTERN_MANAGER);
 
 		DefaultItemComponentEvents.MODIFY.register((ctx) -> {
 			ctx.modify(Items.ENCHANTED_GOLDEN_APPLE, builder ->

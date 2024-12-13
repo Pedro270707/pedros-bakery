@@ -10,12 +10,12 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.BeaterBlock;
 import net.pedroricardo.block.entity.BeaterBlockEntity;
 import net.pedroricardo.block.extras.beater.Liquid;
 import net.pedroricardo.model.PBModelLayers;
@@ -83,7 +83,10 @@ public class BeaterBlockRenderer implements BlockEntityRenderer<BeaterBlockEntit
             matrices.scale(0.375f, 0.375f, 0.375f);
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotation(rotation));
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
-            this.itemRenderer.renderItem(entity.getItem(), ModelTransformationMode.FIXED, light, overlay, matrices, vertexConsumers, entity.getWorld(), (int)entity.getPos().asLong());
+            for (ItemStack stack : entity.getItems()) {
+                matrices.translate(0.0f, 0.0f, -0.0625f);
+                this.itemRenderer.renderItem(stack, ModelTransformationMode.FIXED, light, overlay, matrices, vertexConsumers, entity.getWorld(), (int) entity.getPos().asLong());
+            }
         }
     }
 }

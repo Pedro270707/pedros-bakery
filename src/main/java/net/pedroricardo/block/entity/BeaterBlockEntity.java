@@ -1,15 +1,15 @@
 package net.pedroricardo.block.entity;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BlockStateComponent;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -19,79 +19,23 @@ import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pedroricardo.PBHelpers;
+import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.BeaterBlock;
 import net.pedroricardo.block.extras.beater.Liquid;
+import net.pedroricardo.item.recipes.MixingPatternEntry;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class BeaterBlockEntity extends BlockEntity implements Clearable {
     private int poweredTicks;
     private int mixTime;
     private boolean powered;
-
-    private record BeaterInventory(BeaterBlockEntity parent) implements Inventory {
-        @Override
-        public int size() {
-            return 1;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return this.parent.item.isEmpty();
-        }
-
-        @Override
-        public ItemStack getStack(int slot) {
-            return slot == 0 ? this.parent.item : ItemStack.EMPTY;
-        }
-
-        @Override
-        public ItemStack removeStack(int slot, int amount) {
-            if (slot == 0) {
-                return this.parent.item.split(amount);
-            }
-            return ItemStack.EMPTY;
-        }
-
-        @Override
-        public ItemStack removeStack(int slot) {
-            if (slot == 0) {
-                ItemStack stack = this.parent.item;
-                this.parent.item = ItemStack.EMPTY;
-                return stack;
-            }
-            return ItemStack.EMPTY;
-        }
-
-        @Override
-        public void setStack(int slot, ItemStack stack) {
-        }
-
-        @Override
-        public int getMaxCountPerStack() {
-            return 1;
-        }
-
-        @Override
-        public void markDirty() {
-            this.parent.markDirty();
-        }
-
-        @Override
-        public boolean canPlayerUse(PlayerEntity player) {
-            return false;
-        }
-
-        @Override
-        public boolean isValid(int slot, ItemStack stack) {
-            return false;
-        }
-
-        @Override
-        public void clear() {
-        }
-    }
-    private final Inventory inventory = new BeaterInventory(this);
-    ItemStack item = ItemStack.EMPTY;
+    ArrayList<ItemStack> items = new ArrayList<>();
     @Nullable Liquid liquid;
 
     public BeaterBlockEntity(BlockPos pos, BlockState state) {
@@ -106,8 +50,8 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
-        if (!this.item.isEmpty()) {
-            nbt.put("item", this.item.encode(registryLookup));
+        if (!this.getItems().isEmpty()) {
+            nbt.put("items", ItemStack.CODEC.listOf().xmap(list -> list.stream().filter(stack -> !stack.isEmpty()).toList(), Function.identity()).encodeStart(NbtOps.INSTANCE, this.getItems()).getOrThrow());
             nbt.putInt("mix_time", this.mixTime);
         }
         if (this.liquid != null) {
@@ -118,30 +62,42 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
-        this.item = ItemStack.fromNbtOrEmpty(registryLookup, nbt.getCompound("item"));
-        if (!this.item.isEmpty() && nbt.contains("mix_time", NbtElement.INT_TYPE)) {
+
+        Optional<Pair<List<ItemStack>, NbtElement>> optional = ItemStack.CODEC.listOf().decode(NbtOps.INSTANCE, nbt.getList("items", NbtElement.COMPOUND_TYPE)).result();
+        this.items = optional.map(pair -> new ArrayList<>(pair.getFirst())).orElseGet(ArrayList::new);
+
+        if (!this.getItems().isEmpty() && nbt.contains("mix_time", NbtElement.INT_TYPE)) {
             this.mixTime = nbt.getInt("mix_time");
         }
         this.liquid = Liquid.fromNbt(nbt).orElse(null);
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, BeaterBlockEntity blockEntity) {
-        if (blockEntity.getItem().isEmpty()) {
+        if (blockEntity.getItems().isEmpty()) {
             blockEntity.mixTime = 0;
         }
         if (state.contains(Properties.POWERED) && state.get(Properties.POWERED)) {
             blockEntity.powered = true;
             ++blockEntity.poweredTicks;
-            if (!blockEntity.getItem().isEmpty()) {
+            if (!blockEntity.getItems().isEmpty()) {
                 ++blockEntity.mixTime;
             }
         } else {
             blockEntity.powered = false;
         }
-        if (blockEntity.updateLiquid() && blockEntity.getLiquid().onMix(world, state, pos, blockEntity)) {
+        if (blockEntity.updateLiquid() && blockEntity.tryToMix(world, state, pos, blockEntity)) {
             blockEntity.mixTime = 0;
         }
         PBHelpers.updateListeners(world, pos, state, blockEntity);
+    }
+
+    private boolean tryToMix(World world, BlockState state, BlockPos pos, BeaterBlockEntity beater) {
+        if (beater.getMixTime() <= 200) return false;
+        Optional<MixingPatternEntry> optional = PedrosBakery.MIXING_PATTERN_MANAGER.getFirstMatch(beater.getItems(), beater.getLiquid());
+        if (optional.isEmpty()) return false;
+        beater.setItems(List.of());
+        beater.setLiquid(optional.get().entry().getResult());
+        return true;
     }
 
     public float getPoweredTicks(float tickDelta) {
@@ -151,14 +107,22 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
         return this.poweredTicks;
     }
 
-    public ItemStack getItem() {
-        return this.item;
+    public ArrayList<ItemStack> getItems() {
+        return this.items;
     }
 
-    public void setItem(ItemStack stack) {
-        this.item = stack;
+    public void setItems(List<ItemStack> items) {
+        this.items = items.stream().filter(stack -> !stack.isEmpty()).collect(Collectors.toCollection(ArrayList::new));
         this.mixTime = 0;
         PBHelpers.updateListeners(this);
+    }
+
+    public void addItem(ItemStack stack) {
+        if (!stack.isEmpty()) {
+            List<ItemStack> items = this.getItems();
+            items.add(stack);
+            this.setItems(items);
+        }
     }
 
     public @Nullable Liquid getLiquid() {
@@ -200,7 +164,7 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
 
     @Override
     public void clear() {
-        this.setItem(ItemStack.EMPTY);
+        this.setItems(List.of());
     }
 
     @Nullable
