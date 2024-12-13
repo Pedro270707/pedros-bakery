@@ -1,6 +1,7 @@
 package net.pedroricardo.block;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -8,22 +9,35 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
+import net.minecraft.item.Items;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
+import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.entity.BeaterBlockEntity;
 import net.pedroricardo.block.entity.PBBlockEntities;
+import net.pedroricardo.block.extras.beater.Liquid;
+import net.pedroricardo.item.PBComponentTypes;
+import net.pedroricardo.item.PBItems;
 import org.jetbrains.annotations.Nullable;
 
 public class BeaterBlock extends BlockWithEntity {
-    public static final EnumProperty<BeaterLiquids> LIQUID = EnumProperty.of("liquid", BeaterLiquids.class);
+    public static final BooleanProperty HAS_LIQUID = BooleanProperty.of("has_liquid");
     public static final MapCodec<BeaterBlock> CODEC = createCodec(BeaterBlock::new);
     private static final VoxelShape EAST_SHAPE = VoxelShapes.union(Block.createCuboidShape(5, 9, 0, 11, 14, 12), Block.createCuboidShape(6, 0, 1, 10, 10, 4), Block.createCuboidShape(3, 0, 3, 13, 1, 13), Block.createCuboidShape(4, 1, 4, 12, 7, 12));
     private static final VoxelShape WEST_SHAPE = VoxelShapes.union(Block.createCuboidShape(5, 9, 4, 11, 14, 16), Block.createCuboidShape(6, 0, 12, 10, 10, 15), Block.createCuboidShape(3, 0, 3, 13, 1, 13), Block.createCuboidShape(4, 1, 4, 12, 7, 12));
@@ -32,7 +46,7 @@ public class BeaterBlock extends BlockWithEntity {
 
     protected BeaterBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.getStateManager().getDefaultState().with(LIQUID, BeaterLiquids.EMPTY).with(Properties.POWERED, false).with(LIQUID, BeaterLiquids.EMPTY));
+        this.setDefaultState(this.getStateManager().getDefaultState().with(HAS_LIQUID, false).with(Properties.POWERED, false).with(Properties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
     @Override
@@ -48,13 +62,13 @@ public class BeaterBlock extends BlockWithEntity {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(LIQUID, Properties.POWERED, Properties.HORIZONTAL_FACING);
+        builder.add(HAS_LIQUID, Properties.POWERED, Properties.HORIZONTAL_FACING);
     }
 
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return super.getPlacementState(ctx).with(LIQUID, BeaterLiquids.EMPTY).with(Properties.POWERED, ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos())).with(Properties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+        return super.getPlacementState(ctx).with(HAS_LIQUID, false).with(Properties.POWERED, ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos())).with(Properties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
     @Override
@@ -97,7 +111,7 @@ public class BeaterBlock extends BlockWithEntity {
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (!state.contains(LIQUID) || state.get(LIQUID) == BeaterLiquids.EMPTY || !(world.getBlockEntity(pos) instanceof BeaterBlockEntity beater) || beater.getItem().isEmpty()) return ActionResult.FAIL;
+        if (!state.contains(HAS_LIQUID) || !state.get(HAS_LIQUID) || !(world.getBlockEntity(pos) instanceof BeaterBlockEntity beater) || beater.getItem().isEmpty()) return ActionResult.FAIL;
         else {
             player.giveItemStack(beater.getItem().copyAndEmpty());
             return ActionResult.SUCCESS;
@@ -106,8 +120,37 @@ public class BeaterBlock extends BlockWithEntity {
 
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!state.contains(LIQUID) || !(world.getBlockEntity(pos) instanceof BeaterBlockEntity beater)) return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        return state.get(LIQUID).use(stack, state, world, pos, player, hand, hit, beater);
+        if (!(world.getBlockEntity(pos) instanceof BeaterBlockEntity beater)) return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        if (!beater.updateLiquid()) {
+            BlockState newState = state;
+            if (stack.isOf(Items.MILK_BUCKET)) {
+                if (player instanceof ServerPlayerEntity serverPlayer) {
+                    Criteria.CONSUME_ITEM.trigger(serverPlayer, stack);
+                    serverPlayer.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+                }
+                newState = newState.with(BeaterBlock.HAS_LIQUID, true);
+                beater.setLiquid(new Liquid.Milk());
+                world.setBlockState(pos, newState);
+                player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.BUCKET)));
+                world.playSound(null, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                world.emitGameEvent(GameEvent.FLUID_PLACE, pos, GameEvent.Emitter.of(player, newState));
+                return ItemActionResult.SUCCESS;
+            } else if (stack.isOf(PBItems.FROSTING_BOTTLE)) {
+                if (player instanceof ServerPlayerEntity serverPlayer) {
+                    Criteria.CONSUME_ITEM.trigger(serverPlayer, stack);
+                    serverPlayer.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+                }
+                beater.setLiquid(new Liquid.Frosting(stack.get(PBComponentTypes.TOP)));
+                newState = newState.with(BeaterBlock.HAS_LIQUID, true);
+                world.setBlockState(pos, newState);
+                player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
+                world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                world.emitGameEvent(GameEvent.FLUID_PLACE, pos, GameEvent.Emitter.of(player, newState));
+                return ItemActionResult.SUCCESS;
+            }
+            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+        return beater.getLiquid().onUseWithItem(stack, state, world, pos, player, hand, hit, beater);
     }
 
     @Override
@@ -118,7 +161,7 @@ public class BeaterBlock extends BlockWithEntity {
     @Override
     protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         if (!(world.getBlockEntity(pos) instanceof BeaterBlockEntity beater)) return 0;
-        if (beater.getMixTime() == 0 && (beater.getTop() != null || beater.getFlavor() != null)) return 15;
+        if (beater.getMixTime() == 0 && beater.getLiquid() != null) return beater.getLiquid().getType() == Liquid.Type.MILK ? 7 : 15;
         return Math.min(beater.getMixTime() * 15 / 200, 15);
     }
 

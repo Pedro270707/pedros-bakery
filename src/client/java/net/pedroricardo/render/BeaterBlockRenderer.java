@@ -16,8 +16,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.BeaterBlock;
-import net.pedroricardo.block.BeaterLiquids;
 import net.pedroricardo.block.entity.BeaterBlockEntity;
+import net.pedroricardo.block.extras.beater.Liquid;
 import net.pedroricardo.model.PBModelLayers;
 
 public class BeaterBlockRenderer implements BlockEntityRenderer<BeaterBlockEntity> {
@@ -69,14 +69,16 @@ public class BeaterBlockRenderer implements BlockEntityRenderer<BeaterBlockEntit
         this.top.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(Identifier.of(PedrosBakery.MOD_ID, "textures/entity/beater.png"))), light, overlay);
         this.bowl.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(Identifier.of(PedrosBakery.MOD_ID, "textures/entity/beater.png"))), light, overlay);
         matrices.pop();
-        if (state.get(BeaterBlock.LIQUID) == BeaterLiquids.MILK) {
-            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(Identifier.of(PedrosBakery.MOD_ID, "textures/entity/beater.png"))), 4, 4, 6, 8, 8, 0, 36, 8, 44, 64, 64, light, overlay, 0xFFFFFFFF);
-        } else if (state.get(BeaterBlock.LIQUID) == BeaterLiquids.FROSTING && entity.getTop() != null) {
-            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(entity.getTop().getCakeTextureLocation())), 4, 4, 6, 8, 8, 20, 4, light, overlay, 0xFFFFFFFF);
-        } else if (state.get(BeaterBlock.LIQUID) == BeaterLiquids.MIXTURE && entity.getFlavor() != null) {
-            PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(entity.getFlavor().getCakeTextureLocation())), 4, 4, 6, 8, 8, 20, 4, light, OverlayTexture.getUv(1.0f/4.0f, false), 0xFFFFFFFF);
+        if (entity.hasLiquid()) {
+            if (entity.getLiquid().getType() == Liquid.Type.MILK) {
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(Identifier.of(PedrosBakery.MOD_ID, "textures/entity/beater.png"))), 4, 4, 6, 8, 8, 0, 36, 8, 44, 64, 64, light, overlay, 0xFFFFFFFF);
+            } else if (entity.getLiquid().getType() == Liquid.Type.FROSTING) {
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(((Liquid.Frosting) entity.getLiquid()).top().getCakeTextureLocation())), 4, 4, 6, 8, 8, 20, 4, light, overlay, 0xFFFFFFFF);
+            } else if (entity.getLiquid().getType() == Liquid.Type.MIXTURE) {
+                PBRenderHelper.createFace(Direction.UP, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(((Liquid.Mixture) entity.getLiquid()).flavor().getCakeTextureLocation())), 4, 4, 6, 8, 8, 20, 4, light, OverlayTexture.getUv(1.0f / 4.0f, false), 0xFFFFFFFF);
+            }
         }
-        if (entity.hasWorld() && state.get(BeaterBlock.LIQUID) != BeaterLiquids.EMPTY) {
+        if (entity.hasWorld() && entity.hasLiquid()) {
             matrices.translate(0.5f, 0.375f, 0.5f);
             matrices.scale(0.375f, 0.375f, 0.375f);
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotation(rotation));

@@ -16,15 +16,11 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Clearable;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.BeaterBlock;
-import net.pedroricardo.block.extras.CakeFlavor;
-import net.pedroricardo.block.extras.CakeFlavors;
-import net.pedroricardo.block.extras.CakeTop;
-import net.pedroricardo.block.extras.CakeTops;
+import net.pedroricardo.block.extras.beater.Liquid;
 import org.jetbrains.annotations.Nullable;
 
 public class BeaterBlockEntity extends BlockEntity implements Clearable {
@@ -96,8 +92,7 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
     }
     private final Inventory inventory = new BeaterInventory(this);
     ItemStack item = ItemStack.EMPTY;
-    @Nullable CakeTop top = null;
-    @Nullable CakeFlavor flavor = null;
+    @Nullable Liquid liquid;
 
     public BeaterBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.BEATER, pos, state);
@@ -115,14 +110,8 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
             nbt.put("item", this.item.encode(registryLookup));
             nbt.putInt("mix_time", this.mixTime);
         }
-        if (this.top != null) {
-            Identifier topId = CakeTops.REGISTRY.getId(this.top);
-            if (topId != null) {
-                nbt.putString("top", topId.toString());
-            }
-        }
-        if (this.flavor != null) {
-            nbt.putString("flavor", CakeFlavors.REGISTRY.getId(this.flavor).toString());
+        if (this.liquid != null) {
+            this.liquid.toNbt(nbt);
         }
     }
 
@@ -133,12 +122,7 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
         if (!this.item.isEmpty() && nbt.contains("mix_time", NbtElement.INT_TYPE)) {
             this.mixTime = nbt.getInt("mix_time");
         }
-        if (nbt.contains("top", NbtElement.STRING_TYPE)) {
-            this.top = CakeTops.REGISTRY.getOrEmpty(Identifier.of(nbt.getString("top"))).orElse(null);
-        }
-        if (nbt.contains("flavor", NbtElement.STRING_TYPE)) {
-            this.flavor = CakeFlavors.REGISTRY.getOrEmpty(Identifier.of(nbt.getString("flavor"))).orElse(null);
-        }
+        this.liquid = Liquid.fromNbt(nbt).orElse(null);
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, BeaterBlockEntity blockEntity) {
@@ -154,7 +138,9 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
         } else {
             blockEntity.powered = false;
         }
-        if (state.contains(BeaterBlock.LIQUID) && state.get(BeaterBlock.LIQUID).onMix(world, state, pos, blockEntity)) blockEntity.mixTime = 0;
+        if (blockEntity.updateLiquid() && blockEntity.getLiquid().onMix(world, state, pos, blockEntity)) {
+            blockEntity.mixTime = 0;
+        }
         PBHelpers.updateListeners(world, pos, state, blockEntity);
     }
 
@@ -175,24 +161,37 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
         PBHelpers.updateListeners(this);
     }
 
-    @Nullable
-    public CakeTop getTop() {
-        return this.top;
+    public @Nullable Liquid getLiquid() {
+        return this.liquid;
     }
 
-    public void setTop(@Nullable CakeTop top) {
-        this.top = top;
+    public void setLiquid(@Nullable Liquid liquid) {
+        this.liquid = liquid;
         PBHelpers.updateListeners(this);
     }
 
-    @Nullable
-    public CakeFlavor getFlavor() {
-        return this.flavor;
+    /**
+     * Updates the liquid state, syncing the block property and the {@code liquid} field.
+     * @return whether there is liquid or not
+     */
+    public boolean updateLiquid() {
+        if (this.getCachedState().contains(BeaterBlock.HAS_LIQUID)) {
+            if (!this.getCachedState().get(BeaterBlock.HAS_LIQUID) || this.getLiquid() == null) {
+                this.getWorld().setBlockState(this.getPos(), this.getCachedState().with(BeaterBlock.HAS_LIQUID, false));
+                this.setLiquid(null);
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
-    public void setFlavor(@Nullable CakeFlavor flavor) {
-        this.flavor = flavor;
-        PBHelpers.updateListeners(this);
+    /**
+     * Checks if the block has liquid on both the block property and {@code liquid} field without updating
+     * @return whether there is liquid or not
+     */
+    public boolean hasLiquid() {
+        return this.getCachedState().contains(BeaterBlock.HAS_LIQUID) && this.getCachedState().get(BeaterBlock.HAS_LIQUID) && this.getLiquid() != null;
     }
 
     public int getMixTime() {
@@ -214,7 +213,7 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
         if (this.hasWorld()) {
-            componentMapBuilder.add(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(BeaterBlock.LIQUID, this.getWorld().getBlockState(this.getPos()).get(BeaterBlock.LIQUID)));
+            componentMapBuilder.add(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(BeaterBlock.HAS_LIQUID, this.getWorld().getBlockState(this.getPos()).get(BeaterBlock.HAS_LIQUID)));
         }
     }
 }
