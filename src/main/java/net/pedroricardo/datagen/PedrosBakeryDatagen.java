@@ -19,5 +19,6 @@ public class PedrosBakeryDatagen implements DataGeneratorEntrypoint {
 //        pack.addProvider(CakeFlavorTagProvider::new);
 //        pack.addProvider(CakeTopTagProvider::new);
         pack.addProvider(PBModelProvider::new);
+        pack.addProvider(MixingPatternProvider::new);
     }
 }
