@@ -22,22 +22,22 @@ public class ItemStandBlockEntity extends BlockEntity implements Clearable {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return this.createNbt(registryLookup);
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.createNbt();
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
+    public void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
         if (!this.stack.isEmpty()) {
-            nbt.put("item", this.stack.encode(registryLookup));
+            nbt.put("item", this.stack.writeNbt(new NbtCompound()));
         }
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-        this.stack = ItemStack.fromNbtOrEmpty(registryLookup, nbt.getCompound("item"));
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        this.stack = ItemStack.fromNbt(nbt.getCompound("item"));
     }
 
     public ItemStack getStack() {

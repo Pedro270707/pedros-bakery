@@ -2,26 +2,21 @@ package net.pedroricardo.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
-import net.minecraft.block.Block;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.entry.LootPoolEntry;
-import net.minecraft.loot.function.CopyComponentsLootFunction;
+import net.minecraft.loot.function.CopyNbtLootFunction;
+import net.minecraft.loot.provider.nbt.ContextLootNbtProvider;
 import net.minecraft.predicate.StatePredicate;
-import net.minecraft.registry.RegistryWrapper;
 import net.pedroricardo.block.ButterChurnBlock;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 
-import java.util.concurrent.CompletableFuture;
-
 public class PBLootTableProvider extends FabricBlockLootTableProvider {
-    public PBLootTableProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
-        super(dataOutput, registryLookup);
+    public PBLootTableProvider(FabricDataOutput dataOutput) {
+        super(dataOutput);
     }
 
     @Override
@@ -51,7 +46,7 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
         this.addDrop(PBBlocks.CAKE_STAND);
         this.addDrop(PBBlocks.PLATE);
         this.addDrop(PBBlocks.EXPANDABLE_BAKING_TRAY);
-        this.addDrop(PBBlocks.CUPCAKE_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.CUPCAKE_TRAY).apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).include(PBComponentTypes.CUPCAKE_TRAY_BATTER))).build()));
+        this.addDrop(PBBlocks.CUPCAKE_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.CUPCAKE_TRAY).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY))).build()));
         this.addDrop(PBBlocks.CUPCAKE);
         this.addDrop(PBBlocks.COOKIE_JAR);
         this.addDrop(PBBlocks.BUTTER_CHURN, LootTable.builder()

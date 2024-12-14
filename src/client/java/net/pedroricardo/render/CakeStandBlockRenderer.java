@@ -70,7 +70,7 @@ public class CakeStandBlockRenderer implements BlockEntityRenderer<ItemStandBloc
             if (itemState.hasBlockEntity()) {
                 BlockEntity blockEntity = ((BlockEntityProvider) blockItem.getBlock()).createBlockEntity(entity.getPos(), itemState);
                 if (blockEntity != null) {
-                    blockEntity.readComponents(entity.getStack());
+                    blockEntity.readNbt(entity.getStack().getOrCreateSubNbt("BlockEntityTag"));
                     this.blockEntityRenderer.renderEntity(blockEntity, matrices, vertexConsumers, light, overlay);
                 }
             }

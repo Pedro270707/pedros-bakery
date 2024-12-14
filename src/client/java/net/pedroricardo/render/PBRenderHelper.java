@@ -29,7 +29,7 @@ public class PBRenderHelper {
         ModelPart.Vertex vertex8 = new ModelPart.Vertex(x, z, y + height, 8.0f, 0.0f);
         ModelPart.Quad quad = new ModelPart.Quad(new ModelPart.Vertex[]{vertex3, vertex4, vertex8, vertex7}, u, v, u2, v2, textureWidth, textureHeight, false, direction);
         Vector3f vector3f = new Vector3f();
-        Vector3f vector3f2 = entry.transformNormal(quad.direction, vector3f);
+        Vector3f vector3f2 = entry.getNormalMatrix().transform(new Vector3f(quad.direction));
         float normalX = vector3f2.x();
         float normalY = vector3f2.y();
         float normalZ = vector3f2.z();
@@ -38,7 +38,7 @@ public class PBRenderHelper {
             float j = vertex.pos.y() / 16.0f;
             float k = vertex.pos.z() / 16.0f;
             Vector3f vector3f3 = entry.getPositionMatrix().transformPosition(i, j, k, vector3f);
-            vertexConsumer.vertex(vector3f3.x(), vector3f3.y(), vector3f3.z(), color, vertex.u, vertex.v, overlay, light, normalX, normalY, normalZ);
+            vertexConsumer.vertex(vector3f3.x(), vector3f3.y(), vector3f3.z(), ((color >> 16) & 0xFF) / 255.0f, ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, ((color >> 24) & 0xFF) / 255.0f, vertex.u, vertex.v, overlay, light, normalX, normalY, normalZ);
         }
 
         entry.getPositionMatrix().rotate(rotation.conjugate());

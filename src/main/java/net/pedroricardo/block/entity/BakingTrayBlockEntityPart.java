@@ -5,7 +5,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.pedroricardo.block.multipart.MultipartBlockEntityPart;
 import org.jetbrains.annotations.Nullable;
@@ -20,8 +19,8 @@ public class BakingTrayBlockEntityPart extends MultipartBlockEntityPart<BakingTr
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return this.createNbt(registryLookup);
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.createNbt();
     }
 
     @Nullable

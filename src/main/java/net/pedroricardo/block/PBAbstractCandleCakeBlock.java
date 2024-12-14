@@ -26,8 +26,6 @@ import java.util.function.BiConsumer;
 public abstract class PBAbstractCandleCakeBlock extends BlockWithEntity {
     public static final BooleanProperty LIT = Properties.LIT;
 
-    protected abstract MapCodec<? extends PBAbstractCandleCakeBlock> getCodec();
-
     protected PBAbstractCandleCakeBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
@@ -35,7 +33,7 @@ public abstract class PBAbstractCandleCakeBlock extends BlockWithEntity {
     protected abstract Iterable<Vec3d> getParticleOffsets(BlockState state, WorldAccess world, BlockPos pos);
 
     @Override
-    protected void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
+    public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
         if (!world.isClient && projectile.isOnFire() && this.isNotLit(state)) {
             setLit(world, state, hit.getBlockPos(), true);
         }
@@ -74,14 +72,6 @@ public abstract class PBAbstractCandleCakeBlock extends BlockWithEntity {
     }
 
     private static void setLit(WorldAccess world, BlockState state, BlockPos pos, boolean lit) {
-        world.setBlockState(pos, state.with(LIT, lit), Block.NOTIFY_ALL_AND_REDRAW);
-    }
-
-    @Override
-    protected void onExploded(BlockState state, World world, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> stackMerger) {
-        if (explosion.getDestructionType() == Explosion.DestructionType.TRIGGER_BLOCK && !world.isClient() && state.get(LIT)) {
-            AbstractCandleBlock.extinguish(null, state, world, pos);
-        }
-        super.onExploded(state, world, pos, explosion, stackMerger);
+        world.setBlockState(pos, state.with(LIT, lit), Block.NOTIFY_ALL & Block.REDRAW_ON_MAIN_THREAD);
     }
 }

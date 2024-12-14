@@ -2,34 +2,30 @@ package net.pedroricardo.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.server.recipe.ComplexRecipeJsonBuilder;
-import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.ShapelessRecipeJsonBuilder;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBItems;
-import net.pedroricardo.item.recipes.BakingTrayIncreaseRecipe;
-import net.pedroricardo.item.recipes.ExpandableBakingTrayRecipe;
-import net.pedroricardo.item.recipes.FrostedDonutRecipe;
+import net.pedroricardo.item.recipes.PBRecipeSerializers;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class PBRecipeProvider extends FabricRecipeProvider {
-    public PBRecipeProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
-        super(output, registriesFuture);
+    public PBRecipeProvider(FabricDataOutput output) {
+        super(output);
     }
 
     @Override
-    public void generate(RecipeExporter exporter) {
+    public void generate(Consumer<RecipeJsonProvider> exporter) {
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBItems.DONUT).input('w', Items.WHEAT).pattern(" w ").pattern("w w").pattern(" w ").criterion(hasItem(Items.WHEAT), conditionsFromItem(Items.WHEAT)).offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, PBItems.WHITE_SPRINKLES).input(Items.COCOA_BEANS).input(Items.WHITE_DYE).criterion(hasItem(Items.COCOA_BEANS), conditionsFromItem(Items.COCOA_BEANS)).offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, PBItems.ORANGE_SPRINKLES).input(Items.COCOA_BEANS).input(Items.ORANGE_DYE).criterion(hasItem(Items.COCOA_BEANS), conditionsFromItem(Items.COCOA_BEANS)).offerTo(exporter);
@@ -60,8 +56,8 @@ public class PBRecipeProvider extends FabricRecipeProvider {
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBItems.BUTTER_CHURN_STAFF).input('|', Items.STICK).input('s', ItemTags.WOODEN_SLABS).pattern("|").pattern("|").pattern("s").criterion("has_milk_bucket", conditionsFromItem(Items.MILK_BUCKET)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBBlocks.BUTTER_CHURN).input('l', ItemTags.LOGS).pattern("l").pattern("l").criterion("has_milk_bucket", conditionsFromItem(Items.MILK_BUCKET)).offerTo(exporter);
 
-        ComplexRecipeJsonBuilder.create(BakingTrayIncreaseRecipe::new).offerTo(exporter, "baking_tray_increase");
-        ComplexRecipeJsonBuilder.create(ExpandableBakingTrayRecipe::new).offerTo(exporter, "expandable_baking_tray");
-        ComplexRecipeJsonBuilder.create(FrostedDonutRecipe::new).offerTo(exporter, "frosted_donut");
+        ComplexRecipeJsonBuilder.create(PBRecipeSerializers.BAKING_TRAY_INCREASE).offerTo(exporter, "baking_tray_increase");
+        ComplexRecipeJsonBuilder.create(PBRecipeSerializers.EXPANDABLE_BAKING_TRAY).offerTo(exporter, "expandable_baking_tray");
+        ComplexRecipeJsonBuilder.create(PBRecipeSerializers.FROSTED_DONUT).offerTo(exporter, "frosted_donut");
     }
 }

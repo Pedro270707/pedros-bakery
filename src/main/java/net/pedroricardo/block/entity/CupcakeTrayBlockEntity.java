@@ -2,12 +2,11 @@ package net.pedroricardo.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.component.ComponentMap;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -15,6 +14,7 @@ import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PBSounds;
 import net.pedroricardo.PedrosBakery;
+import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.CupcakeTrayBatter;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
@@ -29,19 +29,19 @@ public class CupcakeTrayBlockEntity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return this.createNbt(registryLookup);
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.createNbt();
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
+    public void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
         this.getBatter().toNbt(nbt);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
         this.batter = CupcakeTrayBatter.fromNbt(nbt);
     }
 
@@ -68,27 +68,19 @@ public class CupcakeTrayBlockEntity extends BlockEntity {
         this.markDirty();
     }
 
-    @Override
-    public void removeFromCopiedStackNbt(NbtCompound nbt) {
-        super.removeFromCopiedStackNbt(nbt);
-        nbt.remove("batter");
-    }
-
-    @Override
-    protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-        super.addComponents(componentMapBuilder);
-        componentMapBuilder.add(PBComponentTypes.CUPCAKE_TRAY_BATTER, this.getBatter());
-    }
-
-    @Override
-    protected void readComponents(ComponentsAccess components) {
-        super.readComponents(components);
-        this.batter = components.getOrDefault(PBComponentTypes.CUPCAKE_TRAY_BATTER, CupcakeTrayBatter.getEmpty());
-    }
-
     @Nullable
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public void setStackNbt(ItemStack stack) {
+        super.setStackNbt(stack);
+        PBHelpers.set(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER, this.getBatter());
+    }
+
+    public void readFrom(ItemStack stack) {
+        this.setBatter(PBHelpers.getOrDefault(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER, CupcakeTrayBatter.getEmpty()));
     }
 }

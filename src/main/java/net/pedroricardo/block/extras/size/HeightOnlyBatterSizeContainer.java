@@ -7,9 +7,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -23,7 +20,6 @@ public class HeightOnlyBatterSizeContainer extends BatterSizeContainer {
     public static final Codec<HeightOnlyBatterSizeContainer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.FLOAT.fieldOf("height").forGetter(HeightOnlyBatterSizeContainer::getHeight)
     ).apply(instance, HeightOnlyBatterSizeContainer::new));
-    public static final PacketCodec<RegistryByteBuf, HeightOnlyBatterSizeContainer> PACKET_CODEC = PacketCodec.tuple(PacketCodecs.FLOAT, HeightOnlyBatterSizeContainer::getHeight, HeightOnlyBatterSizeContainer::new);
 
     public HeightOnlyBatterSizeContainer() {
     }

@@ -16,7 +16,6 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
@@ -57,28 +56,28 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		BlockEntityRendererFactories.register(PBBlockEntities.CUPCAKE, CupcakeBlockRenderer::new);
 
 		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.CAKE, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
-			PBCakeBlockRenderer.RENDER_CAKE.readComponents(stack);
+			PBCakeBlockRenderer.RENDER_CAKE.readFrom(stack);
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(PBCakeBlockRenderer.RENDER_CAKE, matrices, vertexConsumers, light, overlay);
 		});
 		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.BAKING_TRAY, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
-			BakingTrayBlockRenderer.RENDER_TRAY.readComponents(stack);
+			BakingTrayBlockRenderer.RENDER_TRAY.readFrom(stack);
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(BakingTrayBlockRenderer.RENDER_TRAY, matrices, vertexConsumers, light, overlay);
 		});
 		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.EXPANDABLE_BAKING_TRAY, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
-			BakingTrayBlockRenderer.RENDER_EXPANDABLE_TRAY.readComponents(stack);
+			BakingTrayBlockRenderer.RENDER_EXPANDABLE_TRAY.readFrom(stack);
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(BakingTrayBlockRenderer.RENDER_EXPANDABLE_TRAY, matrices, vertexConsumers, light, overlay);
 		});
 		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.CUPCAKE_TRAY, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
-			CupcakeTrayBlockRenderer.RENDER_CUPCAKE_TRAY.readComponents(stack);
+			CupcakeTrayBlockRenderer.RENDER_CUPCAKE_TRAY.readFrom(stack);
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(CupcakeTrayBlockRenderer.RENDER_CUPCAKE_TRAY, matrices, vertexConsumers, light, overlay);
 		});
 		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.CUPCAKE, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
-			CupcakeBlockRenderer.RENDER_CUPCAKE.readComponents(stack);
+			CupcakeBlockRenderer.RENDER_CUPCAKE.readFrom(stack);
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(CupcakeBlockRenderer.RENDER_CUPCAKE, matrices, vertexConsumers, light, overlay);
 		});
 
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
-			CakeTop top = stack.get(PBComponentTypes.TOP);
+			CakeTop top = PBHelpers.get(stack, PBComponentTypes.TOP);
 			if (tintIndex > 0 || top == null) {
 				return -1;
 			}
@@ -86,10 +85,10 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		}, PBItems.FROSTING_BOTTLE);
 		ModelPredicateProviderRegistry.register(Identifier.of(PedrosBakery.MOD_ID, "empty"), (stack, world, entity, seed) -> {
 			if (!stack.isOf(PBBlocks.CUPCAKE.asItem())) return 0.0f;
-			return stack.getOrDefault(PBComponentTypes.FIXED_SIZE_BATTER, CakeBatter.getFixedSizeEmpty()).isEmpty() ? 1.0f : 0.0f;
+			return PBHelpers.getOrDefault(stack, PBComponentTypes.FIXED_SIZE_BATTER, CakeBatter.getFixedSizeEmpty()).isEmpty() ? 1.0f : 0.0f;
 		});
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
-			CakeTop top = stack.get(PBComponentTypes.TOP);
+			CakeTop top = PBHelpers.get(stack, PBComponentTypes.TOP);
 			if (tintIndex != 1 || top == null) {
 				return -1;
 			}
@@ -97,7 +96,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		}, PBItems.DONUT);
 		ModelPredicateProviderRegistry.register(Identifier.of(PedrosBakery.MOD_ID, "frosted"), (stack, world, entity, seed) -> {
 			if (!stack.isOf(PBItems.DONUT)) return 0.0f;
-			return stack.get(PBComponentTypes.TOP) == null ? 0.0f : 1.0f;
+			return PBHelpers.contains(stack, PBComponentTypes.TOP) ? 1.0f : 0.0f;
 		});
 
 		BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(),
@@ -143,7 +142,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		);
 		CakeFeatureRendererRegistry.register(CakeFeatures.HONEY, cakeLayerFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.PAINTING, (feature, entity, batter, matrices, vertexConsumers, light, overlay) -> {
-			RegistryEntry<PaintingVariant> painting = ((PaintingCakeFeature) feature).getPainting(batter, entity.hasWorld() ? entity.getWorld().getRegistryManager() : null);
+			RegistryEntry<PaintingVariant> painting = ((PaintingCakeFeature) feature).getPainting(batter);
 			if (painting == null) return;
 			Sprite sprite = MinecraftClient.getInstance().getPaintingManager().getPaintingSprite(painting.value());
 
@@ -181,11 +180,10 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		CakeFeatureRendererRegistry.register(CakeFeatures.BLACK_SPRINKLES, cakeLayerFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.GLASS, cakeLayerFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.PLAYER_HEAD, (feature, entity, batter, matrices, vertexConsumers, light, overlay) -> {
-			ProfileComponent component = ((PlayerHeadCakeFeature) feature).getProfileComponent(batter);
-			GameProfile profile = component == null ? null : component.gameProfile();
-			drawPlayerHead(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(profile == null ? DefaultSkinHelper.getTexture() : MinecraftClient.getInstance().getSkinProvider().getSkinTextures(profile).texture())), batter, light, overlay, MinecraftClient.getInstance().world != null && profile != null && LivingEntityRenderer.shouldFlipUpsideDown(new OtherClientPlayerEntity(MinecraftClient.getInstance().world, profile)));
+			GameProfile profile = ((PlayerHeadCakeFeature) feature).getProfile(batter);
+			drawPlayerHead(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(profile == null ? DefaultSkinHelper.getTexture() : MinecraftClient.getInstance().getSkinProvider().loadSkin(profile))), batter, light, overlay, MinecraftClient.getInstance().world != null && profile != null && LivingEntityRenderer.shouldFlipUpsideDown(new OtherClientPlayerEntity(MinecraftClient.getInstance().world, profile)));
 		});
-		CakeFeatureRendererRegistry.register(CakeFeatures.SHORT_GRASS, blockOnTopFeatureRenderer);
+		CakeFeatureRendererRegistry.register(CakeFeatures.GRASS, blockOnTopFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.FERN, blockOnTopFeatureRenderer);
 	}
 

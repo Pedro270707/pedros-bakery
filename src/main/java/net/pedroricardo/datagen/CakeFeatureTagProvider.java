@@ -16,6 +16,6 @@ public class CakeFeatureTagProvider extends FabricTagProvider<CakeFeature> {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
-        this.getOrCreateTagBuilder(PBTags.Features.INEDIBLE).add(CakeFeatures.GLASS, CakeFeatures.SHORT_GRASS, CakeFeatures.FERN);
+        this.getOrCreateTagBuilder(PBTags.Features.INEDIBLE).add(CakeFeatures.GLASS, CakeFeatures.GRASS, CakeFeatures.FERN);
     }
 }

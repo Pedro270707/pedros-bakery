@@ -2,19 +2,25 @@ package net.pedroricardo.item;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.World;
+import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PBCakeBlockItem extends BlockItem {
@@ -23,12 +29,14 @@ public class PBCakeBlockItem extends BlockItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        List<CakeBatter<FullBatterSizeContainer>> batterList = stack.getOrDefault(PBComponentTypes.BATTER_LIST, List.of());
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        List<CakeBatter<FullBatterSizeContainer>> batterList = PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST, List.of());
         if (batterList.isEmpty()) {
             return;
         }
-        for (CakeBatter<FullBatterSizeContainer> batter : batterList.reversed()) {
+        List<CakeBatter<FullBatterSizeContainer>> reversed = new ArrayList<>(batterList);
+        Collections.reverse(reversed);
+        for (CakeBatter<FullBatterSizeContainer> batter : reversed) {
             if (batter.getTop().isPresent()) {
                 tooltip.add(Text.translatable("block.pedrosbakery.cake.flavor_and_top", Text.translatable(batter.getFlavor().getTranslationKey()), Text.translatable(batter.getTop().get().getTranslationKey())).formatted(batter.isWaxed() ? Formatting.GOLD : Formatting.GRAY));
             } else {
@@ -40,7 +48,7 @@ public class PBCakeBlockItem extends BlockItem {
     @Override
     protected boolean canPlace(ItemPlacementContext context, BlockState state) {
         PBCakeBlockEntity blockEntity = new PBCakeBlockEntity(context.getBlockPos(), state);
-        blockEntity.readComponents(context.getStack());
+        blockEntity.readFrom(context.getStack());
         VoxelShape shape = blockEntity.toShape();
         if (!context.getWorld().doesNotIntersectEntities(null, shape.offset(context.getBlockPos().getX(), context.getBlockPos().getY(), context.getBlockPos().getZ()))) return false;
         if (shape.isEmpty()) return false;
@@ -56,5 +64,12 @@ public class PBCakeBlockItem extends BlockItem {
             }
         }
         return true;
+    }
+
+    @Override
+    public ItemStack getDefaultStack() {
+        ItemStack stack = super.getDefaultStack();
+        PBHelpers.set(stack, PBComponentTypes.BATTER_LIST, Collections.singletonList(CakeBatter.getFullSizeDefault().withBakeTime(2000)));
+        return stack;
     }
 }

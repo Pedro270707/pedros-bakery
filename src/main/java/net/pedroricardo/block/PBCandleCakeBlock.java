@@ -2,8 +2,6 @@ package net.pedroricardo.block;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -11,12 +9,10 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -42,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 
 public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements BlockEntityProvider, MultipartBlock<PBCakeBlockEntity, PBCakeBlockEntityPart, PBCakeBlockPart> {
-    public static final MapCodec<PBCandleCakeBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec<? super CandleBlock>)Registries.BLOCK.getCodec().fieldOf("candle")).forGetter(block -> block.candle), CandleCakeBlock.createSettingsCodec()).apply(instance, (block, settings) -> new PBCandleCakeBlock((CandleBlock) block, settings)));
     private final CandleBlock candle;
     private static final Map<CandleBlock, PBCandleCakeBlock> CANDLES_TO_CANDLE_CAKES = Maps.newHashMap();
 
@@ -54,22 +49,17 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
     }
 
     @Override
-    protected MapCodec<? extends PBAbstractCandleCakeBlock> getCodec() {
-        return CODEC;
-    }
-
-    @Override
     protected Iterable<Vec3d> getParticleOffsets(BlockState state, WorldAccess world, BlockPos pos) {
         return ImmutableList.of(new Vec3d(0.5, world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake ? (cake.getHeight() + 8) / 16.0 : 1.0, 0.5));
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return VoxelShapes.combineAndSimplify(this.getFullShape(state, world, pos, context), VoxelShapes.fullCube(), BooleanBiFunction.AND);
     }
 
     @Override
-    protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+    public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return VoxelShapes.empty();
     }
 
@@ -87,23 +77,24 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return validateTicker(type, PBBlockEntities.CAKE, PBCakeBlockEntity::tick);
+        return checkType(type, PBBlockEntities.CAKE, PBCakeBlockEntity::tick);
     }
 
-    @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    private ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (stack.isOf(Items.FLINT_AND_STEEL) || stack.isOf(Items.FIRE_CHARGE) || !(world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake)) {
-            return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+            return ActionResult.FAIL;
         }
         if (hit.getPos().y - (double)hit.getBlockPos().getY() > cake.getHeight() / 16.0f && stack.isEmpty() && state.get(LIT)) {
             extinguish(player, state, world, pos);
-            return ItemActionResult.success(world.isClient());
+            return ActionResult.success(world.isClient());
         }
-        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+        return ActionResult.PASS;
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        ActionResult useWithItem = this.onUseWithItem(player.getStackInHand(hand), state, world, pos, player, hand, hit);
+        if (useWithItem != ActionResult.PASS) return useWithItem;
         ActionResult tryEatResult = PBCakeBlock.tryUsing(world, pos, PBBlocks.CAKE.getDefaultState().with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING)), player, hit);
         if (tryEatResult.isAccepted()) {
             dropStacks(state, world, pos);
@@ -120,7 +111,7 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
             return PBCakeBlock.of(cake.getBatterList());
         }
@@ -128,7 +119,7 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 

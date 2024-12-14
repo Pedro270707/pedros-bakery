@@ -76,6 +76,6 @@ public class MixingPatternProvider extends AbstractMixingPatternProvider {
         exporter.accept(SWEET_BERRY_TOP, new MixingPattern(List.of(Ingredient.ofItems(Items.SUGAR), Ingredient.ofItems(Items.SWEET_BERRIES)), new Liquid.Milk(), new Liquid.Frosting(CakeTops.SWEET_BERRY)));
         exporter.accept(SWEET_BERRY_TOP_FROM_SUGAR_TOP, new MixingPattern(List.of(Ingredient.ofItems(Items.SWEET_BERRIES)), new Liquid.Frosting(CakeTops.SUGAR), new Liquid.Frosting(CakeTops.SWEET_BERRY)));
         exporter.accept(DIRT_TOP, new MixingPattern(List.of(Ingredient.ofItems(Items.DIRT)), new Liquid.Milk(), new Liquid.Frosting(CakeTops.DIRT)));
-        exporter.accept(GRASS_TOP, new MixingPattern(List.of(Ingredient.ofItems(Items.SHORT_GRASS, Items.TALL_GRASS)), new Liquid.Milk(), new Liquid.Frosting(CakeTops.GRASS)));
+        exporter.accept(GRASS_TOP, new MixingPattern(List.of(Ingredient.ofItems(Items.GRASS, Items.TALL_GRASS)), new Liquid.Milk(), new Liquid.Frosting(CakeTops.GRASS)));
     }
 }

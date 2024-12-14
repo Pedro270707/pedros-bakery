@@ -66,7 +66,7 @@ public class PlateBlockRenderer implements BlockEntityRenderer<ItemStandBlockEnt
             if (itemState.hasBlockEntity()) {
                 BlockEntity blockEntity = ((BlockEntityProvider) blockItem.getBlock()).createBlockEntity(entity.getPos(), itemState);
                 if (blockEntity != null) {
-                    blockEntity.readComponents(entity.getStack());
+                    blockEntity.readNbt(entity.getStack().getOrCreateSubNbt("BlockEntityTag"));
                     this.blockEntityRenderer.renderEntity(blockEntity, matrices, vertexConsumers, light, overlay);
                 }
             }

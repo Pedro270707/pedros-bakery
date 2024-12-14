@@ -52,7 +52,8 @@ public class CupcakeBlockRenderer implements BlockEntityRenderer<CupcakeBlockEnt
         } else {
             Identifier texture = entity.getBatter().getFlavor().getCupcakeTextureLocation();
             this.liner.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, overlay);
-            this.top.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, PBCakeBlockRenderer.getBakeTimeOverlay(entity.getBatter().getBakeTime(), overlay), PBCakeBlockRenderer.getBakeTimeColor(entity.getBatter().getBakeTime(), 0xFFFFFFFF));
+            int bakeTimeColor = PBCakeBlockRenderer.getBakeTimeColor(entity.getBatter().getBakeTime(), 0xFFFFFFFF);
+            this.top.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, PBCakeBlockRenderer.getBakeTimeOverlay(entity.getBatter().getBakeTime(), overlay), ((bakeTimeColor >> 16) & 0xFF) / 255.0f, ((bakeTimeColor >> 8) & 0xFF) / 255.0f, (bakeTimeColor & 0xFF) / 255.0f, ((bakeTimeColor >> 24) & 0xFF) / 255.0f);
             entity.getBatter().getTop().ifPresent(top -> {
                 Identifier topTexture = top.getCupcakeTextureLocation();
                 this.liner.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(topTexture)), light, overlay);

@@ -1,12 +1,12 @@
 package net.pedroricardo.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
@@ -54,20 +54,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCakeBlockEntity, PBCakeBlockEntityPart, PBCakeBlockPart> {
-    public static final MapCodec<PBCakeBlock> CODEC = createCodec(PBCakeBlock::new);
-
     public PBCakeBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.getStateManager().getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
     @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
-        return CODEC;
-    }
-
-    @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return VoxelShapes.combineAndSimplify(this.getFullShape(state, world, pos, context), VoxelShapes.fullCube(), BooleanBiFunction.AND);
     }
 
@@ -93,7 +86,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
     }
 
     @Override
-    protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+    public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return VoxelShapes.empty();
     }
 
@@ -117,11 +110,13 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return validateTicker(type, PBBlockEntities.CAKE, PBCakeBlockEntity::tick);
+        return checkType(type, PBBlockEntities.CAKE, PBCakeBlockEntity::tick);
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        ActionResult useWithItem = this.onUseWithItem(player.getStackInHand(hand), state, world, pos, player, hand, hit);
+        if (useWithItem != ActionResult.PASS) return useWithItem;
         if (world.isClient()) {
             if (tryUsing(world, pos, state, player, hit).isAccepted()) {
                 return ActionResult.SUCCESS;
@@ -179,48 +174,51 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         return result;
     }
 
-    @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    private ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!(world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake)) {
-            return ItemActionResult.FAIL;
+            return ActionResult.FAIL;
         }
 
         if (cake.getBatterList().isEmpty()) {
-            return ItemActionResult.FAIL;
+            return ActionResult.FAIL;
         }
 
         if (stack.isOf(PBBlocks.CAKE.asItem())) {
-            List<CakeBatter<FullBatterSizeContainer>> batterList = stack.getComponents().getOrDefault(PBComponentTypes.BATTER_LIST, List.<CakeBatter<FullBatterSizeContainer>>of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList));
+            List<CakeBatter<FullBatterSizeContainer>> batterList = PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST, List.of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList));
             if (batterList.isEmpty()) {
-                return ItemActionResult.FAIL;
+                return ActionResult.FAIL;
             }
 
             if (tryAddBatter(cake, batterList)) {
                 PBHelpers.updateListeners(cake);
                 world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 world.playSound(pos.getX(), pos.getY(), pos.getZ(), state.getSoundGroup().getPlaceSound(), SoundCategory.BLOCKS, (state.getSoundGroup().getVolume() + 1.0f) / 2.0f, state.getSoundGroup().getPitch() * 0.8f, true);
-                stack.decrementUnlessCreative(1, player);
-                return ItemActionResult.SUCCESS;
+                if (!player.isCreative()) {
+                    stack.decrement(1);
+                }
+                return ActionResult.SUCCESS;
             }
         }
 
         Item item = stack.getItem();
         Block block = Block.getBlockFromItem(item);
-        if (stack.isIn(ItemTags.CANDLES) && cake.getBatterList().getLast().getSizeContainer().getBites() == 0 && block instanceof CandleBlock candleBlock) {
+        if (stack.isIn(ItemTags.CANDLES) && cake.getBatterList().get(cake.getBatterList().size() - 1).getSizeContainer().getBites() == 0 && block instanceof CandleBlock candleBlock) {
             if (player instanceof ServerPlayerEntity serverPlayer) {
                 serverPlayer.incrementStat(Stats.USED.getOrCreateStat(item));
             }
 
-            stack.decrementUnlessCreative(1, player);
+            if (!player.isCreative()) {
+                stack.decrement(1);
+            }
             world.playSound(null, pos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0f, 1.0f);
             changeState(player, world, pos, PBCandleCakeBlock.getCandleCakeFromCandle(candleBlock).with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING)));
             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
         CakeBatter<FullBatterSizeContainer> clickedBatter = getClickedBatter(cake.getBatterList(), hit);
-        CakeTop top = stack.get(PBComponentTypes.TOP);
+        CakeTop top = PBHelpers.get(stack, PBComponentTypes.TOP);
         if (stack.isOf(PBItems.FROSTING_BOTTLE) && clickedBatter.getTop().orElse(null) != top) {
             if (player instanceof ServerPlayerEntity serverPlayer) {
                 Criteria.CONSUME_ITEM.trigger(serverPlayer, stack);
@@ -231,7 +229,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.GLASS_BOTTLE));
             PBHelpers.updateListeners(cake);
 
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
         if (stack.isOf(Items.HONEYCOMB) && clickedBatter.setWaxed(true)) {
@@ -240,11 +238,13 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
                 serverPlayer.incrementStat(Stats.USED.getOrCreateStat(item));
             }
 
-            stack.decrementUnlessCreative(1, player);
+            if (!player.isCreative()) {
+                stack.decrement(1);
+            }
             world.syncWorldEvent(player, WorldEvents.BLOCK_WAXED, pos, 0);
             PBHelpers.updateListeners(cake);
 
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
         if (stack.isOf(Items.MILK_BUCKET) && !clickedBatter.isWaxed()) {
@@ -252,7 +252,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
                 Criteria.CONSUME_ITEM.trigger(serverPlayer, stack);
                 serverPlayer.incrementStat(Stats.USED.getOrCreateStat(item));
             }
-            if (!player.isInCreativeMode()) {
+            if (!player.isCreative()) {
                 PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.BUCKET), false);
             }
 
@@ -263,10 +263,10 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             world.playSound(player, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
             PBHelpers.updateListeners(cake);
 
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
-        List<CakeFeature> features = stack.getOrDefault(PBComponentTypes.FEATURES, List.of());
+        List<CakeFeature> features = PBHelpers.getOrDefault(stack, PBComponentTypes.FEATURES, PedrosBakery.ITEM_TO_FEATURES.getOrDefault(stack.getItem(), List.of()));
         boolean appliedFeature = false;
         for (CakeFeature feature : features) {
             if (feature.canBeApplied(player, stack, clickedBatter, world, pos, state, cake)) {
@@ -276,11 +276,13 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             }
         }
         if (appliedFeature) {
-            stack.decrementUnlessCreative(1, player);
+            if (!player.isCreative()) {
+                stack.decrement(1);
+            }
             PBHelpers.updateListeners(cake);
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return ActionResult.PASS;
     }
 
     private static CakeBatter<FullBatterSizeContainer> getClickedBatter(List<CakeBatter<FullBatterSizeContainer>> batterList, BlockHitResult hit) {
@@ -301,7 +303,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
 
     public static ItemStack of(List<CakeBatter<FullBatterSizeContainer>> batterList) {
         ItemStack stack = new ItemStack(PBBlocks.CAKE);
-        stack.set(PBComponentTypes.BATTER_LIST, batterList.stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
+        PBHelpers.set(stack, PBComponentTypes.BATTER_LIST, batterList.stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
         return stack;
     }
 
@@ -310,7 +312,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             return true;
         }
 
-        if (batterList.getFirst().getSizeContainer().getSize() / 2.0f - batterList.getFirst().getSizeContainer().getBites() <= cake.getBatterList().getLast().getSizeContainer().getSize() / 2.0f - cake.getBatterList().getLast().getSizeContainer().getBites()) {
+        if (batterList.get(0).getSizeContainer().getSize() / 2.0f - batterList.get(0).getSizeContainer().getBites() <= cake.getBatterList().get(cake.getBatterList().size() - 1).getSizeContainer().getSize() / 2.0f - cake.getBatterList().get(cake.getBatterList().size() - 1).getSizeContainer().getBites()) {
             float batterListHeight = (float) batterList.stream().mapToDouble((batter) -> batter.getSizeContainer().getHeight()).sum();
             return cake.getHeight() + batterListHeight <= PedrosBakery.CONFIG.maxCakeHeight() && (!cake.hasWorld() || cake.getWorld().doesNotIntersectEntities(null, PBCakeBlockEntity.toShape(batterList, cake.getCachedState(), cake.getWorld(), cake.getPos()).offset(cake.getPos().getX(), cake.getPos().getY() + cake.getHeight() / 16.0f, cake.getPos().getZ()))) && cake.getBatterList().addAll(batterList);
         }
@@ -330,7 +332,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
             return of(cake.getBatterList());
         }
@@ -355,17 +357,25 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
     }
 
     @Override
-    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(Properties.HORIZONTAL_FACING, rotation.rotate(state.get(Properties.HORIZONTAL_FACING)));
     }
 
     @Override
-    protected BlockState mirror(BlockState state, BlockMirror mirror) {
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(Properties.HORIZONTAL_FACING)));
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
+    }
+
+    @Override
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.onPlaced(world, pos, state, placer, stack);
+        if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
+            cake.readFrom(stack);
+        }
     }
 }

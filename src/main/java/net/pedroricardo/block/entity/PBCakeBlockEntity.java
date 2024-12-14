@@ -3,14 +3,13 @@ package net.pedroricardo.block.entity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.component.ComponentMap;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -40,13 +39,13 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return this.createNbt(registryLookup);
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.createNbt();
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
+    public void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
         NbtList list = new NbtList();
         for (CakeBatter<FullBatterSizeContainer> layer : this.batterList) {
             list.add(layer.toNbt(new NbtCompound(), CakeBatter.FULL_CODEC));
@@ -56,26 +55,14 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
         this.readCakeNbt(nbt);
         this.parts = Lists.newArrayList(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(Lists.newArrayList()).iterator());
     }
 
     protected void readCakeNbt(NbtCompound nbt) {
         this.batterList = Lists.newArrayList(CakeBatter.listFrom(nbt).iterator());
-    }
-
-    @Override
-    protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-        super.addComponents(componentMapBuilder);
-        componentMapBuilder.add(PBComponentTypes.BATTER_LIST, this.getBatterList().stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
-    }
-
-    @Override
-    protected void readComponents(ComponentsAccess components) {
-        super.readComponents(components);
-        this.batterList = components.getOrDefault(PBComponentTypes.BATTER_LIST, List.<CakeBatter<FullBatterSizeContainer>>of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList));
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
@@ -143,15 +130,20 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
         return shape;
     }
 
-    @Override
-    public void removeFromCopiedStackNbt(NbtCompound nbt) {
-        super.removeFromCopiedStackNbt(nbt);
-        nbt.remove("parts");
-    }
-
     @Nullable
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public void setStackNbt(ItemStack stack) {
+        super.setStackNbt(stack);
+        PBHelpers.set(stack, PBComponentTypes.BATTER_LIST, this.getBatterList());
+    }
+
+    public void readFrom(ItemStack stack) {
+        this.getBatterList().clear();
+        this.getBatterList().addAll(PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST, List.of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
     }
 }

@@ -3,7 +3,6 @@ package net.pedroricardo.block.entity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.component.ComponentMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -12,7 +11,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
@@ -24,7 +22,6 @@ import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PBSounds;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.size.HeightOnlyBatterSizeContainer;
 import net.pedroricardo.block.multipart.MultipartBlock;
@@ -48,13 +45,13 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return this.createNbt(registryLookup);
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.createNbt();
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
+    public void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
         nbt.putInt("size", this.size);
         nbt.putInt("height", this.height);
         nbt.put("batter", this.getCakeBatter().toNbt(new NbtCompound(), CakeBatter.WITH_HEIGHT_CODEC));
@@ -62,8 +59,8 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
         if (nbt.contains("size", NbtElement.INT_TYPE)) {
             this.size = nbt.getInt("size");
         }
@@ -90,31 +87,6 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         }
     }
 
-    @Override
-    protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-        super.addComponents(componentMapBuilder);
-        componentMapBuilder.add(PBComponentTypes.HEIGHT_ONLY_BATTER, this.getCakeBatter().copy());
-        componentMapBuilder.add(PBComponentTypes.SIZE, this.getSize());
-        componentMapBuilder.add(PBComponentTypes.HEIGHT, this.getHeight());
-    }
-
-    @Override
-    protected void readComponents(ComponentsAccess components) {
-        super.readComponents(components);
-        this.cakeBatter = components.getOrDefault(PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty()).copy();
-        this.size = components.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize());
-        this.height = components.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight());
-    }
-
-    @Override
-    public void removeFromCopiedStackNbt(NbtCompound nbt) {
-        super.removeFromCopiedStackNbt(nbt);
-        nbt.remove("batter");
-        nbt.remove("size");
-        nbt.remove("height");
-        nbt.remove("parts");
-    }
-
     public CakeBatter<HeightOnlyBatterSizeContainer> getCakeBatter() {
         return this.cakeBatter;
     }
@@ -125,14 +97,6 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
             this.cakeBatter.getSizeContainer().setHeight(this.getHeight());
         }
         this.markDirty();
-    }
-
-    public ItemStack toStack() {
-        ItemStack stack = new ItemStack(PBBlocks.BAKING_TRAY.asItem());
-        stack.set(PBComponentTypes.HEIGHT_ONLY_BATTER, this.getCakeBatter().copy());
-        stack.set(PBComponentTypes.SIZE, this.getSize());
-        stack.set(PBComponentTypes.HEIGHT, this.getHeight());
-        return stack;
     }
 
     public int getSize() {
@@ -184,5 +148,19 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
                 }
             }
         }
+    }
+
+    @Override
+    public void setStackNbt(ItemStack stack) {
+        super.setStackNbt(stack);
+        PBHelpers.set(stack, PBComponentTypes.HEIGHT_ONLY_BATTER, this.getCakeBatter());
+        PBHelpers.set(stack, PBComponentTypes.SIZE, this.getSize());
+        PBHelpers.set(stack, PBComponentTypes.HEIGHT, this.getHeight());
+    }
+
+    public void readFrom(ItemStack stack) {
+        this.setCakeBatter(PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty()).copy());
+        this.setSize(PBHelpers.getOrDefault(stack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()));
+        this.setHeight(PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()));
     }
 }

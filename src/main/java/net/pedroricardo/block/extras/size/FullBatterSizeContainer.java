@@ -7,9 +7,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -29,7 +26,6 @@ public class FullBatterSizeContainer extends BatterSizeContainer {
             Codec.FLOAT.fieldOf("height").forGetter(FullBatterSizeContainer::getHeight),
             Codec.FLOAT.fieldOf("bites").forGetter(FullBatterSizeContainer::getBites)
     ).apply(instance, FullBatterSizeContainer::new));
-    public static final PacketCodec<RegistryByteBuf, FullBatterSizeContainer> PACKET_CODEC = PacketCodec.tuple(PacketCodecs.FLOAT, FullBatterSizeContainer::getSize, PacketCodecs.FLOAT, FullBatterSizeContainer::getHeight, PacketCodecs.FLOAT, FullBatterSizeContainer::getBites, FullBatterSizeContainer::new);
 
     public FullBatterSizeContainer() {
     }

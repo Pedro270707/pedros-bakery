@@ -20,8 +20,8 @@ public class PBCakeBlockEntityPart extends MultipartBlockEntityPart<PBCakeBlockE
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return this.createNbt(registryLookup);
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.createNbt();
     }
 
     @Nullable

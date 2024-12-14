@@ -3,16 +3,11 @@ package net.pedroricardo.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.BlockStateComponent;
-import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -26,21 +21,21 @@ public class CookieJarBlockEntity extends BlockEntity implements Inventory, Clea
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return this.createNbt(registryLookup);
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.createNbt();
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
         this.stacks = DefaultedList.ofSize(CookieJarBlock.MAX_COOKIES, ItemStack.EMPTY);
-        Inventories.readNbt(nbt, this.getStacks(), registryLookup);
+        Inventories.readNbt(nbt, this.getStacks());
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        Inventories.writeNbt(nbt, this.getStacks(), registryLookup);
+    public void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        Inventories.writeNbt(nbt, this.getStacks());
     }
 
     public DefaultedList<ItemStack> getStacks() {
@@ -85,23 +80,5 @@ public class CookieJarBlockEntity extends BlockEntity implements Inventory, Clea
     @Override
     public boolean canPlayerUse(PlayerEntity player) {
         return false;
-    }
-
-    @Override
-    protected void readComponents(BlockEntity.ComponentsAccess components) {
-        super.readComponents(components);
-        components.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT).copyTo(this.getStacks());
-    }
-
-    @Override
-    protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-        super.addComponents(componentMapBuilder);
-        componentMapBuilder.add(DataComponentTypes.CONTAINER, ContainerComponent.fromStacks(this.getStacks()));
-        componentMapBuilder.add(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(CookieJarBlock.COOKIES, this.getStacks().stream().mapToInt(stack -> stack.isEmpty() ? 0 : 1).sum()));
-    }
-
-    @Override
-    public void removeFromCopiedStackNbt(NbtCompound nbt) {
-        nbt.remove("Items");
     }
 }

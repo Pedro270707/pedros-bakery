@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
@@ -13,9 +12,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -65,26 +61,23 @@ public class CakeBatter<S extends BatterSizeContainer> {
             Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
                     FixedBatterSizeContainer.CODEC.fieldOf("batter_size").orElse(new FixedBatterSizeContainer()).forGetter(CakeBatter::getSizeContainer),
                     CakeTops.REGISTRY.getCodec().optionalFieldOf("top").forGetter(CakeBatter::getTop),
-                    CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.getDefaultEntry().get().value()).forGetter(CakeBatter::getFlavor),
+                    CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.get(CakeFlavors.REGISTRY.getDefaultId())).forGetter(CakeBatter::getFlavor),
                     Codec.BOOL.fieldOf("is_waxed").orElse(false).forGetter(CakeBatter::isWaxed))
             .apply(instance, CakeBatter::new));
     public static final Codec<CakeBatter<HeightOnlyBatterSizeContainer>> WITH_HEIGHT_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
                     HeightOnlyBatterSizeContainer.CODEC.fieldOf("batter_size").orElse(new HeightOnlyBatterSizeContainer()).forGetter(CakeBatter::getSizeContainer),
-                    CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.getDefaultEntry().get().value()).forGetter(CakeBatter::getFlavor),
+                    CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.get(CakeFlavors.REGISTRY.getDefaultId())).forGetter(CakeBatter::getFlavor),
                     Codec.BOOL.fieldOf("is_waxed").orElse(false).forGetter(CakeBatter::isWaxed))
             .apply(instance, CakeBatter::new));
     public static final Codec<CakeBatter<FullBatterSizeContainer>> FULL_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.INT.fieldOf("bake_time").orElse(0).forGetter(CakeBatter::getBakeTime),
                     FullBatterSizeContainer.CODEC.fieldOf("batter_size").orElse(new FullBatterSizeContainer()).forGetter(CakeBatter::getSizeContainer),
-                    CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.getDefaultEntry().get().value()).forGetter(CakeBatter::getFlavor),
+                    CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.get(CakeFlavors.REGISTRY.getDefaultId())).forGetter(CakeBatter::getFlavor),
                     CakeTops.REGISTRY.getCodec().optionalFieldOf("top").forGetter(CakeBatter::getTop),
                     Codec.unboundedMap(CakeFeatures.REGISTRY.getCodec(), NbtCompound.CODEC).fieldOf("features").orElse(Map.of()).forGetter(CakeBatter::getFeatureMap),
                     Codec.BOOL.fieldOf("is_waxed").orElse(false).forGetter(CakeBatter::isWaxed))
             .apply(instance, CakeBatter::new));
-    public static final PacketCodec<RegistryByteBuf, CakeBatter<FixedBatterSizeContainer>> FIXED_SIZE_PACKET_CODEC = PacketCodec.tuple(PacketCodecs.VAR_INT, CakeBatter::getBakeTime, FixedBatterSizeContainer.PACKET_CODEC, CakeBatter::getSizeContainer, PacketCodecs.registryValue(CakeFlavors.REGISTRY_KEY), CakeBatter::getFlavor, PacketCodecs.optional(PacketCodecs.registryValue(CakeTops.REGISTRY_KEY)), CakeBatter::getTop, PacketCodecs.map(Object2ObjectOpenHashMap::new, PacketCodecs.registryValue(CakeFeatures.REGISTRY_KEY), PacketCodecs.NBT_COMPOUND), CakeBatter::getFeatureMap, PacketCodecs.BOOL, CakeBatter::isWaxed, CakeBatter::new);
-    public static final PacketCodec<RegistryByteBuf, CakeBatter<HeightOnlyBatterSizeContainer>> HEIGHT_ONLY_PACKET_CODEC = PacketCodec.tuple(PacketCodecs.VAR_INT, CakeBatter::getBakeTime, HeightOnlyBatterSizeContainer.PACKET_CODEC, CakeBatter::getSizeContainer, PacketCodecs.registryValue(CakeFlavors.REGISTRY_KEY), CakeBatter::getFlavor, PacketCodecs.optional(PacketCodecs.registryValue(CakeTops.REGISTRY_KEY)), CakeBatter::getTop, PacketCodecs.map(Object2ObjectOpenHashMap::new, PacketCodecs.registryValue(CakeFeatures.REGISTRY_KEY), PacketCodecs.NBT_COMPOUND), CakeBatter::getFeatureMap, PacketCodecs.BOOL, CakeBatter::isWaxed, CakeBatter::new);
-    public static final PacketCodec<RegistryByteBuf, CakeBatter<FullBatterSizeContainer>> FULL_PACKET_CODEC = PacketCodec.tuple(PacketCodecs.VAR_INT, CakeBatter::getBakeTime, FullBatterSizeContainer.PACKET_CODEC, CakeBatter::getSizeContainer, PacketCodecs.registryValue(CakeFlavors.REGISTRY_KEY), CakeBatter::getFlavor, PacketCodecs.optional(PacketCodecs.registryValue(CakeTops.REGISTRY_KEY)), CakeBatter::getTop, PacketCodecs.map(Object2ObjectOpenHashMap::new, PacketCodecs.registryValue(CakeFeatures.REGISTRY_KEY), PacketCodecs.NBT_COMPOUND), CakeBatter::getFeatureMap, PacketCodecs.BOOL, CakeBatter::isWaxed, CakeBatter::new);
 
     public static CakeBatter<FixedBatterSizeContainer> getFixedSizeDefault() {
         return new CakeBatter<>(0, new FixedBatterSizeContainer(false), CakeFlavors.VANILLA, Optional.empty(), Map.of(), false);
@@ -111,7 +104,7 @@ public class CakeBatter<S extends BatterSizeContainer> {
     }
 
     public NbtCompound toNbt(NbtCompound nbt, Codec<CakeBatter<S>> codec) {
-        NbtElement result = codec.encodeStart(NbtOps.INSTANCE, this).getOrThrow();
+        NbtElement result = codec.encodeStart(NbtOps.INSTANCE, this).get().orThrow();
 
         if (result instanceof NbtCompound compound) {
             return compound;

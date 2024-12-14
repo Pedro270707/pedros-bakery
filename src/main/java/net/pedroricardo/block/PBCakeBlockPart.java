@@ -21,8 +21,6 @@ import net.pedroricardo.block.multipart.MultipartBlockPart;
 import org.jetbrains.annotations.Nullable;
 
 public class PBCakeBlockPart extends MultipartBlockPart<PBCakeBlockEntity, PBCakeBlockEntityPart> {
-    public static final MapCodec<PBCakeBlockPart> CODEC = createCodec(PBCakeBlockPart::new);
-
     protected PBCakeBlockPart(Settings settings) {
         super(settings);
     }
@@ -33,17 +31,12 @@ public class PBCakeBlockPart extends MultipartBlockPart<PBCakeBlockEntity, PBCak
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         if (!(world.getBlockEntity(pos) instanceof MultipartBlockEntityPart<?> cake) || cake.getParentPos() == null || !(world.getBlockState(cake.getParentPos()).getBlock() instanceof MultipartBlock<?, ?, ?> block)) {
             return VoxelShapes.empty();
         }
         BlockPos offset = cake.getParentPos().subtract(pos);
         return VoxelShapes.combineAndSimplify(block.getFullShape(world.getBlockState(cake.getParentPos()), world, cake.getParentPos(), context).offset(offset.getX(), offset.getY(), offset.getZ()), VoxelShapes.fullCube(), BooleanBiFunction.AND);
-    }
-
-    @Override
-    protected MapCodec<? extends MultipartBlockPart<PBCakeBlockEntity, PBCakeBlockEntityPart>> getCodec() {
-        return CODEC;
     }
 
     @Nullable
@@ -55,6 +48,6 @@ public class PBCakeBlockPart extends MultipartBlockPart<PBCakeBlockEntity, PBCak
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return validateTicker(type, PBBlockEntities.CAKE_PART, PBCakeBlockEntityPart::tick);
+        return checkType(type, PBBlockEntities.CAKE_PART, PBCakeBlockEntityPart::tick);
     }
 }

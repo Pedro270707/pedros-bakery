@@ -5,8 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
 import net.pedroricardo.block.extras.size.FixedBatterSizeContainer;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +19,6 @@ public record CupcakeTrayBatter(CakeBatter<FixedBatterSizeContainer> topLeft, Ca
             CakeBatter.FIXED_SIZE_CODEC.fieldOf("bottom_left").orElse(CakeBatter.getFixedSizeEmpty()).forGetter(CupcakeTrayBatter::bottomLeft),
             CakeBatter.FIXED_SIZE_CODEC.fieldOf("bottom_right").orElse(CakeBatter.getFixedSizeEmpty()).forGetter(CupcakeTrayBatter::bottomRight)
     ).apply(instance, CupcakeTrayBatter::new));
-    public static final PacketCodec<RegistryByteBuf, CupcakeTrayBatter> PACKET_CODEC = PacketCodec.tuple(CakeBatter.FIXED_SIZE_PACKET_CODEC, CupcakeTrayBatter::topLeft, CakeBatter.FIXED_SIZE_PACKET_CODEC, CupcakeTrayBatter::topRight, CakeBatter.FIXED_SIZE_PACKET_CODEC, CupcakeTrayBatter::bottomLeft, CakeBatter.FIXED_SIZE_PACKET_CODEC, CupcakeTrayBatter::bottomRight, CupcakeTrayBatter::new);
     private static final CupcakeTrayBatter EMPTY = new CupcakeTrayBatter(CakeBatter.getFixedSizeEmpty(), CakeBatter.getFixedSizeEmpty(), CakeBatter.getFixedSizeEmpty(), CakeBatter.getFixedSizeEmpty());
 
     public static CupcakeTrayBatter getEmpty() {
@@ -29,7 +26,7 @@ public record CupcakeTrayBatter(CakeBatter<FixedBatterSizeContainer> topLeft, Ca
     }
 
     public CupcakeTrayBatter(List<CakeBatter<FixedBatterSizeContainer>> list) {
-        this(list.isEmpty() ? CakeBatter.getFixedSizeEmpty() : list.getFirst(), list.size() > 1 ? list.get(1) : CakeBatter.getFixedSizeEmpty(), list.size() > 2 ? list.get(2) : CakeBatter.getFixedSizeEmpty(), list.size() > 3 ? list.get(3) : CakeBatter.getFixedSizeEmpty());
+        this(list.isEmpty() ? CakeBatter.getFixedSizeEmpty() : list.get(0), list.size() > 1 ? list.get(1) : CakeBatter.getFixedSizeEmpty(), list.size() > 2 ? list.get(2) : CakeBatter.getFixedSizeEmpty(), list.size() > 3 ? list.get(3) : CakeBatter.getFixedSizeEmpty());
     }
 
     public List<CakeBatter<FixedBatterSizeContainer>> stream() {
@@ -51,7 +48,7 @@ public record CupcakeTrayBatter(CakeBatter<FixedBatterSizeContainer> topLeft, Ca
         if (this.equals(CupcakeTrayBatter.getEmpty())) {
             return nbt;
         }
-        nbt.put("batter", CODEC.encodeStart(NbtOps.INSTANCE, this).getOrThrow());
+        nbt.put("batter", CODEC.encodeStart(NbtOps.INSTANCE, this).get().orThrow());
         return nbt;
     }
 

@@ -2,7 +2,7 @@ package net.pedroricardo.datagen.lang;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.Util;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.extras.CakeFeatures;
@@ -11,15 +11,13 @@ import net.pedroricardo.block.extras.CakeTops;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBItems;
 
-import java.util.concurrent.CompletableFuture;
-
 public class PBENLanguageProvider extends FabricLanguageProvider {
-    public PBENLanguageProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
-        super(dataOutput, registryLookup);
+    public PBENLanguageProvider(FabricDataOutput dataOutput) {
+        super(dataOutput);
     }
 
     @Override
-    public void generateTranslations(RegistryWrapper.WrapperLookup registryLookup, TranslationBuilder builder) {
+    public void generateTranslations(TranslationBuilder builder) {
         builder.add(PBBlocks.CAKE, "Cake");
         builder.add(PBBlocks.CANDLE_CAKE, "Candle Cake");
         builder.add(PBBlocks.WHITE_CANDLE_CAKE, "White Candle Cake");
@@ -133,16 +131,16 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(CakeFeatures.BLACK_SPRINKLES.getTranslationKey(), "Black Sprinkles");
         builder.add(CakeFeatures.GLASS.getTranslationKey(), "Glass");
         builder.add(CakeFeatures.PLAYER_HEAD.getTranslationKey(), "Player Head");
-        builder.add(CakeFeatures.SHORT_GRASS.getTranslationKey(), "Short Grass");
+        builder.add(CakeFeatures.GRASS.getTranslationKey(), "Short Grass");
         builder.add(CakeFeatures.FERN.getTranslationKey(), "Fern");
-        builder.add(PBTags.Blocks.BAKES_CAKE, "Bakes Cake");
-        builder.add(PBTags.Blocks.CAKES, "Cakes");
-        builder.add(PBTags.Blocks.CANDLE_CAKES, "Candle Cakes");
-        builder.add(PBTags.Items.CAKE_STAND_ITEM, "Cake Stand Item");
-        builder.add(PBTags.Items.COOKIES, "Cookies");
-        builder.add(PBTags.Flavors.INEDIBLE, "Inedible");
-        builder.add(PBTags.Features.INEDIBLE, "Inedible");
-        builder.add(PBTags.Tops.INEDIBLE, "Inedible");
+        builder.add(Util.createTranslationKey("tag.block", PBTags.Blocks.BAKES_CAKE.id()), "Bakes Cake");
+        builder.add(Util.createTranslationKey("tag.block", PBTags.Blocks.CAKES.id()), "Cakes");
+        builder.add(Util.createTranslationKey("tag.block", PBTags.Blocks.CANDLE_CAKES.id()), "Candle Cakes");
+        builder.add(Util.createTranslationKey("tag.item", PBTags.Items.CAKE_STAND_ITEM.id()), "Cake Stand Item");
+        builder.add(Util.createTranslationKey("tag.item", PBTags.Items.COOKIES.id()), "Cookies");
+        builder.add(Util.createTranslationKey("tag.pedrosbakery.cake_flavor", PBTags.Flavors.INEDIBLE.id()), "Inedible");
+        builder.add(Util.createTranslationKey("tag.pedrosbakery.cake_feature", PBTags.Features.INEDIBLE.id()), "Inedible");
+        builder.add(Util.createTranslationKey("tag.pedrosbakery.cake_top", PBTags.Tops.INEDIBLE.id()), "Inedible");
         builder.add("subtitles." + PBBlocks.BAKING_TRAY.getTranslationKey() + ".done", "Cake baked");
         builder.add("itemGroup." + PedrosBakery.MOD_ID, "Pedro's Bakery");
         builder.add("text.config.pedrosbakery.option.bakingTrayMinSize", "Baking Tray Minimum Size");

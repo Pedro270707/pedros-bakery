@@ -7,9 +7,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -24,7 +21,6 @@ public class FixedBatterSizeContainer extends BatterSizeContainer {
     public static final Codec<FixedBatterSizeContainer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.BOOL.fieldOf("empty").forGetter(FixedBatterSizeContainer::isEmpty)
     ).apply(instance, FixedBatterSizeContainer::new));
-    public static final PacketCodec<RegistryByteBuf, FixedBatterSizeContainer> PACKET_CODEC = PacketCodec.tuple(PacketCodecs.BOOL, FixedBatterSizeContainer::isEmpty, FixedBatterSizeContainer::new);
 
     public FixedBatterSizeContainer() {
     }

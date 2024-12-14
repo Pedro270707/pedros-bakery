@@ -1,8 +1,8 @@
 package net.pedroricardo.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -21,7 +21,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
@@ -34,8 +33,6 @@ import net.pedroricardo.item.PBItems;
 import org.jetbrains.annotations.Nullable;
 
 public class CupcakeBlock extends BlockWithEntity {
-    public static final MapCodec<CupcakeBlock> CODEC = createCodec(CupcakeBlock::new);
-
     protected CupcakeBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.getStateManager().getDefaultState().with(Properties.ROTATION, 0));
@@ -52,17 +49,17 @@ public class CupcakeBlock extends BlockWithEntity {
     }
 
     @Override
-    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(Properties.ROTATION, rotation.rotate(state.get(Properties.ROTATION), RotationPropertyHelper.getMax() + 1));
     }
 
     @Override
-    protected BlockState mirror(BlockState state, BlockMirror mirror) {
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.with(Properties.ROTATION, mirror.mirror(state.get(Properties.ROTATION), RotationPropertyHelper.getMax() + 1));
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         VoxelShape shape;
         if (world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake) {
             shape = cupcake.getBatter().getShape(state, world, pos, context).offset(0.0, 0.15625, 0.0);
@@ -73,17 +70,14 @@ public class CupcakeBlock extends BlockWithEntity {
     }
 
     @Override
-    protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+    public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return VoxelShapes.empty();
     }
 
     @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
-        return CODEC;
-    }
-
-    @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        ActionResult useWithItem = this.onUseWithItem(player.getStackInHand(hand), state, world, pos, player, hand, hit);
+        if (useWithItem != ActionResult.PASS) return useWithItem;
         if (!(world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake)) return ActionResult.PASS;
         if ((player.isCreative() || player.canConsume(false)) && !cupcake.getBatter().isEmpty()) {
             CakeBatter<FixedBatterSizeContainer> batter = cupcake.getBatter();
@@ -100,31 +94,30 @@ public class CupcakeBlock extends BlockWithEntity {
         return ActionResult.FAIL;
     }
 
-    @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!(world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake)) return ItemActionResult.FAIL;
-        CakeTop top = stack.get(PBComponentTypes.TOP);
+    private ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (!(world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake)) return ActionResult.FAIL;
+        CakeTop top = PBHelpers.get(stack, PBComponentTypes.TOP);
         if (stack.isOf(PBItems.FROSTING_BOTTLE) && !cupcake.getBatter().isEmpty() && cupcake.getBatter().getTop().orElse(null) != top) {
             cupcake.getBatter().withTop(top);
             PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.GLASS_BOTTLE));
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
         if (stack.isOf(Items.HONEYCOMB) && !cupcake.getBatter().isEmpty() && cupcake.getBatter().setWaxed(true)) {
             world.syncWorldEvent(player, WorldEvents.BLOCK_WAXED, pos, 0);
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return ActionResult.PASS;
     }
 
     public static ItemStack of(CakeBatter<FixedBatterSizeContainer> batter) {
         ItemStack stack = new ItemStack(PBBlocks.CUPCAKE);
-        stack.set(PBComponentTypes.FIXED_SIZE_BATTER, batter.copy());
+        PBHelpers.set(stack, PBComponentTypes.FIXED_SIZE_BATTER, batter.copy());
         return stack;
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         if (world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake) {
             return of(cupcake.getBatter());
         }
@@ -138,7 +131,15 @@ public class CupcakeBlock extends BlockWithEntity {
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
+    }
+
+    @Override
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.onPlaced(world, pos, state, placer, stack);
+        if (world.getBlockEntity(pos) instanceof CupcakeBlockEntity cupcake) {
+            cupcake.readFrom(stack);
+        }
     }
 }

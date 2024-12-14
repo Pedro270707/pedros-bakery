@@ -1,13 +1,15 @@
 package net.pedroricardo.item.recipes;
 
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.extras.CakeBatter;
@@ -16,19 +18,19 @@ import net.pedroricardo.item.PBComponentTypes;
 import java.util.OptionalInt;
 
 public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
-    public BakingTrayIncreaseRecipe(CraftingRecipeCategory category) {
-        super(category);
+    public BakingTrayIncreaseRecipe(Identifier id, CraftingRecipeCategory category) {
+        super(id, category);
     }
 
     @Override
-    public boolean matches(CraftingRecipeInput inventory, World world) {
+    public boolean matches(RecipeInputInventory inventory, World world) {
         if (!this.fits(inventory.getWidth(), inventory.getHeight())) {
             return false;
         }
         OptionalInt trayIndex = OptionalInt.empty();
         boolean hasIronIngots = false;
-        for (int i = 0; i < inventory.getSize(); i++) {
-            ItemStack stack = inventory.getStackInSlot(i);
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack stack = inventory.getStack(i);
             if (stack.isOf(Items.AIR)) continue;
             if (stack.isOf(Items.IRON_INGOT)) {
                 hasIronIngots = true;
@@ -43,40 +45,40 @@ public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
         }
         if (!hasIronIngots || trayIndex.isEmpty()) return false;
         int trayIndexInt = trayIndex.getAsInt();
-        ItemStack trayStack = inventory.getStackInSlot(trayIndexInt).copy();
-        if (!trayStack.getOrDefault(PBComponentTypes.FULL_BATTER, CakeBatter.getFullSizeEmpty()).isEmpty()) return false;
-        for (int i = 0; i < inventory.getSize(); i++) {
-            ItemStack stack = inventory.getStackInSlot(i);
+        ItemStack trayStack = inventory.getStack(trayIndexInt).copy();
+        if (!PBHelpers.getOrDefault(trayStack, PBComponentTypes.FULL_BATTER, CakeBatter.getFullSizeEmpty()).isEmpty()) return false;
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack stack = inventory.getStack(i);
             if (stack.isOf(Items.IRON_INGOT)) {
                 if (i < (trayIndexInt - trayIndexInt % inventory.getWidth()) || i > trayIndexInt - trayIndexInt % inventory.getWidth() + 2) {
-                    trayStack.set(PBComponentTypes.HEIGHT, trayStack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) + 2);
+                    PBHelpers.set(trayStack, PBComponentTypes.HEIGHT, PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) + 2);
                 } else {
-                    trayStack.set(PBComponentTypes.SIZE, trayStack.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()) + 2);
+                    PBHelpers.set(trayStack, PBComponentTypes.SIZE, PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()) + 2);
                 }
             }
         }
-        return trayStack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) <= PedrosBakery.CONFIG.bakingTrayMaxHeight() && trayStack.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()) <= PedrosBakery.CONFIG.bakingTrayMaxSize();
+        return PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) <= PedrosBakery.CONFIG.bakingTrayMaxHeight() && PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()) <= PedrosBakery.CONFIG.bakingTrayMaxSize();
     }
 
     @Override
-    public ItemStack craft(CraftingRecipeInput inventory, RegistryWrapper.WrapperLookup lookup) {
+    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registryManager) {
         ItemStack trayStack = ItemStack.EMPTY;
         int trayIndex = 0;
-        for (int i = 0; i < inventory.getSize(); i++) {
-            ItemStack stack = inventory.getStackInSlot(i);
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack stack = inventory.getStack(i);
             if (stack.isOf(PBBlocks.BAKING_TRAY.asItem())) {
                 trayStack = stack.copy();
                 trayIndex = i;
                 break;
             }
         }
-        for (int i = 0; i < inventory.getSize(); i++) {
-            ItemStack stack = inventory.getStackInSlot(i);
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack stack = inventory.getStack(i);
             if (stack.isOf(Items.IRON_INGOT)) {
                 if (i < (trayIndex - trayIndex % inventory.getWidth()) || i > trayIndex - trayIndex % inventory.getWidth() + 2) {
-                    trayStack.set(PBComponentTypes.HEIGHT, Math.min(trayStack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) + 2, 16));
+                    PBHelpers.set(trayStack, PBComponentTypes.HEIGHT, Math.min(PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) + 2, 16));
                 } else {
-                    trayStack.set(PBComponentTypes.SIZE, Math.min(trayStack.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()) + 2, 16));
+                    PBHelpers.set(trayStack, PBComponentTypes.SIZE, Math.min(PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()) + 2, 16));
                 }
             }
         }

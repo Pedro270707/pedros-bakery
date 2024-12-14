@@ -10,7 +10,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.pedroricardo.mixin.ReadComponentsAccessor;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class MultipartBlockEntityPart<T extends BlockEntity & MultipartBlockEntity> extends BlockEntity {
@@ -23,14 +22,14 @@ public abstract class MultipartBlockEntityPart<T extends BlockEntity & Multipart
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
         this.parentPos = BlockPos.CODEC.parse(NbtOps.INSTANCE, nbt.get("parent_pos")).result().orElse(null);
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
+    public void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
         if (this.parentPos != null) {
             NbtElement parentPosNbt = BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, this.parentPos).result().orElse(null);
             nbt.put("parent_pos", parentPosNbt);
@@ -41,23 +40,9 @@ public abstract class MultipartBlockEntityPart<T extends BlockEntity & Multipart
     }
 
     @Override
-    public void setStackNbt(ItemStack stack, RegistryWrapper.WrapperLookup registries) {
+    public void setStackNbt(ItemStack stack) {
         if (this.getParent() != null) {
-            this.getParent().setStackNbt(stack, registries);
-        }
-    }
-
-    @Override
-    public void removeFromCopiedStackNbt(NbtCompound nbt) {
-        if (this.getParent() != null) {
-            this.getParent().removeFromCopiedStackNbt(nbt);
-        }
-    }
-
-    @Override
-    protected void readComponents(ComponentsAccess components) {
-        if (this.getParent() != null) {
-            ((ReadComponentsAccessor) this.getParent()).invokeReadComponents(components);
+            this.getParent().setStackNbt(stack);
         }
     }
 

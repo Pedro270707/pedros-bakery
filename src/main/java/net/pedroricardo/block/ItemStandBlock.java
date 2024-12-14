@@ -8,8 +8,8 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -40,41 +40,41 @@ public abstract class ItemStandBlock<T extends ItemStandBlockEntity> extends Blo
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
-    protected VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+    public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return VoxelShapes.empty();
     }
 
     public abstract boolean canContain(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit);
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        ItemStack stack = player.getStackInHand(hand);
         try {
             @SuppressWarnings("unchecked")
             T stand = (T) world.getBlockEntity(pos);
-            if (stand == null) return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            if (stand == null) return ActionResult.PASS;
             if (stand.getStack().isEmpty() && canContain(stack, state, world, pos, player, hand, hit)) {
-                stand.setStack(stack.copyWithCount(1));
-                stack.decrementUnlessCreative(1, player);
+                stand.setStack(PBHelpers.splitUnlessCreative(stack, 1, player));
                 world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, state));
-                return ItemActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
             } else if (!stand.getStack().isEmpty()) {
                 player.giveItemStack(stand.getStack());
                 stand.setStack(ItemStack.EMPTY);
-                return ItemActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
             }
-            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return ActionResult.PASS;
         } catch (ClassCastException ignored) {
-            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return ActionResult.PASS;
         }
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.isOf(newState.getBlock())) {
             return;
         }
@@ -95,7 +95,7 @@ public abstract class ItemStandBlock<T extends ItemStandBlockEntity> extends Blo
     }
 
     @Override
-    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return world.getBlockEntity(pos) instanceof ItemStandBlockEntity stand && !stand.getStack().isEmpty() ? 15 : 0;
     }
 }

@@ -3,9 +3,6 @@ package net.pedroricardo.block.entity;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.BlockStateComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -13,7 +10,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
@@ -43,15 +39,15 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return this.createNbt(registryLookup);
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.createNbt();
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
+    public void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
         if (!this.getItems().isEmpty()) {
-            nbt.put("items", ItemStack.CODEC.listOf().xmap(list -> list.stream().filter(stack -> !stack.isEmpty()).toList(), Function.identity()).encodeStart(NbtOps.INSTANCE, this.getItems()).getOrThrow());
+            nbt.put("items", ItemStack.CODEC.listOf().xmap(list -> list.stream().filter(stack -> !stack.isEmpty()).toList(), Function.identity()).encodeStart(NbtOps.INSTANCE, this.getItems()).get().orThrow());
             nbt.putInt("mix_time", this.mixTime);
         }
         if (this.liquid != null) {
@@ -60,8 +56,8 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
 
         Optional<Pair<List<ItemStack>, NbtElement>> optional = ItemStack.CODEC.listOf().decode(NbtOps.INSTANCE, nbt.getList("items", NbtElement.COMPOUND_TYPE)).result();
         this.items = optional.map(pair -> new ArrayList<>(pair.getFirst())).orElseGet(ArrayList::new);
@@ -171,13 +167,5 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this);
-    }
-
-    @Override
-    protected void addComponents(ComponentMap.Builder componentMapBuilder) {
-        super.addComponents(componentMapBuilder);
-        if (this.hasWorld()) {
-            componentMapBuilder.add(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(BeaterBlock.HAS_LIQUID, this.getWorld().getBlockState(this.getPos()).get(BeaterBlock.HAS_LIQUID)));
-        }
     }
 }

@@ -60,7 +60,7 @@ public class CakeFeatures {
     public static final CakeFeature BLACK_SPRINKLES = register("black_sprinkles", new SprinklesCakeFeature());
     public static final CakeFeature GLASS = register("glass", new CakeFeature());
     public static final CakeFeature PLAYER_HEAD = register("player_head", new PlayerHeadCakeFeature());
-    public static final CakeFeature SHORT_GRASS = register("short_grass", new BlockCakeFeature(Blocks.SHORT_GRASS.getDefaultState()));
+    public static final CakeFeature GRASS = register("short_grass", new BlockCakeFeature(Blocks.GRASS.getDefaultState()));
     public static final CakeFeature FERN = register("fern", new BlockCakeFeature(Blocks.FERN.getDefaultState()));
 
     public static void init() {

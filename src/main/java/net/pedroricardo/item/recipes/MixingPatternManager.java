@@ -27,7 +27,7 @@ public class MixingPatternManager extends JsonDataLoader implements SimpleSynchr
     private ImmutableMap<Identifier, MixingPattern> patterns = ImmutableMap.of();
 
     public MixingPatternManager() {
-        super(GSON, RegistryKeys.getPath(MixingPatterns.REGISTRY_KEY));
+        super(GSON, "mixing_patterns");
     }
 
     @Override
@@ -36,8 +36,12 @@ public class MixingPatternManager extends JsonDataLoader implements SimpleSynchr
         for (Map.Entry<Identifier, JsonElement> entry : prepared.entrySet()) {
             Identifier identifier = entry.getKey();
             try {
-                MixingPattern recipe = MixingPattern.CODEC.parse(JsonOps.INSTANCE, entry.getValue()).getOrThrow(JsonParseException::new);
-                builder.put(identifier, recipe);
+                MixingPattern recipe = MixingPattern.Serializer.fromJson(entry.getValue());
+                if (recipe != null) {
+                    builder.put(identifier, recipe);
+                } else {
+                    PedrosBakery.LOGGER.warn("Could not load mixing pattern {}", identifier);
+                }
             } catch (JsonParseException | IllegalArgumentException runtimeException) {
                 PedrosBakery.LOGGER.error("Parsing error loading mixing pattern {}", identifier, runtimeException);
             }

@@ -20,19 +20,12 @@ import net.pedroricardo.block.tags.PBTags;
 import org.jetbrains.annotations.Nullable;
 
 public class CakeStandBlock extends ItemStandBlock<CakeStandBlockEntity> {
-    public static final MapCodec<CakeStandBlock> CODEC = createCodec(CakeStandBlock::new);
-
     protected CakeStandBlock(Settings settings) {
         super(settings);
     }
 
     @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
-        return CODEC;
-    }
-
-    @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return VoxelShapes.union(Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0), Block.createCuboidShape(1.0, 1.0, 1.0, 15.0, 16.0, 15.0));
     }
 

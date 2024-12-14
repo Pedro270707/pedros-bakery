@@ -62,7 +62,7 @@ public class PBCreativeTab {
     private static void addFrostingBottles(ItemGroup.Entries entries) {
         for (CakeTop top : CakeTops.REGISTRY.stream().toList()) {
             ItemStack stack = new ItemStack(PBItems.FROSTING_BOTTLE);
-            stack.set(PBComponentTypes.TOP, top);
+            PBHelpers.set(stack, PBComponentTypes.TOP, top);
             entries.add(stack);
         }
     }
@@ -71,8 +71,8 @@ public class PBCreativeTab {
         for (int w = 8; w <= 16; ++w) {
             for (int h = 8; h <= 16; ++h) {
                 ItemStack stack = new ItemStack(PBBlocks.BAKING_TRAY.asItem());
-                stack.set(PBComponentTypes.SIZE, w);
-                stack.set(PBComponentTypes.HEIGHT, h);
+                PBHelpers.set(stack, PBComponentTypes.SIZE, w);
+                PBHelpers.set(stack, PBComponentTypes.HEIGHT, h);
                 entries.add(stack);
             }
         }

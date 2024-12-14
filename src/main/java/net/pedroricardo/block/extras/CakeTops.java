@@ -84,7 +84,7 @@ public class CakeTops {
                         soundEvent = SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT;
                         soundCategory = SoundCategory.PLAYERS;
                     }
-                    world.playSound(null, user.getX(), user.getY(), user.getZ(), soundEvent, soundCategory);
+                    world.playSound(null, user.getX(), user.getY(), user.getZ(), soundEvent, soundCategory, 1.0f, 1.0f);
                     user.onLanding();
                     break;
                 }
@@ -99,7 +99,7 @@ public class CakeTops {
                 if (serverWorld == null) {
                     return ActionResult.PASS;
                 }
-                player.teleportTo(((EndPortalBlock) Blocks.END_PORTAL).createTeleportTarget(serverWorld, player, pos));
+                player.moveToWorld(serverWorld);
             }
             return ActionResult.SUCCESS;
         }
@@ -108,7 +108,7 @@ public class CakeTops {
     public static final CakeTop BROWN_MUSHROOM = register("brown_mushroom", new CakeTop(SUGAR, Ingredient.ofItems(Items.BROWN_MUSHROOM), 0xFF977251));
     public static final CakeTop SWEET_BERRY = register("sweet_berry", new CakeTop(SUGAR, Ingredient.ofItems(Items.SWEET_BERRIES), 0xFFF6C9BD));
     public static final CakeTop DIRT = register("dirt", new CakeTop(SUGAR, Ingredient.ofItems(Items.DIRT), 0xFF79553A));
-    public static final CakeTop GRASS = register("grass", new CakeTop(SUGAR, Ingredient.ofItems(Items.SHORT_GRASS, Items.TALL_GRASS), 0xFF486E3E));
+    public static final CakeTop GRASS = register("grass", new CakeTop(SUGAR, Ingredient.ofItems(Items.GRASS, Items.TALL_GRASS), 0xFF486E3E));
 
     @Nullable
     public static CakeTop from(ItemStack item) {

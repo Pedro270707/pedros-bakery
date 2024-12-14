@@ -1,17 +1,15 @@
 package net.pedroricardo.item;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.block.entity.BakingTrayBlockEntity;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.CakeFlavor;
 import net.pedroricardo.block.extras.size.HeightOnlyBatterSizeContainer;
@@ -25,10 +23,10 @@ public class BakingTrayItem extends BlockItem implements BatterContainerItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        int size = stack.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize());
-        int height = stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight());
-        CakeBatter<HeightOnlyBatterSizeContainer> batter = stack.getOrDefault(PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty());
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        int size = PBHelpers.getOrDefault(stack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize());
+        int height = PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight());
+        CakeBatter<HeightOnlyBatterSizeContainer> batter = PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty());
 
         tooltip.add(Text.translatable("block.pedrosbakery.baking_tray.size", size, size, height));
         if (batter.isEmpty()) {
@@ -40,26 +38,29 @@ public class BakingTrayItem extends BlockItem implements BatterContainerItem {
         }
     }
 
-    public BakingTrayBlockEntity asBlockEntity(ItemStack stack) {
-        BakingTrayBlockEntity blockEntity = new BakingTrayBlockEntity(BlockPos.ORIGIN, PBBlocks.BAKING_TRAY.getDefaultState());
-        blockEntity.readComponents(stack);
-        return blockEntity;
-    }
-
     public boolean addBatter(PlayerEntity player, ItemStack stack, @Nullable CakeFlavor flavor, int amount) {
         if (flavor == null || !stack.isOf(this)) return false;
         ItemStack newStack = stack.copyWithCount(1);
-        CakeBatter<HeightOnlyBatterSizeContainer> batter = stack.getOrDefault(PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty());
+        CakeBatter<HeightOnlyBatterSizeContainer> batter = PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty());
         if (batter.isEmpty()) {
-            newStack.set(PBComponentTypes.HEIGHT_ONLY_BATTER, new CakeBatter<>(0, new HeightOnlyBatterSizeContainer(Math.min(amount, stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()))), flavor, false));
+            PBHelpers.set(newStack, PBComponentTypes.HEIGHT_ONLY_BATTER, new CakeBatter<>(0, new HeightOnlyBatterSizeContainer(Math.min(amount, PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()))), flavor, false));
             PBHelpers.decrementStackAndAdd(player, stack, newStack, false);
             return true;
-        } else if (batter.getBakeTime() < 200 && batter.getSizeContainer().getHeight() < stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) && flavor == batter.getFlavor()) {
-            batter.getSizeContainer().setHeight(Math.min(batter.getSizeContainer().getHeight() + amount, stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight())));
-            newStack.set(PBComponentTypes.HEIGHT_ONLY_BATTER, batter);
+        } else if (batter.getBakeTime() < 200 && batter.getSizeContainer().getHeight() < PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) && flavor == batter.getFlavor()) {
+            batter.getSizeContainer().setHeight(Math.min(batter.getSizeContainer().getHeight() + amount, PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight())));
+            PBHelpers.set(newStack, PBComponentTypes.HEIGHT_ONLY_BATTER, batter);
             PBHelpers.decrementStackAndAdd(player, stack, newStack, false);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public ItemStack getDefaultStack() {
+        ItemStack stack = super.getDefaultStack();
+        PBHelpers.set(stack, PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty());
+        PBHelpers.set(stack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize());
+        PBHelpers.set(stack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight());
+        return stack;
     }
 }
