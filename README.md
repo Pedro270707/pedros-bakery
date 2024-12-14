@@ -4,50 +4,50 @@
 ## Baking
 To bake a cake or a cupcake, you will first need a beater:
 
-![Beater crafting recipe](beater_crafting_recipe.png)
+![Beater crafting recipe](images/beater_crafting_recipe.png)
 
 The base of any beater mixture is milk. Let's make the batter first.
 For the batter, put the milk and then wheat:
 
-![Beater with milk and wheat](beater_with_milk_and_wheat.png)
+![Beater with milk and wheat](images/beater_with_milk_and_wheat.png)
 
 Then power the beater with redstone:
 
-![Beater with milk and wheat, powered](beater_with_milk_and_wheat_powered.png)
+![Beater with milk and wheat, powered](images/beater_with_milk_and_wheat_powered.png)
 
 The beater's whisk will start spinning and, after a while, the mixture will turn into batter:
 
-![Beater with batter](beater_with_batter.png)
+![Beater with batter](images/beater_with_batter.png)
 
 The default batter is vanilla. You can mix certain ingredients (cocoa beans, sweet berries, pumpkin, melon, and bread) to create new batter types. Let's use the vanilla batter for now.
 
 We need a baking tray for the batter:
 
-![Baking tray crafting recipe](baking_tray_crafting_recipe.png)
+![Baking tray crafting recipe](images/baking_tray_crafting_recipe.png)
 
 You may notice that the baking tray is too small. Let's expand it to the sides by crafting it with iron on the side:
 
-![Baking tray being expanded](baking_tray_expanded_1.png)
+![Baking tray being expanded](images/baking_tray_expanded_1.png)
 
 Let's expand it a bit more:
 
-![Baking tray being expanded more](baking_tray_expanded_2.png)
+![Baking tray being expanded more](images/baking_tray_expanded_2.png)
 
 We can now right-click the beater with the baking tray to fill it. Note that it may not be completely filled, so you'll have to make more batter.
 
-![Baking tray half-full (or half-empty)](baking_tray_half_full.png)
+![Baking tray half-full (or half-empty)](images/baking_tray_half_full.png)
 
 Once you fill the baking tray (completely or otherwise), you can place it on a campfire or magma block to bake the cake:
 
-![Baking the cake](baking_cake.png)
+![Baking the cake](images/baking_cake.png)
 
 The cake will be perfectly baked once you hear a ding sound.
 
-![Perfectly baked cake](perfect_cake.png)
+![Perfectly baked cake](images/perfect_cake.png)
 
 Waiting too long will burn the cake. Burning the cake has no disadvantages other than looking darker.
 
-![Burnt cake (not a chocolate cake!)](burnt_cake.png)
+![Burnt cake (not a chocolate cake!)](images/burnt_cake.png)
 
 To take the cake off of the tray, simply right-click the tray.
 
@@ -56,18 +56,18 @@ You can also make a coal cake by initially using coal instead of wheat.
 ### Baking cupcakes
 To make cupcakes, do the same with a cupcake tray:
 
-![Cupcake tray crafting recipe](cupcake_tray_crafting_recipe.png)
+![Cupcake tray crafting recipe](images/cupcake_tray_crafting_recipe.png)
 
 Note that the batter has four holes, meaning four cupcakes.
 
 There is a small difference at the end of the baking process. Instead of right-clicking the tray bare-handed, you need a cupcake liner:
 
-![Cupcake liner crafting recipe](cupcake_liner_crafting_recipe.png)
+![Cupcake liner crafting recipe](images/cupcake_liner_crafting_recipe.png)
 
 Remember that each tray yields four cupcakes, so you'll need four cupcake liners (or you can eat the cupcake and use the same liner).
 Let's see what the cupcake looks like:
 
-![The resulting cupcake](cupcake.png)
+![The resulting cupcake](images/cupcake.png)
 
 Scrumdiddlyumptious!
 
@@ -76,13 +76,13 @@ You can also create various frostings by first mixing milk with sugar, then with
 
 Let's use the chocolate one: milk + sugar, then sugar top + cocoa beans.
 
-![Collecting chocolate frosting](collecting_chocolate_frosting.png)
+![Collecting chocolate frosting](images/collecting_chocolate_frosting.png)
 
 If you pick up the frosting but actually wanted to craft it into further frostings, you can place it back by right-clicking the beater with the bottle.
 
 To use the frosting, simply right-click the cake or cupcake with the bottle:
 
-![Cake and cupcake with chocolate frosting](cake_and_cupcake_with_chocolate_frosting.png)
+![Cake and cupcake with chocolate frosting](images/cake_and_cupcake_with_chocolate_frosting.png)
 
 ## Features
 Cakes (not cupcakes) can have extra features, like berries on top or an enchantment glint. Those are applied by right-clicking the cake. Try them out:
