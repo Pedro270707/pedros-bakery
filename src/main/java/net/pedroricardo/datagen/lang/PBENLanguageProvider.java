@@ -52,6 +52,7 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBBlocks.BUTTER_CHURN, "Butter Churn");
         builder.add(PBItems.FROSTING_BOTTLE, "Frosting Bottle");
         builder.add(PBItems.DONUT, "Donut");
+        builder.add(PBItems.DONUT.getTranslationKey() + ".top", "%s");
         builder.add(PBItems.WHITE_SPRINKLES, "White Sprinkles");
         builder.add(PBItems.ORANGE_SPRINKLES, "Orange Sprinkles");
         builder.add(PBItems.MAGENTA_SPRINKLES, "Magenta Sprinkles");
