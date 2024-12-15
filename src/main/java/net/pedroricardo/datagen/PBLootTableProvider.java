@@ -61,5 +61,9 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
                         .with(ItemEntry.builder(PBItems.BUTTER)
                                 .conditionally(BlockStatePropertyLootCondition.builder(PBBlocks.BUTTER_CHURN)
                                         .properties(StatePredicate.Builder.create().exactMatch(ButterChurnBlock.CHURN_STATE, ButterChurnBlock.ChurnState.BUTTER))))));
+        this.addDrop(PBBlocks.PIE, LootTable.builder()
+                .pool(LootPool.builder()
+                        .with(ItemEntry.builder(PBBlocks.PIE)
+                                .apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).include(PBComponentTypes.PIE_DATA)))));
     }
 }

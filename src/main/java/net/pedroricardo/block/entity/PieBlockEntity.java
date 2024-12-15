@@ -47,6 +47,18 @@ public class PieBlockEntity extends BlockEntity {
         this.topBakeTime = nbt.getInt("top_bake_time");
         this.fillingItem = ItemStack.fromNbtOrEmpty(registryLookup, nbt.getCompound("filling_item"));
         this.bottomBakeTime = nbt.getInt("bottom_bake_time");
+        if (this.isEmpty()) {
+            this.setBottomBakeTime(0);
+            this.setLayers(0);
+            this.setSlices(0);
+            this.setFillingItem(ItemStack.EMPTY);
+        }
+        if (this.getFillingItem().isEmpty()) {
+            this.setLayers(Math.min(this.getLayers(), 1));
+        }
+        if (this.getLayers() != 3) {
+            this.setTopBakeTime(0);
+        }
     }
 
     @Override
@@ -54,11 +66,15 @@ public class PieBlockEntity extends BlockEntity {
         super.writeNbt(nbt, registryLookup);
         nbt.putInt("layers", this.layers);
         nbt.putInt("slices", this.slices);
-        nbt.putInt("top_bake_time", this.topBakeTime);
-        if (!this.fillingItem.isEmpty()) {
+        if (this.getLayers() >= 1) {
+            nbt.putInt("bottom_bake_time", this.bottomBakeTime);
+        }
+        if (this.getLayers() >= 2 && !this.fillingItem.isEmpty()) {
             nbt.put("filling_item", this.fillingItem.encode(registryLookup));
         }
-        nbt.putInt("bottom_bake_time", this.bottomBakeTime);
+        if (this.getLayers() == 3) {
+            nbt.putInt("top_bake_time", this.topBakeTime);
+        }
     }
 
     public ItemStack getFillingItem() {
@@ -102,26 +118,10 @@ public class PieBlockEntity extends BlockEntity {
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, PieBlockEntity blockEntity) {
-//        if (PieBlock.isEmpty(state)) {
-//            blockEntity.setBottomBakeTime(0);
-//            state = state.with(PieBlock.BOTTOM, false).with(PieBlock.SLICES, 0);
-//            blockEntity.setFillingItem(ItemStack.EMPTY);
-//        }
-//        if (blockEntity.getFillingItem().isEmpty()) {
-//            state = state.with(PieBlock.TOP, false);
-//        }
-//        if (!state.getOrEmpty(PieBlock.TOP).orElse(false)) {
-//            blockEntity.setTopBakeTime(0);
-//            world.setBlockState(pos, state);
-//            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
-//            if (!world.isClient()) {
-//                PBHelpers.update(blockEntity, (ServerWorld) world);
-//            }
-//        }
         if (world.getBlockState(pos.down()).isIn(PBTags.Blocks.BAKES_CAKE)) {
             boolean isEmpty = blockEntity.isEmpty();
             blockEntity.setBottomBakeTime(isEmpty ? 0 : blockEntity.getBottomBakeTime() + 1);
-            blockEntity.setTopBakeTime(isEmpty || blockEntity.getLayers() < 3 ? blockEntity.getTopBakeTime() + 1 : 0);
+            blockEntity.setTopBakeTime(isEmpty || blockEntity.getLayers() < 3 ? 0 : blockEntity.getTopBakeTime() + 1);
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
             if (!world.isClient()) {
                 PBHelpers.update(blockEntity, (ServerWorld) world);

@@ -53,6 +53,8 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBBlocks.COOKIE_JAR, "Cookie Jar");
         builder.add(PBBlocks.BUTTER_CHURN, "Butter Churn");
         builder.add(PBBlocks.PIE, "Pie");
+        builder.add(PBBlocks.PIE.getTranslationKey() + ".flavor", "%s");
+        builder.add(PBBlocks.PIE.getTranslationKey() + ".pie_flavor", "'Oh, boy, what flavor?'");
         builder.add(PBItems.FROSTING_BOTTLE, "Frosting Bottle");
         builder.add(PBItems.DONUT, "Donut");
         builder.add(PBItems.DONUT.getTranslationKey() + ".top", "%s");
