@@ -16,6 +16,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -154,7 +155,9 @@ public class CakeBatter<S extends BatterSizeContainer> {
             player.incrementStat(Stats.EAT_CAKE_SLICE);
             world.emitGameEvent(player, GameEvent.EAT, pos);
             player.getHungerManager().add(PedrosBakery.CONFIG.cakeBiteFood(), PedrosBakery.CONFIG.cakeBiteSaturation());
-            PBHelpers.updateListeners(blockEntity);
+            if (!world.isClient()) {
+                PBHelpers.update(blockEntity, (ServerWorld) world);
+            }
             return ActionResult.SUCCESS;
         }
         return ActionResult.FAIL;

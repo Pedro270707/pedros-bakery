@@ -9,6 +9,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
 import net.pedroricardo.PBHelpers;
@@ -46,7 +47,11 @@ public class ItemStandBlockEntity extends BlockEntity implements Clearable {
 
     public void setStack(ItemStack stack) {
         this.stack = stack;
-        PBHelpers.updateListeners(this);
+        if (this.getWorld() != null) {
+            if (!this.getWorld().isClient()) PBHelpers.update(this, (ServerWorld) this.getWorld());
+        } else {
+            this.markDirty();
+        }
     }
 
     @Nullable

@@ -78,7 +78,9 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
             this.parentConsumer(world.getBlockEntity(pos), blockEntity -> {
                 world.breakBlock(blockEntity.getPos(), player.canHarvest(blockEntity.getCachedState()) && !player.isInCreativeMode(), player);
 //                blockEntity.getCachedState().getBlock().afterBreak(world, player, blockEntity.getPos(), blockEntity.getCachedState(), blockEntity, player.getMainHandStack());
-                PBHelpers.updateListeners(blockEntity);
+                if (!world.isClient()) {
+                    PBHelpers.update(blockEntity, (ServerWorld) world);
+                }
             });
         }
         return super.onBreak(world, pos, state, player);

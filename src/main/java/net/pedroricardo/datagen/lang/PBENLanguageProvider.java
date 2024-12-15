@@ -52,6 +52,7 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBBlocks.CUPCAKE.getTranslationKey() + ".empty", "Cupcake Liner");
         builder.add(PBBlocks.COOKIE_JAR, "Cookie Jar");
         builder.add(PBBlocks.BUTTER_CHURN, "Butter Churn");
+        builder.add(PBBlocks.PIE, "Pie");
         builder.add(PBItems.FROSTING_BOTTLE, "Frosting Bottle");
         builder.add(PBItems.DONUT, "Donut");
         builder.add(PBItems.DONUT.getTranslationKey() + ".top", "%s");
@@ -145,6 +146,7 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBTags.Features.INEDIBLE, "Inedible");
         builder.add(PBTags.Tops.INEDIBLE, "Inedible");
         builder.add("subtitles." + PBBlocks.BAKING_TRAY.getTranslationKey() + ".done", "Cake baked");
+        builder.add("subtitles." + PBBlocks.PIE.getTranslationKey() + ".done", "Pie baked");
         builder.add("itemGroup." + PedrosBakery.MOD_ID, "Pedro's Bakery");
         builder.add("text.config.pedrosbakery.option.bakingTrayMinSize", "Baking Tray Minimum Size");
         builder.add("text.config.pedrosbakery.option.bakingTrayMaxSize", "Baking Tray Maximum Size");

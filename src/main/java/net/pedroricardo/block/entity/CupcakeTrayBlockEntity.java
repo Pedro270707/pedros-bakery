@@ -8,6 +8,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -50,12 +51,14 @@ public class CupcakeTrayBlockEntity extends BlockEntity {
             blockEntity.getBatter().stream().forEach(batter -> {
                 if (batter.isEmpty()) return;
                 batter.bakeTick(world, pos, state);
-                if (batter.getBakeTime() == PedrosBakery.CONFIG.ticksUntilBaked()) {
+                if (batter.getBakeTime() == PedrosBakery.CONFIG.ticksUntilCakeBaked()) {
                     world.playSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.BAKING_TRAY_DONE, SoundCategory.BLOCKS, 1.25f, 1.0f, true);
                 }
             });
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
-            PBHelpers.updateListeners(blockEntity);
+            if (!world.isClient()) {
+                PBHelpers.update(blockEntity, (ServerWorld) world);
+            }
         }
     }
 

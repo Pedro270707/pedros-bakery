@@ -11,6 +11,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -80,18 +81,17 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
 
     public static void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         blockEntity.getBatterList().removeIf(CakeBatter::isEmpty);
+        if (world.isClient()) return;
         if (blockEntity.getBatterList().isEmpty()) {
             blockEntity.removeAllParts(world);
             world.removeBlock(pos, false);
             world.emitGameEvent(null, GameEvent.BLOCK_DESTROY, pos);
-            PBHelpers.updateListeners(world, pos, state, blockEntity);
+            PBHelpers.update((ServerWorld) world, pos, blockEntity);
         } else {
             blockEntity.getBatterList().forEach(batter -> CakeBatter.tick(batter, blockEntity.getBatterList(), world, pos, state, blockEntity));
             blockEntity.markDirty();
         }
-        if (!world.isClient()) {
-            blockEntity.updateParts(world, pos, state);
-        }
+        blockEntity.updateParts(world, pos, state);
     }
 
     public List<CakeBatter<FullBatterSizeContainer>> getBatterList() {

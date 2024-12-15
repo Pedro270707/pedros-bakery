@@ -2,14 +2,12 @@ package net.pedroricardo;
 
 import com.mojang.datafixers.util.Function7;
 import com.mojang.datafixers.util.Function8;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.OptionalInt;
@@ -41,15 +39,13 @@ public class PBHelpers {
         }
     }
 
-    public static void updateListeners(BlockEntity blockEntity) {
-        updateListeners(blockEntity.getWorld(), blockEntity.getPos(), blockEntity.getCachedState(), blockEntity);
+    public static void update(BlockEntity blockEntity, ServerWorld world) {
+        update(world, blockEntity.getPos(), blockEntity);
     }
 
-    public static void updateListeners(World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+    public static void update(ServerWorld world, BlockPos pos, BlockEntity blockEntity) {
         blockEntity.markDirty();
-        if (world != null) {
-            world.updateListeners(pos, state, state, Block.NOTIFY_ALL_AND_REDRAW);
-        }
+        world.getChunkManager().markForUpdate(pos);
     }
 
     public static <T> T firstOrElse(List<T> list, T fallback) {
