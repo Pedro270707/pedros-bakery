@@ -73,6 +73,7 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBItems.APPLE_COOKIE, "Apple Cookie");
         builder.add(PBItems.BUTTER, "Butter");
         builder.add(PBItems.BUTTER_CHURN_STAFF, "Butter Churn Staff");
+        builder.add(PBItems.DOUGH, "Dough");
         builder.add(PBBlocks.CAKE.getTranslationKey() + ".flavor_and_top", "%s, %s");
         builder.add(PBBlocks.CAKE.getTranslationKey() + ".flavor", "%s");
         builder.add(CakeFlavors.VANILLA.getTranslationKey(), "Vanilla");
@@ -156,11 +157,14 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add("text.config.pedrosbakery.option.maxCakeHeight.tooltip", "Cakes turn into multi-blocks if\nhigher than 16 blocks.");
         builder.add("text.config.pedrosbakery.option.beaterBatterAmount", "Beater Batter Amount");
         builder.add("text.config.pedrosbakery.option.biteSize", "Bite Size");
-        builder.add("text.config.pedrosbakery.option.ticksUntilBaked", "Ticks Until Baked");
+        builder.add("text.config.pedrosbakery.option.ticksUntilCakeBaked", "Ticks Until Cake Baked");
+        builder.add("text.config.pedrosbakery.option.ticksUntilPieBaked", "Ticks Until Pie Baked");
         builder.add("text.config.pedrosbakery.option.cakeBiteFood", "Cake Bite Food");
         builder.add("text.config.pedrosbakery.option.cakeBiteSaturation", "Cake Bite Saturation");
         builder.add("text.config.pedrosbakery.option.cupcakeFood", "Cupcake Food");
         builder.add("text.config.pedrosbakery.option.cupcakeSaturation", "Cupcake Saturation");
+        builder.add("text.config.pedrosbakery.option.pieSliceFood", "Pie Slice Food");
+        builder.add("text.config.pedrosbakery.option.pieSliceSaturation", "Pie Slice Saturation");
         builder.add("text.config.pedrosbakery.option.cakeRenderQuality", "Cake Render Quality");
         builder.add("text.config.pedrosbakery.enum.cakeRenderQuality.simple", "Simple");
         builder.add("text.config.pedrosbakery.enum.cakeRenderQuality.borders_on_sides", "Borders on Sides");
