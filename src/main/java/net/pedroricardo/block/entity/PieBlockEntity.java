@@ -53,10 +53,10 @@ public class PieBlockEntity extends BlockEntity {
             this.setSlices(0);
             this.setFillingItem(ItemStack.EMPTY);
         }
-        if (this.getFillingItem().isEmpty()) {
+        if (this.getLayers() < 2 || this.getFillingItem().isEmpty()) {
             this.setLayers(Math.min(this.getLayers(), 1));
         }
-        if (this.getLayers() != 3) {
+        if (this.getLayers() < 3) {
             this.setTopBakeTime(0);
         }
     }
@@ -72,7 +72,7 @@ public class PieBlockEntity extends BlockEntity {
         if (this.getLayers() >= 2 && !this.fillingItem.isEmpty()) {
             nbt.put("filling_item", this.fillingItem.encode(registryLookup));
         }
-        if (this.getLayers() == 3) {
+        if (this.getLayers() >= 3) {
             nbt.putInt("top_bake_time", this.topBakeTime);
         }
     }
