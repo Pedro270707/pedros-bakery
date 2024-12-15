@@ -1,23 +1,19 @@
 package net.pedroricardo.render;
 
-import com.anthonyhilyard.prism.util.ImageAnalysis;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.pedroricardo.PBClientHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.PieBlockEntity;
@@ -196,8 +192,7 @@ public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 			bottom[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, getBakeTimeOverlay(entity.getBottomBakeTime(), overlay), ((bottomBakeTimeColor >> 16) & 0xFF) / 255.0f, ((bottomBakeTimeColor >> 8) & 0xFF) / 255.0f, (bottomBakeTimeColor & 0xFF) / 255.0f, ((bottomBakeTimeColor >> 24) & 0xFF) / 255.0f);
 		}
 		if (layers >= 2) {
-			Sprite sprite = MinecraftClient.getInstance().getItemRenderer().getModel(entity.getFillingItem().isEmpty() ? new ItemStack(Items.APPLE) : entity.getFillingItem(), entity.getWorld(), null, 0).getParticleSprite();
-			TextColor color = ImageAnalysis.getDominantColor(sprite.getContents().getId().withPrefixedPath("textures/").withSuffixedPath(".png"), new Rect2i(0, 0, sprite.getContents().getWidth(), sprite.getContents().getHeight()));
+			TextColor color = PBClientHelpers.getPieColor(entity.getFillingItem().isEmpty() ? new ItemStack(Items.APPLE) : entity.getFillingItem(), entity.getWorld(), null, 0);
 			int fillingColor = color == null ? 0xFFFF00FF : (color.getRgb() | 0xFF000000);
 			for (int i = 0; i < slices; i++) {
 				filling[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, overlay, ((fillingColor >> 16) & 0xFF) / 255.0f, ((fillingColor >> 8) & 0xFF) / 255.0f, (fillingColor & 0xFF) / 255.0f, ((fillingColor >> 24) & 0xFF) / 255.0f);

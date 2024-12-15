@@ -14,6 +14,7 @@ import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import net.pedroricardo.item.recipes.MixingPatternManager;
 import net.pedroricardo.item.recipes.PBRecipeSerializers;
+import net.pedroricardo.item.recipes.PieColorOverrides;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +27,7 @@ public class PedrosBakery implements ModInitializer {
 
 	public static final MixingPatternManager MIXING_PATTERN_MANAGER = new MixingPatternManager();
 	public static final Map<Item, List<CakeFeature>> ITEM_TO_FEATURES = new HashMap<>();
+    public static final PieColorOverrides PIE_COLOR_OVERRIDES = new PieColorOverrides();
 
 	@Override
 	public void onInitialize() {
@@ -39,6 +41,7 @@ public class PedrosBakery implements ModInitializer {
 		PBRecipeSerializers.init();
 
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(MIXING_PATTERN_MANAGER);
+		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(PIE_COLOR_OVERRIDES);
 
 		ITEM_TO_FEATURES.put(Items.ENCHANTED_GOLDEN_APPLE, Collections.singletonList(CakeFeatures.GLINT));
 		ITEM_TO_FEATURES.put(Items.NETHER_STAR, Collections.singletonList(CakeFeatures.GLINT));
