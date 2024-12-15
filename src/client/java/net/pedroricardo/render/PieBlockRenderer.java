@@ -24,57 +24,167 @@ import net.pedroricardo.block.entity.PieBlockEntity;
 import net.pedroricardo.model.PBModelLayers;
 
 public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
-	public static final Identifier TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/entity/pie.png");
+	public static final Identifier UNRAISED_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/entity/pie/unraised.png");
+	public static final Identifier SLIGHTLY_RAISED_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/entity/pie/slightly_raised.png");
+	public static final Identifier FULLY_RAISED_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/entity/pie/fully_raised.png");
 	public static final PieBlockEntity RENDER_PIE = new PieBlockEntity(BlockPos.ORIGIN, PBBlocks.PIE.getDefaultState());
 
-	private final ModelPart[] bottom;
-	private final ModelPart[] filling;
-	private final ModelPart[] top;
-	private final ModelPart pan;
+	private final ModelPart[] unraisedBottom;
+	private final ModelPart[] unraisedFilling;
+	private final ModelPart[] unraisedTop;
+	private final ModelPart unraisedPan;
+	private final ModelPart[] slightlyRaisedBottom;
+	private final ModelPart[] slightlyRaisedFilling;
+	private final ModelPart[] slightlyRaisedTop;
+	private final ModelPart slightlyRaisedPan;
+	private final ModelPart[] fullyRaisedBottom;
+	private final ModelPart[] fullyRaisedFilling;
+	private final ModelPart[] fullyRaisedTop;
+	private final ModelPart fullyRaisedPan;
 
 	public PieBlockRenderer(BlockEntityRendererFactory.Context ctx) {
-		ModelPart modelPart = ctx.getLayerModelPart(PBModelLayers.PIE);
-		this.pan = modelPart.getChild("pan");
-		this.bottom = new ModelPart[4];
-		this.filling = new ModelPart[4];
-		this.top = new ModelPart[4];
+		ModelPart unraisedModelPart = ctx.getLayerModelPart(PBModelLayers.UNRAISED_PIE);
+		this.unraisedPan = unraisedModelPart.getChild("pan");
+		this.unraisedBottom = new ModelPart[4];
+		this.unraisedFilling = new ModelPart[4];
+		this.unraisedTop = new ModelPart[4];
 		for (int i = 0; i < 4; i++) {
-			this.bottom[i] = modelPart.getChild("bottom_slice_" + i);
+			this.unraisedBottom[i] = unraisedModelPart.getChild("bottom_slice_" + i);
 		}
 		for (int i = 0; i < 4; i++) {
-			this.filling[i] = modelPart.getChild("filling_slice_" + i);
+			this.unraisedFilling[i] = unraisedModelPart.getChild("filling_slice_" + i);
 		}
 		for (int i = 0; i < 4; i++) {
-			this.top[i] = modelPart.getChild("top_slice_" + i);
+			this.unraisedTop[i] = unraisedModelPart.getChild("top_slice_" + i);
+		}
+
+		ModelPart slightlyRaisedModelPart = ctx.getLayerModelPart(PBModelLayers.SLIGHTLY_RAISED_PIE);
+		this.slightlyRaisedPan = slightlyRaisedModelPart.getChild("pan");
+		this.slightlyRaisedBottom = new ModelPart[4];
+		this.slightlyRaisedFilling = new ModelPart[4];
+		this.slightlyRaisedTop = new ModelPart[4];
+		for (int i = 0; i < 4; i++) {
+			this.slightlyRaisedBottom[i] = slightlyRaisedModelPart.getChild("bottom_slice_" + i);
+		}
+		for (int i = 0; i < 4; i++) {
+			this.slightlyRaisedFilling[i] = slightlyRaisedModelPart.getChild("filling_slice_" + i);
+		}
+		for (int i = 0; i < 4; i++) {
+			this.slightlyRaisedTop[i] = slightlyRaisedModelPart.getChild("top_slice_" + i);
+		}
+
+		ModelPart fullyRaisedModelPart = ctx.getLayerModelPart(PBModelLayers.FULLY_RAISED_PIE);
+		this.fullyRaisedPan = fullyRaisedModelPart.getChild("pan");
+		this.fullyRaisedBottom = new ModelPart[4];
+		this.fullyRaisedFilling = new ModelPart[4];
+		this.fullyRaisedTop = new ModelPart[4];
+		for (int i = 0; i < 4; i++) {
+			this.fullyRaisedBottom[i] = fullyRaisedModelPart.getChild("bottom_slice_" + i);
+		}
+		for (int i = 0; i < 4; i++) {
+			this.fullyRaisedFilling[i] = fullyRaisedModelPart.getChild("filling_slice_" + i);
+		}
+		for (int i = 0; i < 4; i++) {
+			this.fullyRaisedTop[i] = fullyRaisedModelPart.getChild("top_slice_" + i);
 		}
 	}
 
-	public static TexturedModelData getTexturedModelData() {
+	public static TexturedModelData getUnraisedTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		ModelPartData pan = modelPartData.addChild("pan", ModelPartBuilder.create().uv(0, 0).cuboid(-15.0F, -4.0F, -1.0F, 16.0F, 4.0F, 16.0F, Dilation.NONE), ModelTransform.pivot(7.0F, 24.0F, -7.0F));
-		ModelPartData bottom_slice_0 = modelPartData.addChild("bottom_slice_0", ModelPartBuilder.create().uv(32, 20).cuboid(-7.0F, -1.0F, -1.0F, 8.0F, 1.0F, 8.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 24.0F, 1.0F));
-		ModelPartData bottom_slice_1 = modelPartData.addChild("bottom_slice_1", ModelPartBuilder.create().uv(32, 29).cuboid(-7.0F, -1.0F, -1.0F, 8.0F, 1.0F, 8.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 24.0F, -7.0F));
-		ModelPartData bottom_slice_2 = modelPartData.addChild("bottom_slice_2", ModelPartBuilder.create().uv(32, 38).cuboid(-7.0F, -1.0F, -1.0F, 8.0F, 1.0F, 8.0F, Dilation.NONE), ModelTransform.pivot(7.0F, 24.0F, -7.0F));
-		ModelPartData bottom_slice_3 = modelPartData.addChild("bottom_slice_3", ModelPartBuilder.create().uv(32, 47).cuboid(1.0F, -1.0F, -1.0F, 8.0F, 1.0F, 8.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 24.0F, 1.0F));
-		ModelPartData filling_slice_0 = modelPartData.addChild("filling_slice_0", ModelPartBuilder.create().uv(0, 20).cuboid(-7.0F, -3.0F, -1.0F, 8.0F, 3.0F, 8.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 23.0F, 1.0F));
-		ModelPartData filling_slice_1 = modelPartData.addChild("filling_slice_1", ModelPartBuilder.create().uv(0, 31).cuboid(-7.0F, -3.0F, -1.0F, 8.0F, 3.0F, 8.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 23.0F, -7.0F));
-		ModelPartData filling_slice_2 = modelPartData.addChild("filling_slice_2", ModelPartBuilder.create().uv(0, 42).cuboid(-7.0F, -3.0F, -1.0F, 8.0F, 3.0F, 8.0F, Dilation.NONE), ModelTransform.pivot(7.0F, 23.0F, -7.0F));
-		ModelPartData filling_slice_3 = modelPartData.addChild("filling_slice_3", ModelPartBuilder.create().uv(0, 53).cuboid(0.0F, -2.0F, 0.0F, 8.0F, 3.0F, 8.0F, Dilation.NONE), ModelTransform.pivot(0.0F, 22.0F, 0.0F));
-		ModelPartData top_slice_0 = modelPartData.addChild("top_slice_0", ModelPartBuilder.create().uv(64, 20).cuboid(-7.0F, -3.0F, -1.0F, 8.0F, 3.0F, 8.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 23.0F, 1.0F));
-		ModelPartData top_slice_1 = modelPartData.addChild("top_slice_1", ModelPartBuilder.create().uv(64, 31).cuboid(-7.0F, -3.0F, -1.0F, 8.0F, 3.0F, 8.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 23.0F, -7.0F));
-		ModelPartData top_slice_2 = modelPartData.addChild("top_slice_2", ModelPartBuilder.create().uv(64, 42).cuboid(-7.0F, -3.0F, -1.0F, 8.0F, 3.0F, 8.0F, Dilation.NONE), ModelTransform.pivot(7.0F, 23.0F, -7.0F));
-		ModelPartData top_slice_3 = modelPartData.addChild("top_slice_3", ModelPartBuilder.create().uv(64, 53).cuboid(0.0F, -2.0F, 0.0F, 8.0F, 3.0F, 8.0F, Dilation.NONE), ModelTransform.pivot(0.0F, 22.0F, 0.0F));
+		ModelPartData bottom_slice_0 = modelPartData.addChild("bottom_slice_0", ModelPartBuilder.create().uv(28, 0).cuboid(-6.0F, -1.0F, -1.0F, 7.0F, 1.0F, 7.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 24.0F, 1.0F));
+		ModelPartData bottom_slice_1 = modelPartData.addChild("bottom_slice_1", ModelPartBuilder.create().uv(28, 8).cuboid(-6.0F, -1.0F, -1.0F, 7.0F, 1.0F, 7.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 24.0F, -6.0F));
+		ModelPartData bottom_slice_2 = modelPartData.addChild("bottom_slice_2", ModelPartBuilder.create().uv(28, 16).cuboid(-6.0F, -1.0F, -1.0F, 7.0F, 1.0F, 7.0F, Dilation.NONE), ModelTransform.pivot(6.0F, 24.0F, -6.0F));
+		ModelPartData bottom_slice_3 = modelPartData.addChild("bottom_slice_3", ModelPartBuilder.create().uv(28, 24).cuboid(2.0F, -1.0F, -1.0F, 7.0F, 1.0F, 7.0F, Dilation.NONE), ModelTransform.pivot(-2.0F, 24.0F, 1.0F));
+		ModelPartData filling_slice_0 = modelPartData.addChild("filling_slice_0", ModelPartBuilder.create().uv(0, 0).cuboid(-6.0F, -3.0F, -1.0F, 7.0F, 3.0F, 7.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 23.0F, 1.0F));
+		ModelPartData filling_slice_1 = modelPartData.addChild("filling_slice_1", ModelPartBuilder.create().uv(0, 10).cuboid(-6.0F, -3.0F, -1.0F, 7.0F, 3.0F, 7.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 23.0F, -6.0F));
+		ModelPartData filling_slice_2 = modelPartData.addChild("filling_slice_2", ModelPartBuilder.create().uv(0, 20).cuboid(-6.0F, -3.0F, -1.0F, 7.0F, 3.0F, 7.0F, Dilation.NONE), ModelTransform.pivot(6.0F, 23.0F, -6.0F));
+		ModelPartData filling_slice_3 = modelPartData.addChild("filling_slice_3", ModelPartBuilder.create().uv(0, 30).cuboid(1.0F, -2.0F, 0.0F, 7.0F, 3.0F, 7.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 22.0F, 0.0F));
+		ModelPartData top_slice_0 = modelPartData.addChild("top_slice_0", ModelPartBuilder.create().uv(56, 0).cuboid(-6.0F, -3.0F, -1.0F, 7.0F, 3.0F, 7.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 23.0F, 1.0F));
+		ModelPartData top_slice_1 = modelPartData.addChild("top_slice_1", ModelPartBuilder.create().uv(56, 10).cuboid(-6.0F, -3.0F, 0.0F, 7.0F, 3.0F, 7.0F, Dilation.NONE), ModelTransform.pivot(-1.0F, 23.0F, -7.0F));
+		ModelPartData top_slice_2 = modelPartData.addChild("top_slice_2", ModelPartBuilder.create().uv(56, 20).cuboid(-7.0F, -3.0F, 0.0F, 7.0F, 3.0F, 7.0F, Dilation.NONE), ModelTransform.pivot(7.0F, 23.0F, -7.0F));
+		ModelPartData top_slice_3 = modelPartData.addChild("top_slice_3", ModelPartBuilder.create().uv(56, 30).cuboid(0.0F, -2.0F, 0.0F, 7.0F, 3.0F, 7.0F, Dilation.NONE), ModelTransform.pivot(0.0F, 22.0F, 0.0F));
+		ModelPartData pan = modelPartData.addChild("pan", ModelPartBuilder.create().uv(0, 110).cuboid(-13.0F, -4.0F, -1.0F, 14.0F, 4.0F, 14.0F, Dilation.NONE), ModelTransform.pivot(6.0F, 24.0F, -6.0F));
+		return TexturedModelData.of(modelData, 128, 128);
+	}
+
+	public static TexturedModelData getSlightlyRaisedTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		ModelPartData bottom_slice_0 = modelPartData.addChild("bottom_slice_0", ModelPartBuilder.create().uv(28, 0).cuboid(-6.0F, -1.0F, -1.0F, 7.0F, 1.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 24.0F, 1.0F));
+		ModelPartData bottom_slice_1 = modelPartData.addChild("bottom_slice_1", ModelPartBuilder.create().uv(28, 8).cuboid(-6.0F, -1.0F, -1.0F, 7.0F, 1.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 24.0F, -6.0F));
+		ModelPartData bottom_slice_2 = modelPartData.addChild("bottom_slice_2", ModelPartBuilder.create().uv(28, 16).cuboid(-6.0F, -1.0F, -1.0F, 7.0F, 1.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(6.0F, 24.0F, -6.0F));
+		ModelPartData bottom_slice_3 = modelPartData.addChild("bottom_slice_3", ModelPartBuilder.create().uv(28, 24).cuboid(2.0F, -1.0F, -1.0F, 7.0F, 1.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(-2.0F, 24.0F, 1.0F));
+		ModelPartData filling_slice_0 = modelPartData.addChild("filling_slice_0", ModelPartBuilder.create().uv(0, 0).cuboid(-6.0F, -4.0F, -1.0F, 7.0F, 4.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 23.0F, 1.0F));
+		ModelPartData filling_slice_1 = modelPartData.addChild("filling_slice_1", ModelPartBuilder.create().uv(0, 11).cuboid(-6.0F, -4.0F, -1.0F, 7.0F, 4.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 23.0F, -6.0F));
+		ModelPartData filling_slice_2 = modelPartData.addChild("filling_slice_2", ModelPartBuilder.create().uv(0, 22).cuboid(-6.0F, -4.0F, -1.0F, 7.0F, 4.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(6.0F, 23.0F, -6.0F));
+		ModelPartData filling_slice_3 = modelPartData.addChild("filling_slice_3", ModelPartBuilder.create().uv(0, 33).cuboid(1.0F, -3.0F, 0.0F, 7.0F, 4.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 22.0F, 0.0F));
+		ModelPartData top_slice_0 = modelPartData.addChild("top_slice_0", ModelPartBuilder.create().uv(56, 0).cuboid(-6.0F, -4.0F, -1.0F, 7.0F, 4.0F, 7.0F, new Dilation(0.0F))
+				.uv(0, 48).cuboid(-7.0F, -4.0F, -1.0F, 8.0F, 1.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 23.0F, 1.0F));
+		ModelPartData top_slice_1 = modelPartData.addChild("top_slice_1", ModelPartBuilder.create().uv(56, 11).cuboid(-6.0F, -4.0F, 0.0F, 7.0F, 4.0F, 7.0F, new Dilation(0.0F))
+				.uv(0, 57).cuboid(-7.0F, -4.0F, -1.0F, 8.0F, 1.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 23.0F, -7.0F));
+		ModelPartData top_slice_2 = modelPartData.addChild("top_slice_2", ModelPartBuilder.create().uv(56, 22).cuboid(-7.0F, -4.0F, 0.0F, 7.0F, 4.0F, 7.0F, new Dilation(0.0F))
+				.uv(0, 66).cuboid(-7.0F, -4.0F, -1.0F, 8.0F, 1.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(7.0F, 23.0F, -7.0F));
+		ModelPartData top_slice_3 = modelPartData.addChild("top_slice_3", ModelPartBuilder.create().uv(56, 33).cuboid(0.0F, -3.0F, 0.0F, 7.0F, 4.0F, 7.0F, new Dilation(0.0F))
+				.uv(0, 75).cuboid(0.0F, -3.0F, 0.0F, 8.0F, 1.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 22.0F, 0.0F));
+		ModelPartData pan = modelPartData.addChild("pan", ModelPartBuilder.create().uv(0, 110).cuboid(-13.0F, -4.0F, -1.0F, 14.0F, 4.0F, 14.0F, new Dilation(0.0F)), ModelTransform.pivot(6.0F, 24.0F, -6.0F));
+		return TexturedModelData.of(modelData, 128, 128);
+	}
+
+	public static TexturedModelData getFullyRaisedTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		ModelPartData bottom_slice_0 = modelPartData.addChild("bottom_slice_0", ModelPartBuilder.create().uv(28, 0).cuboid(-6.0F, -1.0F, -1.0F, 7.0F, 1.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 24.0F, 1.0F));
+		ModelPartData bottom_slice_1 = modelPartData.addChild("bottom_slice_1", ModelPartBuilder.create().uv(28, 8).cuboid(-6.0F, -1.0F, -1.0F, 7.0F, 1.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 24.0F, -6.0F));
+		ModelPartData bottom_slice_2 = modelPartData.addChild("bottom_slice_2", ModelPartBuilder.create().uv(28, 16).cuboid(-6.0F, -1.0F, -1.0F, 7.0F, 1.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(6.0F, 24.0F, -6.0F));
+		ModelPartData bottom_slice_3 = modelPartData.addChild("bottom_slice_3", ModelPartBuilder.create().uv(28, 24).cuboid(2.0F, -1.0F, -1.0F, 7.0F, 1.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(-2.0F, 24.0F, 1.0F));
+		ModelPartData filling_slice_0 = modelPartData.addChild("filling_slice_0", ModelPartBuilder.create().uv(0, 0).cuboid(-6.0F, -5.0F, -1.0F, 7.0F, 5.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 23.0F, 1.0F));
+		ModelPartData filling_slice_1 = modelPartData.addChild("filling_slice_1", ModelPartBuilder.create().uv(0, 12).cuboid(-6.0F, -5.0F, -1.0F, 7.0F, 5.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 23.0F, -6.0F));
+		ModelPartData filling_slice_2 = modelPartData.addChild("filling_slice_2", ModelPartBuilder.create().uv(0, 24).cuboid(-6.0F, -5.0F, -1.0F, 7.0F, 5.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(6.0F, 23.0F, -6.0F));
+		ModelPartData filling_slice_3 = modelPartData.addChild("filling_slice_3", ModelPartBuilder.create().uv(0, 36).cuboid(1.0F, -4.0F, 0.0F, 7.0F, 5.0F, 7.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 22.0F, 0.0F));
+		ModelPartData top_slice_0 = modelPartData.addChild("top_slice_0", ModelPartBuilder.create().uv(56, 0).cuboid(-6.0F, -5.0F, -1.0F, 7.0F, 5.0F, 7.0F, new Dilation(0.0F))
+				.uv(0, 48).cuboid(-7.0F, -4.0F, -1.0F, 8.0F, 1.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 23.0F, 1.0F));
+		ModelPartData top_slice_1 = modelPartData.addChild("top_slice_1", ModelPartBuilder.create().uv(56, 12).cuboid(-6.0F, -5.0F, 0.0F, 7.0F, 5.0F, 7.0F, new Dilation(0.0F))
+				.uv(0, 57).cuboid(-7.0F, -4.0F, -1.0F, 8.0F, 1.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(-1.0F, 23.0F, -7.0F));
+		ModelPartData top_slice_2 = modelPartData.addChild("top_slice_2", ModelPartBuilder.create().uv(56, 24).cuboid(-7.0F, -5.0F, 0.0F, 7.0F, 5.0F, 7.0F, new Dilation(0.0F))
+				.uv(0, 66).cuboid(-7.0F, -4.0F, -1.0F, 8.0F, 1.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(7.0F, 23.0F, -7.0F));
+		ModelPartData top_slice_3 = modelPartData.addChild("top_slice_3", ModelPartBuilder.create().uv(56, 36).cuboid(0.0F, -4.0F, 0.0F, 7.0F, 5.0F, 7.0F, new Dilation(0.0F))
+				.uv(0, 75).cuboid(0.0F, -3.0F, 0.0F, 8.0F, 1.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 22.0F, 0.0F));
+		ModelPartData pan = modelPartData.addChild("pan", ModelPartBuilder.create().uv(0, 110).cuboid(-13.0F, -4.0F, -1.0F, 14.0F, 4.0F, 14.0F, new Dilation(0.0F)), ModelTransform.pivot(6.0F, 24.0F, -6.0F));
 		return TexturedModelData.of(modelData, 128, 128);
 	}
 
 	@Override
 	public void render(PieBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-		BlockState state = entity.getCachedState();
 		matrices.scale(-1.0f, -1.0f, 1.0f);
 		matrices.translate(-0.5f, -1.5f, 0.5f);
+		ModelPart pan;
+		ModelPart[] bottom;
+		ModelPart[] filling;
+		ModelPart[] top;
+		Identifier texture;
+		int bakeTime = Math.max(entity.getTopBakeTime(), entity.getBottomBakeTime());
+		if (bakeTime < 500) {
+			pan = this.unraisedPan;
+			bottom = this.unraisedBottom;
+			filling = this.unraisedFilling;
+			top = this.unraisedTop;
+			texture = UNRAISED_TEXTURE;
+		} else if (bakeTime < 1800 || bakeTime > 3000) {
+			pan = this.slightlyRaisedPan;
+			bottom = this.slightlyRaisedBottom;
+			filling = this.slightlyRaisedFilling;
+			top = this.slightlyRaisedTop;
+			texture = SLIGHTLY_RAISED_TEXTURE;
+		} else {
+			pan = this.fullyRaisedPan;
+			bottom = this.fullyRaisedBottom;
+			filling = this.fullyRaisedFilling;
+			top = this.fullyRaisedTop;
+			texture = FULLY_RAISED_TEXTURE;
+		}
 
-		this.pan.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(TEXTURE)), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
+		pan.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
 
 		int slices = entity.getSlices();
 		if (slices == 0) return;
@@ -83,20 +193,20 @@ public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 
 		int bottomBakeTimeColor = getBakeTimeColor(entity.getBottomBakeTime(), 0xFFFFFFFF);
 		for (int i = 0; i < slices; i++) {
-			this.bottom[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE)), light, getBakeTimeOverlay(entity.getBottomBakeTime(), overlay), ((bottomBakeTimeColor >> 16) & 0xFF) / 255.0f, ((bottomBakeTimeColor >> 8) & 0xFF) / 255.0f, (bottomBakeTimeColor & 0xFF) / 255.0f, ((bottomBakeTimeColor >> 24) & 0xFF) / 255.0f);
+			bottom[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, getBakeTimeOverlay(entity.getBottomBakeTime(), overlay), ((bottomBakeTimeColor >> 16) & 0xFF) / 255.0f, ((bottomBakeTimeColor >> 8) & 0xFF) / 255.0f, (bottomBakeTimeColor & 0xFF) / 255.0f, ((bottomBakeTimeColor >> 24) & 0xFF) / 255.0f);
 		}
 		if (layers >= 2) {
 			Sprite sprite = MinecraftClient.getInstance().getItemRenderer().getModel(entity.getFillingItem().isEmpty() ? new ItemStack(Items.APPLE) : entity.getFillingItem(), entity.getWorld(), null, 0).getParticleSprite();
 			TextColor color = ImageAnalysis.getDominantColor(sprite.getContents().getId().withPrefixedPath("textures/").withSuffixedPath(".png"), new Rect2i(0, 0, sprite.getContents().getWidth(), sprite.getContents().getHeight()));
 			int fillingColor = color == null ? 0xFFFF00FF : (color.getRgb() | 0xFF000000);
 			for (int i = 0; i < slices; i++) {
-				this.filling[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE)), light, overlay, ((fillingColor >> 16) & 0xFF) / 255.0f, ((fillingColor >> 8) & 0xFF) / 255.0f, (fillingColor & 0xFF) / 255.0f, ((fillingColor >> 24) & 0xFF) / 255.0f);
+				filling[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, overlay, ((fillingColor >> 16) & 0xFF) / 255.0f, ((fillingColor >> 8) & 0xFF) / 255.0f, (fillingColor & 0xFF) / 255.0f, ((fillingColor >> 24) & 0xFF) / 255.0f);
 			}
 		}
 		if (layers == 3) {
 			int topBakeTimeColor = getBakeTimeColor(entity.getTopBakeTime(), 0xFFFFFFFF);
 			for (int i = 0; i < slices; i++) {
-				this.top[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE)), light, getBakeTimeOverlay(entity.getTopBakeTime(), overlay), ((topBakeTimeColor >> 16) & 0xFF) / 255.0f, ((topBakeTimeColor >> 8) & 0xFF) / 255.0f, (topBakeTimeColor & 0xFF) / 255.0f, ((topBakeTimeColor >> 24) & 0xFF) / 255.0f);
+				top[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), light, getBakeTimeOverlay(entity.getTopBakeTime(), overlay), ((topBakeTimeColor >> 16) & 0xFF) / 255.0f, ((topBakeTimeColor >> 8) & 0xFF) / 255.0f, (topBakeTimeColor & 0xFF) / 255.0f, ((topBakeTimeColor >> 24) & 0xFF) / 255.0f);
 			}
 		}
 	}

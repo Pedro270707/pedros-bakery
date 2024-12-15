@@ -46,7 +46,7 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
         this.addDrop(PBBlocks.CAKE_STAND);
         this.addDrop(PBBlocks.PLATE);
         this.addDrop(PBBlocks.EXPANDABLE_BAKING_TRAY);
-        this.addDrop(PBBlocks.CUPCAKE_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.CUPCAKE_TRAY).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY))).build()));
+        this.addDrop(PBBlocks.CUPCAKE_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.CUPCAKE_TRAY).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY))).build())); // TODO: fix
         this.addDrop(PBBlocks.CUPCAKE);
         this.addDrop(PBBlocks.COOKIE_JAR);
         this.addDrop(PBBlocks.BUTTER_CHURN, LootTable.builder()
@@ -56,5 +56,9 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
                         .with(ItemEntry.builder(PBItems.BUTTER)
                                 .conditionally(BlockStatePropertyLootCondition.builder(PBBlocks.BUTTER_CHURN)
                                         .properties(StatePredicate.Builder.create().exactMatch(ButterChurnBlock.CHURN_STATE, ButterChurnBlock.ChurnState.BUTTER))))));
+        this.addDrop(PBBlocks.PIE, LootTable.builder()
+                .pool(LootPool.builder()
+                        .with(ItemEntry.builder(PBBlocks.PIE)
+                                .apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY))))); // TODO: fix
     }
 }

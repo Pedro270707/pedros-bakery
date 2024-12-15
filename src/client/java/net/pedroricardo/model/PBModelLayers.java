@@ -16,7 +16,9 @@ public class PBModelLayers {
     public static final EntityModelLayer PLATE = register("plate", "main", PlateBlockRenderer::getTexturedModelData);
     public static final EntityModelLayer CUPCAKE_TRAY = register("cupcake_tray", "main", CupcakeTrayBlockRenderer::getTexturedModelData);
     public static final EntityModelLayer CUPCAKE = register("cupcake", "main", CupcakeBlockRenderer::getTexturedModelData);
-    public static final EntityModelLayer PIE = register("pie", "main", PieBlockRenderer::getTexturedModelData);
+    public static final EntityModelLayer UNRAISED_PIE = register("pie", "unraised", PieBlockRenderer::getUnraisedTexturedModelData);
+    public static final EntityModelLayer SLIGHTLY_RAISED_PIE = register("pie", "slightly_raised", PieBlockRenderer::getSlightlyRaisedTexturedModelData);
+    public static final EntityModelLayer FULLY_RAISED_PIE = register("pie", "fully_raised", PieBlockRenderer::getFullyRaisedTexturedModelData);
 
     private static EntityModelLayer register(String id, String layer, EntityModelLayerRegistry.TexturedModelDataProvider texturedModelProvider) {
         EntityModelLayer entityModelLayer = create(id, layer);

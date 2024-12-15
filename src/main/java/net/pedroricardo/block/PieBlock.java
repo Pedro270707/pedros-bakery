@@ -95,7 +95,7 @@ public class PieBlock extends BlockWithEntity {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0);
+        return createCuboidShape(1.0, 0.0, 1.0, 15.0, 4.0, 15.0);
     }
 
     @Override
