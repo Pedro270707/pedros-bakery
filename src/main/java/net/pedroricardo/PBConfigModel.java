@@ -33,7 +33,10 @@ public class PBConfigModel {
     public int biteSize = 2;
 
     @RangeConstraint(min = 1, max = Integer.MAX_VALUE)
-    public int ticksUntilBaked = 2000;
+    public int ticksUntilCakeBaked = 2000;
+
+    @RangeConstraint(min = 1, max = Integer.MAX_VALUE)
+    public int ticksUntilPieBaked = 2000;
 
     @Sync(Option.SyncMode.NONE)
     public CakeRenderQuality cakeRenderQuality = CakeRenderQuality.ALL_BORDERS;

@@ -68,6 +68,10 @@ public class PBBlockEntities {
             CookieJarBlockEntity::new,
             PBBlocks.COOKIE_JAR), "cookie_jar");
 
+    public static final BlockEntityType<? extends PieBlockEntity> PIE = register(FabricBlockEntityTypeBuilder.create(
+            PieBlockEntity::new,
+            PBBlocks.PIE), "pie");
+
     private static <T extends BlockEntity> BlockEntityType<T> register(FabricBlockEntityTypeBuilder<T> builder, String id) {
         return Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of(PedrosBakery.MOD_ID, id), builder.build());
     }

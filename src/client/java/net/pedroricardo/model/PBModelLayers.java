@@ -16,6 +16,7 @@ public class PBModelLayers {
     public static final EntityModelLayer PLATE = register("plate", "main", PlateBlockRenderer::getTexturedModelData);
     public static final EntityModelLayer CUPCAKE_TRAY = register("cupcake_tray", "main", CupcakeTrayBlockRenderer::getTexturedModelData);
     public static final EntityModelLayer CUPCAKE = register("cupcake", "main", CupcakeBlockRenderer::getTexturedModelData);
+    public static final EntityModelLayer PIE = register("pie", "main", PieBlockRenderer::getTexturedModelData);
 
     private static EntityModelLayer register(String id, String layer, EntityModelLayerRegistry.TexturedModelDataProvider texturedModelProvider) {
         EntityModelLayer entityModelLayer = create(id, layer);

@@ -215,7 +215,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     }
 
     public static int getBakeTimeColor(int bakeTime, int color) {
-        if (bakeTime <= PedrosBakery.CONFIG.ticksUntilBaked()) {
+        if (bakeTime <= PedrosBakery.CONFIG.ticksUntilCakeBaked()) {
             return color;
         }
 
@@ -224,7 +224,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         int green = color >> 8 & 0xFF;
         int blue = color & 0xFF;
 
-        float factor = Math.max(-1.0f/(2.0f * PedrosBakery.CONFIG.ticksUntilBaked()) * bakeTime + 1.5f, 0.25f);
+        float factor = Math.max(-1.0f/(2.0f * PedrosBakery.CONFIG.ticksUntilCakeBaked()) * bakeTime + 1.5f, 0.25f);
 
         red = (int)MathHelper.clamp(red * factor, 0, 255);
         green = (int)MathHelper.clamp(green * factor, 0, 255);
@@ -234,10 +234,10 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     }
 
     public static int getBakeTimeOverlay(int bakeTime, int overlay) {
-        if (bakeTime > PedrosBakery.CONFIG.ticksUntilBaked()) {
+        if (bakeTime > PedrosBakery.CONFIG.ticksUntilCakeBaked()) {
             return overlay;
         }
-        return OverlayTexture.getUv(((float) PedrosBakery.CONFIG.ticksUntilBaked() - bakeTime) / (2.0f * PedrosBakery.CONFIG.ticksUntilBaked()), false);
+        return OverlayTexture.getUv(((float) PedrosBakery.CONFIG.ticksUntilCakeBaked() - bakeTime) / (2.0f * PedrosBakery.CONFIG.ticksUntilCakeBaked()), false);
     }
 
     @Override

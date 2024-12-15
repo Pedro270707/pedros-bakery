@@ -54,6 +54,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		BlockEntityRendererFactories.register(PBBlockEntities.PLATE, PlateBlockRenderer::new);
 		BlockEntityRendererFactories.register(PBBlockEntities.CUPCAKE_TRAY, CupcakeTrayBlockRenderer::new);
 		BlockEntityRendererFactories.register(PBBlockEntities.CUPCAKE, CupcakeBlockRenderer::new);
+		BlockEntityRendererFactories.register(PBBlockEntities.PIE, PieBlockRenderer::new);
 
 		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.CAKE, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
 			PBCakeBlockRenderer.RENDER_CAKE.readFrom(stack);
@@ -74,6 +75,10 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.CUPCAKE, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
 			CupcakeBlockRenderer.RENDER_CUPCAKE.readFrom(stack);
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(CupcakeBlockRenderer.RENDER_CUPCAKE, matrices, vertexConsumers, light, overlay);
+		});
+		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.PIE, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
+			PieBlockRenderer.RENDER_PIE.readFrom(stack);
+			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(PieBlockRenderer.RENDER_PIE, matrices, vertexConsumers, light, overlay);
 		});
 
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
