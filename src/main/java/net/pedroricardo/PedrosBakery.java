@@ -12,10 +12,7 @@ import net.pedroricardo.block.extras.CakeFlavors;
 import net.pedroricardo.block.extras.CakeTops;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
-import net.pedroricardo.item.recipes.MixingPattern;
-import net.pedroricardo.item.recipes.MixingPatternManager;
-import net.pedroricardo.item.recipes.MixingPatterns;
-import net.pedroricardo.item.recipes.PBRecipeSerializers;
+import net.pedroricardo.item.recipes.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +24,7 @@ public class PedrosBakery implements ModInitializer {
 	public static final net.pedroricardo.PBConfig CONFIG = net.pedroricardo.PBConfig.createAndLoad();
 
 	public static final MixingPatternManager MIXING_PATTERN_MANAGER = new MixingPatternManager();
+	public static final PieColorOverrides PIE_COLOR_OVERRIDES = new PieColorOverrides();
 
 	@Override
 	public void onInitialize() {
@@ -40,6 +38,7 @@ public class PedrosBakery implements ModInitializer {
 		PBRecipeSerializers.init();
 
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(MIXING_PATTERN_MANAGER);
+		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(PIE_COLOR_OVERRIDES);
 
 		DefaultItemComponentEvents.MODIFY.register((ctx) -> {
 			ctx.modify(Items.ENCHANTED_GOLDEN_APPLE, builder ->
