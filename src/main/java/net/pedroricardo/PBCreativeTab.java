@@ -56,6 +56,7 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBItems.APPLE_COOKIE));
                 entries.add(new ItemStack(PBItems.BUTTER));
                 entries.add(new ItemStack(PBItems.BUTTER_CHURN_STAFF));
+                entries.add(new ItemStack(PBItems.DOUGH));
                 addBakingTrays(entries);
             }).build();
 

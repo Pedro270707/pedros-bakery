@@ -77,9 +77,25 @@ public class PieBlockEntity extends BlockEntity {
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, PieBlockEntity blockEntity) {
+//        if (PieBlock.isEmpty(state)) {
+//            blockEntity.setBottomBakeTime(0);
+//            state = state.with(PieBlock.BOTTOM, false).with(PieBlock.SLICES, 0);
+//            blockEntity.setFillingItem(ItemStack.EMPTY);
+//        }
+//        if (blockEntity.getFillingItem().isEmpty()) {
+//            state = state.with(PieBlock.TOP, false);
+//        }
+//        if (!state.getOrEmpty(PieBlock.TOP).orElse(false)) {
+//            blockEntity.setTopBakeTime(0);
+//            world.setBlockState(pos, state);
+//            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
+//            if (!world.isClient()) {
+//                PBHelpers.update(blockEntity, (ServerWorld) world);
+//            }
+//        }
         if (world.getBlockState(pos.down()).isIn(PBTags.Blocks.BAKES_CAKE)) {
-            blockEntity.setBottomBakeTime(world.getBlockState(pos).getOrEmpty(PieBlock.BOTTOM).orElse(false) ? blockEntity.getBottomBakeTime() + 1 : 0);
-            blockEntity.setTopBakeTime(world.getBlockState(pos).getOrEmpty(PieBlock.TOP).orElse(false) ? blockEntity.getTopBakeTime() + 1 : 0);
+            blockEntity.setBottomBakeTime(state.getOrEmpty(PieBlock.BOTTOM).orElse(false) ? blockEntity.getBottomBakeTime() + 1 : 0);
+            blockEntity.setTopBakeTime(state.getOrEmpty(PieBlock.TOP).orElse(false) ? blockEntity.getTopBakeTime() + 1 : 0);
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
             if (!world.isClient()) {
                 PBHelpers.update(blockEntity, (ServerWorld) world);

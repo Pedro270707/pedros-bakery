@@ -56,6 +56,12 @@ public class PBConfigModel {
     @RangeConstraint(min = 0, max = 1000)
     public float cupcakeSaturation = 0.1f;
 
+    @RangeConstraint(min = 0, max = 100)
+    public int pieSliceFood = 2;
+
+    @RangeConstraint(min = 0, max = 1000)
+    public float pieSliceSaturation = 0.1f;
+
     public enum CakeRenderQuality {
         SIMPLE(false, false, false),
         BORDERS_ON_SIDES(true, false, false),
