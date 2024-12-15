@@ -10,16 +10,20 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PBSounds;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.PieBlock;
 import net.pedroricardo.block.tags.PBTags;
+import net.pedroricardo.item.PBComponentTypes;
+import net.pedroricardo.item.PieDataComponent;
 import org.jetbrains.annotations.Nullable;
 
 public class PieBlockEntity extends BlockEntity {
+    private int layers = 0;
+    private int slices = 0;
     private int topBakeTime = 0;
     private ItemStack fillingItem = ItemStack.EMPTY;
     private int bottomBakeTime = 0;
@@ -36,17 +40,21 @@ public class PieBlockEntity extends BlockEntity {
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
+        this.layers = nbt.getInt("layers");
+        this.slices = nbt.getInt("slices");
         this.topBakeTime = nbt.getInt("top_bake_time");
-        this.fillingItem = ItemStack.fromNbt(nbt.getCompound("item"));
+        this.fillingItem = ItemStack.fromNbt(nbt.getCompound("filling_item"));
         this.bottomBakeTime = nbt.getInt("bottom_bake_time");
     }
 
     @Override
     public void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
+        nbt.putInt("layers", this.layers);
+        nbt.putInt("slices", this.slices);
         nbt.putInt("top_bake_time", this.topBakeTime);
         if (!this.fillingItem.isEmpty()) {
-            nbt.put("item", this.fillingItem.writeNbt(new NbtCompound()));
+            nbt.put("filling_item", this.fillingItem.writeNbt(new NbtCompound()));
         }
         nbt.putInt("bottom_bake_time", this.bottomBakeTime);
     }
@@ -75,6 +83,22 @@ public class PieBlockEntity extends BlockEntity {
         this.bottomBakeTime = bottomBakeTime;
     }
 
+    public int getLayers() {
+        return this.layers;
+    }
+
+    public void setLayers(int layers) {
+        this.layers = MathHelper.clamp(layers, 0, 3);
+    }
+
+    public int getSlices() {
+        return this.slices;
+    }
+
+    public void setSlices(int slices) {
+        this.slices = MathHelper.clamp(slices, 0, 4);
+    }
+
     public static void tick(World world, BlockPos pos, BlockState state, PieBlockEntity blockEntity) {
 //        if (PieBlock.isEmpty(state)) {
 //            blockEntity.setBottomBakeTime(0);
@@ -93,8 +117,9 @@ public class PieBlockEntity extends BlockEntity {
 //            }
 //        }
         if (world.getBlockState(pos.down()).isIn(PBTags.Blocks.BAKES_CAKE)) {
-            blockEntity.setBottomBakeTime(state.getOrEmpty(PieBlock.BOTTOM).orElse(false) ? blockEntity.getBottomBakeTime() + 1 : 0);
-            blockEntity.setTopBakeTime(state.getOrEmpty(PieBlock.TOP).orElse(false) ? blockEntity.getTopBakeTime() + 1 : 0);
+            boolean isEmpty = blockEntity.isEmpty();
+            blockEntity.setBottomBakeTime(isEmpty ? 0 : blockEntity.getBottomBakeTime() + 1);
+            blockEntity.setTopBakeTime(isEmpty || blockEntity.getLayers() < 3 ? blockEntity.getTopBakeTime() + 1 : 0);
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
             if (!world.isClient()) {
                 PBHelpers.update(blockEntity, (ServerWorld) world);
@@ -105,6 +130,17 @@ public class PieBlockEntity extends BlockEntity {
         }
     }
 
+    public boolean isEmpty() {
+        if (this.getSlices() == 0) return true;
+        return this.getLayers() == 0;
+    }
+
+    @Override
+    public void setStackNbt(ItemStack stack) {
+        super.setStackNbt(stack);
+        PBHelpers.set(stack, PBComponentTypes.PIE_DATA, new PieDataComponent(this.getLayers(), this.getBottomBakeTime(), this.getFillingItem(), this.getTopBakeTime(), this.getSlices()));
+    }
+
     @Nullable
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
@@ -112,5 +148,11 @@ public class PieBlockEntity extends BlockEntity {
     }
 
     public void readFrom(ItemStack stack) {
+        PieDataComponent pieData = PBHelpers.getOrDefault(stack, PBComponentTypes.PIE_DATA, PieDataComponent.EMPTY);
+        this.setLayers(pieData.layers());
+        this.setBottomBakeTime(pieData.bottomBakeTime());
+        this.setFillingItem(pieData.filling());
+        this.setTopBakeTime(pieData.topBakeTime());
+        this.setSlices(pieData.slices());
     }
 }

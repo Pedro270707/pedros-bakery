@@ -20,6 +20,7 @@ public class PBComponentTypes {
     public static final ItemComponentType<Integer> HEIGHT = of("height", Codec.INT);
     public static final ItemComponentType<List<CakeFeature>> FEATURES = of("features", CakeFeatures.REGISTRY.getCodec().listOf());
     public static final ItemComponentType<CupcakeTrayBatter> CUPCAKE_TRAY_BATTER = of("cupcake_tray_batter", CupcakeTrayBatter.CODEC);
+    public static final ItemComponentType<PieDataComponent> PIE_DATA = of("pie_data", PieDataComponent.CODEC);
 
     private static <T> ItemComponentType<T> of(String id, Codec<T> codec) {
         return new ItemComponentType<>(new Identifier(PedrosBakery.MOD_ID, id), codec);

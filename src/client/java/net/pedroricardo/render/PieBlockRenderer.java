@@ -1,6 +1,5 @@
 package net.pedroricardo.render;
 
-import com.anthonyhilyard.prism.item.ItemColors;
 import com.anthonyhilyard.prism.util.ImageAnalysis;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -13,14 +12,14 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Rect2i;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.text.TextColor;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.block.PieBlock;
 import net.pedroricardo.block.entity.PieBlockEntity;
 import net.pedroricardo.model.PBModelLayers;
 
@@ -75,26 +74,29 @@ public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 		matrices.scale(-1.0f, -1.0f, 1.0f);
 		matrices.translate(-0.5f, -1.5f, 0.5f);
 
-		this.pan.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(TEXTURE)), light, overlay, 0xFFFFFFFF);
+		this.pan.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(TEXTURE)), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
 
-		int slices = state.getOrEmpty(PieBlock.SLICES).orElse(0);
+		int slices = entity.getSlices();
 		if (slices == 0) return;
+		int layers = entity.getLayers();
+		if (layers == 0) return;
 
-		if (state.getOrEmpty(PieBlock.BOTTOM).orElse(false)) {
-			for (int i = 0; i < slices; i++) {
-				this.bottom[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE)), light, getBakeTimeOverlay(entity.getBottomBakeTime(), overlay), getBakeTimeColor(entity.getBottomBakeTime(), 0xFFFFFFFF));
-			}
+		int bottomBakeTimeColor = getBakeTimeColor(entity.getBottomBakeTime(), 0xFFFFFFFF);
+		for (int i = 0; i < slices; i++) {
+			this.bottom[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE)), light, getBakeTimeOverlay(entity.getBottomBakeTime(), overlay), ((bottomBakeTimeColor >> 16) & 0xFF) / 255.0f, ((bottomBakeTimeColor >> 8) & 0xFF) / 255.0f, (bottomBakeTimeColor & 0xFF) / 255.0f, ((bottomBakeTimeColor >> 24) & 0xFF) / 255.0f);
 		}
-		if (!entity.getFillingItem().isEmpty()) {
-			Sprite sprite = MinecraftClient.getInstance().getItemRenderer().getModel(entity.getFillingItem(), entity.getWorld(), null, 0).getParticleSprite();
+		if (layers >= 2) {
+			Sprite sprite = MinecraftClient.getInstance().getItemRenderer().getModel(entity.getFillingItem().isEmpty() ? new ItemStack(Items.APPLE) : entity.getFillingItem(), entity.getWorld(), null, 0).getParticleSprite();
 			TextColor color = ImageAnalysis.getDominantColor(sprite.getContents().getId().withPrefixedPath("textures/").withSuffixedPath(".png"), new Rect2i(0, 0, sprite.getContents().getWidth(), sprite.getContents().getHeight()));
+			int fillingColor = color == null ? 0xFFFF00FF : (color.getRgb() | 0xFF000000);
 			for (int i = 0; i < slices; i++) {
-				this.filling[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE)), light, overlay, color == null ? 0xFFFFFFFF : (color.getRgb() | 0xFF000000));
+				this.filling[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE)), light, overlay, ((fillingColor >> 16) & 0xFF) / 255.0f, ((fillingColor >> 8) & 0xFF) / 255.0f, (fillingColor & 0xFF) / 255.0f, ((fillingColor >> 24) & 0xFF) / 255.0f);
 			}
 		}
-		if (state.getOrEmpty(PieBlock.TOP).orElse(false)) {
+		if (layers == 3) {
+			int topBakeTimeColor = getBakeTimeColor(entity.getTopBakeTime(), 0xFFFFFFFF);
 			for (int i = 0; i < slices; i++) {
-				this.top[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE)), light, getBakeTimeOverlay(entity.getTopBakeTime(), overlay), getBakeTimeColor(entity.getTopBakeTime(), 0xFFFFFFFF));
+				this.top[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE)), light, getBakeTimeOverlay(entity.getTopBakeTime(), overlay), ((topBakeTimeColor >> 16) & 0xFF) / 255.0f, ((topBakeTimeColor >> 8) & 0xFF) / 255.0f, (topBakeTimeColor & 0xFF) / 255.0f, ((topBakeTimeColor >> 24) & 0xFF) / 255.0f);
 			}
 		}
 	}
