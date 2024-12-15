@@ -6,10 +6,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 public record PieDataComponent(int layers, int bottomBakeTime, ItemStack filling, int topBakeTime, int slices) {
-    public static final Codec<PieDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.INT.fieldOf("layers").xmap(value -> MathHelper.clamp(value, 0, 3), Function.identity()).forGetter(PieDataComponent::layers), Codec.INT.fieldOf("bottom_bake_time").forGetter(PieDataComponent::bottomBakeTime), ItemStack.CODEC.fieldOf("filling_item").forGetter(PieDataComponent::filling), Codec.INT.fieldOf("top_bake_time").forGetter(PieDataComponent::topBakeTime), Codec.INT.fieldOf("slices").xmap(value -> MathHelper.clamp(value, 0, 4), Function.identity()).forGetter(PieDataComponent::slices)).apply(instance, PieDataComponent::new));
+    public static final Codec<PieDataComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.INT.fieldOf("layers").xmap(value -> MathHelper.clamp(value, 0, 3), Function.identity()).forGetter(PieDataComponent::layers), Codec.INT.fieldOf("bottom_bake_time").forGetter(PieDataComponent::bottomBakeTime), ItemStack.CODEC.optionalFieldOf("filling_item").xmap(optional -> optional.orElse(ItemStack.EMPTY), stack -> stack.isEmpty() ? Optional.empty() : Optional.of(stack)).forGetter(PieDataComponent::filling), Codec.INT.fieldOf("top_bake_time").forGetter(PieDataComponent::topBakeTime), Codec.INT.fieldOf("slices").xmap(value -> MathHelper.clamp(value, 0, 4), Function.identity()).forGetter(PieDataComponent::slices)).apply(instance, PieDataComponent::new));
     public static final PieDataComponent EMPTY = new PieDataComponent(0, 0, ItemStack.EMPTY, 0, 0);
 
     @Override
