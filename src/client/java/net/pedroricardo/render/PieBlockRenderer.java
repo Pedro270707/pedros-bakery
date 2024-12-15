@@ -17,12 +17,16 @@ import net.pedroricardo.PBClientHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.PieBlockEntity;
+import net.pedroricardo.item.PBItems;
 import net.pedroricardo.model.PBModelLayers;
 
 public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 	public static final Identifier UNRAISED_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/entity/pie/unraised.png");
 	public static final Identifier SLIGHTLY_RAISED_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/entity/pie/slightly_raised.png");
 	public static final Identifier FULLY_RAISED_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/entity/pie/fully_raised.png");
+	public static final Identifier PIE_FLAVOR_UNRAISED_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/entity/pie/pie_flavor_unraised.png");
+	public static final Identifier PIE_FLAVOR_SLIGHTLY_RAISED_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/entity/pie/pie_flavor_slightly_raised.png");
+	public static final Identifier PIE_FLAVOR_FULLY_RAISED_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/entity/pie/pie_flavor_fully_raised.png");
 	public static final PieBlockEntity RENDER_PIE = new PieBlockEntity(BlockPos.ORIGIN, PBBlocks.PIE.getDefaultState());
 
 	private final ModelPart[] unraisedBottom;
@@ -159,6 +163,7 @@ public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 		ModelPart[] filling;
 		ModelPart[] top;
 		Identifier texture;
+		Identifier pieFlavorTexture;
 		int bakeTime = Math.max(entity.getTopBakeTime(), entity.getBottomBakeTime());
 		if (bakeTime < 500) {
 			pan = this.unraisedPan;
@@ -166,18 +171,21 @@ public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 			filling = this.unraisedFilling;
 			top = this.unraisedTop;
 			texture = UNRAISED_TEXTURE;
+			pieFlavorTexture = PIE_FLAVOR_UNRAISED_TEXTURE;
 		} else if (bakeTime < 1800 || bakeTime > 3000) {
 			pan = this.slightlyRaisedPan;
 			bottom = this.slightlyRaisedBottom;
 			filling = this.slightlyRaisedFilling;
 			top = this.slightlyRaisedTop;
 			texture = SLIGHTLY_RAISED_TEXTURE;
+			pieFlavorTexture = PIE_FLAVOR_SLIGHTLY_RAISED_TEXTURE;
 		} else {
 			pan = this.fullyRaisedPan;
 			bottom = this.fullyRaisedBottom;
 			filling = this.fullyRaisedFilling;
 			top = this.fullyRaisedTop;
 			texture = FULLY_RAISED_TEXTURE;
+			pieFlavorTexture = PIE_FLAVOR_FULLY_RAISED_TEXTURE;
 		}
 
 		pan.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
@@ -188,6 +196,7 @@ public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 		if (layers == 0) return;
 
 		int bottomBakeTimeColor = getBakeTimeColor(entity.getBottomBakeTime(), 0xFFFFFFFF);
+        int topBakeTimeColor = getBakeTimeColor(entity.getTopBakeTime(), 0xFFFFFFFF);
 		for (int i = 0; i < slices; i++) {
 			bottom[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, getBakeTimeOverlay(entity.getBottomBakeTime(), overlay), ((bottomBakeTimeColor >> 16) & 0xFF) / 255.0f, ((bottomBakeTimeColor >> 8) & 0xFF) / 255.0f, (bottomBakeTimeColor & 0xFF) / 255.0f, ((bottomBakeTimeColor >> 24) & 0xFF) / 255.0f);
 		}
@@ -195,11 +204,14 @@ public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 			TextColor color = PBClientHelpers.getPieColor(entity.getFillingItem().isEmpty() ? new ItemStack(Items.APPLE) : entity.getFillingItem(), entity.getWorld(), null, 0);
 			int fillingColor = color == null ? 0xFFFF00FF : (color.getRgb() | 0xFF000000);
 			for (int i = 0; i < slices; i++) {
-				filling[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, overlay, ((fillingColor >> 16) & 0xFF) / 255.0f, ((fillingColor >> 8) & 0xFF) / 255.0f, (fillingColor & 0xFF) / 255.0f, ((fillingColor >> 24) & 0xFF) / 255.0f);
+				if (entity.getFillingItem().isOf(PBBlocks.PIE.asItem()) || entity.getFillingItem().isOf(PBItems.DOUGH.asItem())) {
+					filling[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(pieFlavorTexture)), light, getBakeTimeOverlay(entity.getTopBakeTime(), overlay), ((topBakeTimeColor >> 16) & 0xFF) / 255.0f, ((topBakeTimeColor >> 8) & 0xFF) / 255.0f, (topBakeTimeColor & 0xFF) / 255.0f, ((topBakeTimeColor >> 24) & 0xFF) / 255.0f);
+				} else {
+					filling[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, overlay, ((fillingColor >> 16) & 0xFF) / 255.0f, ((fillingColor >> 8) & 0xFF) / 255.0f, (fillingColor & 0xFF) / 255.0f, ((fillingColor >> 24) & 0xFF) / 255.0f);
+				}
 			}
 		}
 		if (layers == 3) {
-			int topBakeTimeColor = getBakeTimeColor(entity.getTopBakeTime(), 0xFFFFFFFF);
 			for (int i = 0; i < slices; i++) {
 				top[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), light, getBakeTimeOverlay(entity.getTopBakeTime(), overlay), ((topBakeTimeColor >> 16) & 0xFF) / 255.0f, ((topBakeTimeColor >> 8) & 0xFF) / 255.0f, (topBakeTimeColor & 0xFF) / 255.0f, ((topBakeTimeColor >> 24) & 0xFF) / 255.0f);
 			}
