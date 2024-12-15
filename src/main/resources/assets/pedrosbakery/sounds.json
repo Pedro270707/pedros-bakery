@@ -4,5 +4,11 @@
       "note/bell"
     ],
     "subtitle": "subtitles.block.pedrosbakery.baking_tray.done"
+  },
+  "block.pie.done": {
+    "sounds": [
+      "note/bell"
+    ],
+    "subtitle": "subtitles.block.pedrosbakery.pie.done"
   }
 }
