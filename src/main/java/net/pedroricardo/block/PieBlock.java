@@ -48,9 +48,15 @@ public class PieBlock extends BlockWithEntity {
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        if (!(world.getBlockEntity(pos) instanceof PieBlockEntity pie)
-                || isEmpty(state)
-                || (pie.getTopBakeTime() < PedrosBakery.CONFIG.ticksUntilPieBaked() && state.getOrEmpty(TOP).orElse(false))
+        if (!(world.getBlockEntity(pos) instanceof PieBlockEntity pie)) return ActionResult.PASS;
+        if (!state.getOrEmpty(TOP).orElse(false) && !pie.getFillingItem().isEmpty() && player.isSneaking()) {
+            ItemStack stack = pie.getFillingItem();
+            pie.setFillingItem(ItemStack.EMPTY);
+            player.giveItemStack(stack);
+            return ActionResult.success(world.isClient());
+        }
+
+        if (isEmpty(state) || (pie.getTopBakeTime() < PedrosBakery.CONFIG.ticksUntilPieBaked() && state.getOrEmpty(TOP).orElse(false))
                 || pie.getBottomBakeTime() < PedrosBakery.CONFIG.ticksUntilPieBaked()
                 || !player.canConsume(false)) return super.onUse(state, world, pos, player, hit);
         player.getHungerManager().add(PedrosBakery.CONFIG.pieSliceFood(), PedrosBakery.CONFIG.pieSliceSaturation());
