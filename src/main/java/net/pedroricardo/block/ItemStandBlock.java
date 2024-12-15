@@ -6,6 +6,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
@@ -84,13 +85,13 @@ public abstract class ItemStandBlock<T extends ItemStandBlockEntity> extends Blo
 
     private void dropItem(World world, BlockPos pos) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof ItemStandBlockEntity stand) {
+        if (blockEntity instanceof ItemStandBlockEntity stand && !world.isClient()) {
             ItemStack stack = stand.getStack().copy();
             ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + 0.5, pos.getY() + 1, (double)pos.getZ() + 0.5, stack);
             itemEntity.setToDefaultPickupDelay();
             world.spawnEntity(itemEntity);
             stand.clear();
-            PBHelpers.updateListeners(stand);
+            PBHelpers.update(stand, (ServerWorld) world);
         }
     }
 

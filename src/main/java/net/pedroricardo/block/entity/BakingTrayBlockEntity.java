@@ -11,6 +11,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
@@ -77,8 +78,10 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         if (world.getBlockState(pos.down()).isIn(PBTags.Blocks.BAKES_CAKE) && !blockEntity.getCakeBatter().isEmpty()) {
             blockEntity.getCakeBatter().bakeTick(world, pos, state);
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
-            PBHelpers.updateListeners(blockEntity);
-            if (blockEntity.getCakeBatter().getBakeTime() == PedrosBakery.CONFIG.ticksUntilBaked()) {
+            if (!world.isClient()) {
+                PBHelpers.update(blockEntity, (ServerWorld) world);
+            }
+            if (blockEntity.getCakeBatter().getBakeTime() == PedrosBakery.CONFIG.ticksUntilCakeBaked()) {
                 world.playSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.BAKING_TRAY_DONE, SoundCategory.BLOCKS, 1.25f, 1.0f, true);
             }
         }

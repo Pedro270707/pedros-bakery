@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -152,7 +153,9 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             if (!player.giveItemStack(stack)) {
                 player.dropItem(stack, false);
             }
-            PBHelpers.updateListeners(cake);
+            if (!world.isClient()) {
+                PBHelpers.update(cake, (ServerWorld) world);
+            }
             return ActionResult.SUCCESS;
         }
         if (!player.canConsume(false)) {
@@ -190,7 +193,9 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             }
 
             if (tryAddBatter(cake, batterList)) {
-                PBHelpers.updateListeners(cake);
+                if (!world.isClient()) {
+                    PBHelpers.update(cake, (ServerWorld) world);
+                }
                 world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 world.playSound(pos.getX(), pos.getY(), pos.getZ(), state.getSoundGroup().getPlaceSound(), SoundCategory.BLOCKS, (state.getSoundGroup().getVolume() + 1.0f) / 2.0f, state.getSoundGroup().getPitch() * 0.8f, true);
                 if (!player.isCreative()) {
@@ -227,7 +232,9 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
 
             clickedBatter.withTop(top);
             PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.GLASS_BOTTLE));
-            PBHelpers.updateListeners(cake);
+            if (!world.isClient()) {
+                PBHelpers.update(cake, (ServerWorld) world);
+            }
 
             return ActionResult.SUCCESS;
         }
@@ -242,7 +249,9 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
                 stack.decrement(1);
             }
             world.syncWorldEvent(player, WorldEvents.BLOCK_WAXED, pos, 0);
-            PBHelpers.updateListeners(cake);
+            if (!world.isClient()) {
+                PBHelpers.update(cake, (ServerWorld) world);
+            }
 
             return ActionResult.SUCCESS;
         }
@@ -261,7 +270,9 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
 
             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             world.playSound(player, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
-            PBHelpers.updateListeners(cake);
+            if (!world.isClient()) {
+                PBHelpers.update(cake, (ServerWorld) world);
+            }
 
             return ActionResult.SUCCESS;
         }
@@ -279,7 +290,9 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             if (!player.isCreative()) {
                 stack.decrement(1);
             }
-            PBHelpers.updateListeners(cake);
+            if (!world.isClient()) {
+                PBHelpers.update(cake, (ServerWorld) world);
+            }
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;

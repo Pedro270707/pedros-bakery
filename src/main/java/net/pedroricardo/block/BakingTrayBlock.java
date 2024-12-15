@@ -69,7 +69,7 @@ public class BakingTrayBlock extends BlockWithEntity implements MultipartBlock<B
         if (!(world.getBlockEntity(pos) instanceof BakingTrayBlockEntity tray)) {
             return ActionResult.PASS;
         }
-        if (!tray.getCakeBatter().isEmpty() && tray.getCakeBatter().getBakeTime() >= PedrosBakery.CONFIG.ticksUntilBaked()) {
+        if (!tray.getCakeBatter().isEmpty() && tray.getCakeBatter().getBakeTime() >= PedrosBakery.CONFIG.ticksUntilCakeBaked()) {
             player.giveItemStack(PBCakeBlock.of(Collections.singletonList(tray.getCakeBatter().copy(new FullBatterSizeContainer(tray.getSize(), tray.getCakeBatter().getSizeContainer().getHeight())))));
             tray.setCakeBatter(CakeBatter.getHeightOnlyEmpty());
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));

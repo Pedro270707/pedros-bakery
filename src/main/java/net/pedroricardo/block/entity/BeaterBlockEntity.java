@@ -10,6 +10,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
@@ -84,7 +85,9 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
         if (blockEntity.updateLiquid() && blockEntity.tryToMix(world, state, pos, blockEntity)) {
             blockEntity.mixTime = 0;
         }
-        PBHelpers.updateListeners(world, pos, state, blockEntity);
+        if (!world.isClient()) {
+            PBHelpers.update((ServerWorld) world, pos, blockEntity);
+        }
     }
 
     private boolean tryToMix(World world, BlockState state, BlockPos pos, BeaterBlockEntity beater) {
@@ -110,7 +113,11 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
     public void setItems(List<ItemStack> items) {
         this.items = items.stream().filter(stack -> !stack.isEmpty()).collect(Collectors.toCollection(ArrayList::new));
         this.mixTime = 0;
-        PBHelpers.updateListeners(this);
+        if (this.getWorld() != null) {
+            if (!this.getWorld().isClient()) PBHelpers.update(this, (ServerWorld) this.getWorld());
+        } else {
+            this.markDirty();
+        }
     }
 
     public void addItem(ItemStack stack) {
@@ -127,7 +134,11 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
 
     public void setLiquid(@Nullable Liquid liquid) {
         this.liquid = liquid;
-        PBHelpers.updateListeners(this);
+        if (this.getWorld() != null) {
+            if (!this.getWorld().isClient()) PBHelpers.update(this, (ServerWorld) this.getWorld());
+        } else {
+            this.markDirty();
+        }
     }
 
     /**

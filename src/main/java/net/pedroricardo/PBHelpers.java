@@ -1,22 +1,18 @@
 package net.pedroricardo;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.pedroricardo.item.ItemComponentType;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Year;
 import java.util.OptionalInt;
 
 public class PBHelpers {
@@ -43,15 +39,13 @@ public class PBHelpers {
         }
     }
 
-    public static void updateListeners(BlockEntity blockEntity) {
-        updateListeners(blockEntity.getWorld(), blockEntity.getPos(), blockEntity.getCachedState(), blockEntity);
+    public static void update(BlockEntity blockEntity, ServerWorld world) {
+        update(world, blockEntity.getPos(), blockEntity);
     }
 
-    public static void updateListeners(World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+    public static void update(ServerWorld world, BlockPos pos, BlockEntity blockEntity) {
         blockEntity.markDirty();
-        if (world != null) {
-            world.updateListeners(pos, state, state, Block.NOTIFY_ALL & Block.REDRAW_ON_MAIN_THREAD);
-        }
+        world.getChunkManager().markForUpdate(pos);
     }
 
     public static ItemStack splitUnlessCreative(ItemStack stack, int amount, PlayerEntity player) {
