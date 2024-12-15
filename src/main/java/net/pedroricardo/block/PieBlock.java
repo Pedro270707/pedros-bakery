@@ -11,9 +11,6 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
@@ -32,38 +29,34 @@ import org.jetbrains.annotations.Nullable;
 
 public class PieBlock extends BlockWithEntity {
     public static final MapCodec<PieBlock> CODEC = createCodec(PieBlock::new);
-    public static final BooleanProperty BOTTOM = BooleanProperty.of("bottom");
-    public static final BooleanProperty TOP = BooleanProperty.of("top");
-    public static final IntProperty SLICES = IntProperty.of("slices", 0, 4);
 
     protected PieBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(BOTTOM, false).with(TOP, false).with(SLICES, 0));
-    }
-
-    @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(BOTTOM).add(TOP).add(SLICES);
     }
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!(world.getBlockEntity(pos) instanceof PieBlockEntity pie)) return ActionResult.PASS;
-        if (!state.getOrEmpty(TOP).orElse(false) && !pie.getFillingItem().isEmpty() && player.isSneaking()) {
-            ItemStack stack = pie.getFillingItem();
-            pie.setFillingItem(ItemStack.EMPTY);
-            player.giveItemStack(stack);
-            return ActionResult.success(world.isClient());
+        if (pie.getLayers() == 2) {
+            if (pie.getFillingItem().isEmpty()) {
+                pie.setLayers(1);
+                return ActionResult.PASS;
+            }
+            if (player.isSneaking()) {
+                ItemStack stack = pie.getFillingItem();
+                pie.setFillingItem(ItemStack.EMPTY);
+                pie.setLayers(1);
+                player.giveItemStack(stack);
+                return ActionResult.success(world.isClient());
+            }
         }
-
-        if (isEmpty(state) || (pie.getTopBakeTime() < PedrosBakery.CONFIG.ticksUntilPieBaked() && state.getOrEmpty(TOP).orElse(false))
+        if (pie.isEmpty() || (pie.getTopBakeTime() < PedrosBakery.CONFIG.ticksUntilPieBaked() && pie.getLayers() == 3)
                 || pie.getBottomBakeTime() < PedrosBakery.CONFIG.ticksUntilPieBaked()
                 || !player.canConsume(false)) return super.onUse(state, world, pos, player, hit);
         player.getHungerManager().add(PedrosBakery.CONFIG.pieSliceFood(), PedrosBakery.CONFIG.pieSliceSaturation());
-        state = state.with(SLICES, state.get(SLICES) - 1);
-        if (state.get(SLICES) == 0) {
-            state = state.with(BOTTOM, false).with(TOP, false);
-            pie.setFillingItem(ItemStack.EMPTY);
+        pie.setSlices(pie.getSlices() - 1);
+        if (pie.getSlices() == 0) {
+            pie.setLayers(0);
         }
         world.setBlockState(pos, state, Block.NOTIFY_ALL);
         world.emitGameEvent(player, GameEvent.EAT, pos);
@@ -73,30 +66,30 @@ public class PieBlock extends BlockWithEntity {
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!(world.getBlockEntity(pos) instanceof PieBlockEntity pie) || stack.isEmpty()) return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        if (state.getOrEmpty(BOTTOM).orElse(false) && pie.getFillingItem().isEmpty() && state.getOrEmpty(SLICES).orElse(0) == 4) {
+        if (pie.getLayers() == 1 && pie.getSlices() == 4) {
             pie.setFillingItem(stack.splitUnlessCreative(1, player));
+            pie.setLayers(2);
+            world.setBlockState(pos, state);
             if (!world.isClient()) {
                 PBHelpers.update(pie, (ServerWorld) world);
             }
             return ItemActionResult.success(world.isClient());
         }
         if (stack.isOf(PBItems.DOUGH)) {
-            if (isEmpty(state)) {
-                world.setBlockState(pos, state.with(BOTTOM, true).with(SLICES, 4));
+            if (pie.isEmpty()) {
+                pie.setLayers(1);
+                pie.setSlices(4);
+                pie.setBottomBakeTime(0);
                 stack.decrementUnlessCreative(1, player);
                 return ItemActionResult.success(world.isClient());
-            } else if (!state.getOrEmpty(TOP).orElse(false) && state.getOrEmpty(SLICES).orElse(0) == 4) {
-                world.setBlockState(pos, state.with(TOP, true));
+            } else if (pie.getLayers() == 2 && pie.getSlices() == 4) {
+                pie.setLayers(3);
+                pie.setTopBakeTime(0);
                 stack.decrementUnlessCreative(1, player);
                 return ItemActionResult.success(world.isClient());
             }
         }
         return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
-    }
-
-    public static boolean isEmpty(BlockState state) {
-        if (state.getOrEmpty(SLICES).orElse(0) == 0) return true;
-        return !state.getOrEmpty(BOTTOM).orElse(false);
     }
 
     @Override

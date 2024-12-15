@@ -2,6 +2,7 @@ package net.pedroricardo.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.component.ComponentMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -11,16 +12,20 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PBSounds;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.PieBlock;
 import net.pedroricardo.block.tags.PBTags;
+import net.pedroricardo.item.PBComponentTypes;
+import net.pedroricardo.item.PieDataComponent;
 import org.jetbrains.annotations.Nullable;
 
 public class PieBlockEntity extends BlockEntity {
+    private int layers = 0;
+    private int slices = 0;
     private int topBakeTime = 0;
     private ItemStack fillingItem = ItemStack.EMPTY;
     private int bottomBakeTime = 0;
@@ -37,17 +42,21 @@ public class PieBlockEntity extends BlockEntity {
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
+        this.layers = nbt.getInt("layers");
+        this.slices = nbt.getInt("slices");
         this.topBakeTime = nbt.getInt("top_bake_time");
-        this.fillingItem = ItemStack.fromNbtOrEmpty(registryLookup, nbt.getCompound("item"));
+        this.fillingItem = ItemStack.fromNbtOrEmpty(registryLookup, nbt.getCompound("filling_item"));
         this.bottomBakeTime = nbt.getInt("bottom_bake_time");
     }
 
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
+        nbt.putInt("layers", this.layers);
+        nbt.putInt("slices", this.slices);
         nbt.putInt("top_bake_time", this.topBakeTime);
         if (!this.fillingItem.isEmpty()) {
-            nbt.put("item", this.fillingItem.encode(registryLookup));
+            nbt.put("filling_item", this.fillingItem.encode(registryLookup));
         }
         nbt.putInt("bottom_bake_time", this.bottomBakeTime);
     }
@@ -76,6 +85,22 @@ public class PieBlockEntity extends BlockEntity {
         this.bottomBakeTime = bottomBakeTime;
     }
 
+    public int getLayers() {
+        return this.layers;
+    }
+
+    public void setLayers(int layers) {
+        this.layers = MathHelper.clamp(layers, 0, 3);
+    }
+
+    public int getSlices() {
+        return this.slices;
+    }
+
+    public void setSlices(int slices) {
+        this.slices = MathHelper.clamp(slices, 0, 4);
+    }
+
     public static void tick(World world, BlockPos pos, BlockState state, PieBlockEntity blockEntity) {
 //        if (PieBlock.isEmpty(state)) {
 //            blockEntity.setBottomBakeTime(0);
@@ -94,8 +119,9 @@ public class PieBlockEntity extends BlockEntity {
 //            }
 //        }
         if (world.getBlockState(pos.down()).isIn(PBTags.Blocks.BAKES_CAKE)) {
-            blockEntity.setBottomBakeTime(state.getOrEmpty(PieBlock.BOTTOM).orElse(false) ? blockEntity.getBottomBakeTime() + 1 : 0);
-            blockEntity.setTopBakeTime(state.getOrEmpty(PieBlock.TOP).orElse(false) ? blockEntity.getTopBakeTime() + 1 : 0);
+            boolean isEmpty = blockEntity.isEmpty();
+            blockEntity.setBottomBakeTime(isEmpty ? 0 : blockEntity.getBottomBakeTime() + 1);
+            blockEntity.setTopBakeTime(isEmpty || blockEntity.getLayers() < 3 ? blockEntity.getTopBakeTime() + 1 : 0);
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
             if (!world.isClient()) {
                 PBHelpers.update(blockEntity, (ServerWorld) world);
@@ -104,6 +130,28 @@ public class PieBlockEntity extends BlockEntity {
                 world.playSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.PIE_DONE, SoundCategory.BLOCKS, 1.25f, 1.0f, true);
             }
         }
+    }
+
+    public boolean isEmpty() {
+        if (this.getSlices() == 0) return true;
+        return this.getLayers() == 0;
+    }
+
+    @Override
+    protected void readComponents(ComponentsAccess components) {
+        super.readComponents(components);
+        PieDataComponent pieData = components.getOrDefault(PBComponentTypes.PIE_DATA, PieDataComponent.EMPTY);
+        this.setLayers(pieData.layers());
+        this.setBottomBakeTime(pieData.bottomBakeTime());
+        this.setFillingItem(pieData.filling());
+        this.setTopBakeTime(pieData.topBakeTime());
+        this.setSlices(pieData.slices());
+    }
+
+    @Override
+    protected void addComponents(ComponentMap.Builder componentMapBuilder) {
+        super.addComponents(componentMapBuilder);
+        componentMapBuilder.add(PBComponentTypes.PIE_DATA, new PieDataComponent(this.getLayers(), this.getBottomBakeTime(), this.getFillingItem(), this.getTopBakeTime(), this.getSlices()));
     }
 
     @Nullable

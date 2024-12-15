@@ -26,6 +26,7 @@ public class PBComponentTypes extends DataComponentTypes {
     public static final ComponentType<Integer> HEIGHT = register("height", (builder) -> builder.codec(Codec.INT).packetCodec(PacketCodecs.INTEGER).cache());
     public static final ComponentType<List<CakeFeature>> FEATURES = register("features", (builder) -> builder.codec(CakeFeatures.REGISTRY.getCodec().listOf()).packetCodec(PacketCodecs.codec(CakeFeatures.REGISTRY.getCodec().listOf())).cache());
     public static final ComponentType<CupcakeTrayBatter> CUPCAKE_TRAY_BATTER = register("cupcake_tray_batter", (builder) -> builder.codec(CupcakeTrayBatter.CODEC).packetCodec(CupcakeTrayBatter.PACKET_CODEC).cache());
+    public static final ComponentType<PieDataComponent> PIE_DATA = register("pie_data", (builder) -> builder.codec(PieDataComponent.CODEC).packetCodec(PieDataComponent.PACKET_CODEC).cache());
 
     private static <T> ComponentType<T> register(String id, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of(PedrosBakery.MOD_ID, id), builderOperator.apply(ComponentType.builder()).build());
