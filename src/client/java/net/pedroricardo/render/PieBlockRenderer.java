@@ -212,8 +212,11 @@ public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 			}
 		}
 		if (layers == 3) {
+			matrices.translate(0.0f, 1.5f, 0.0f);
+			matrices.scale(1.0005f, 1.0005f, 1.0005f);
+			matrices.translate(0.0f, -1.5f, 0.0f);
 			for (int i = 0; i < slices; i++) {
-				top[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture)), light, getBakeTimeOverlay(entity.getTopBakeTime(), overlay), ((topBakeTimeColor >> 16) & 0xFF) / 255.0f, ((topBakeTimeColor >> 8) & 0xFF) / 255.0f, (topBakeTimeColor & 0xFF) / 255.0f, ((topBakeTimeColor >> 24) & 0xFF) / 255.0f);
+				top[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, getBakeTimeOverlay(entity.getTopBakeTime(), overlay), ((topBakeTimeColor >> 16) & 0xFF) / 255.0f, ((topBakeTimeColor >> 8) & 0xFF) / 255.0f, (topBakeTimeColor & 0xFF) / 255.0f, ((topBakeTimeColor >> 24) & 0xFF) / 255.0f);
 			}
 		}
 	}
