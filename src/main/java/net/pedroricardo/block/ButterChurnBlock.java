@@ -55,18 +55,31 @@ public class ButterChurnBlock extends Block {
             world.playSound(null, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
             world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
             return ActionResult.success(false);
-        } else if (state.get(CHURN_STATE) == ChurnState.MILK && stack.isOf(PBItems.BUTTER_CHURN_STAFF)) {
-            world.playSound(null, pos, SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 0.5f, 1.0f);
-            if (world.isClient()) {
-                return ActionResult.success(true);
-            }
-            float probability = 0.05f;
-            if (world.getRandom().nextFloat() < probability) {
+        } else if (state.get(CHURN_STATE) == ChurnState.MILK) {
+            if (stack.isOf(PBItems.BUTTER_CHURN_STAFF)) {
+                world.playSound(null, pos, SoundEvents.ENTITY_GENERIC_SPLASH, SoundCategory.BLOCKS, 0.5f, 1.0f);
+                if (world.isClient()) {
+                    return ActionResult.success(true);
+                }
+                float probability = 0.05f;
+                if (world.getRandom().nextFloat() < probability) {
+                    player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+                    world.setBlockState(pos, state.with(CHURN_STATE, ChurnState.BUTTER));
+                    stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
+                }
+                return ActionResult.success(false);
+            } else if (stack.isOf(Items.BUCKET)) {
+                world.playSound(null, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                if (world.isClient()) {
+                    return ActionResult.success(true);
+                }
+                player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.MILK_BUCKET)));
                 player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
-                world.setBlockState(pos, state.with(CHURN_STATE, ChurnState.BUTTER));
-                stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
+                world.setBlockState(pos, state.with(CHURN_STATE, ChurnState.EMPTY));
+                world.emitGameEvent(player, GameEvent.FLUID_PICKUP, pos);
+                return ActionResult.success(false);
             }
-            return ActionResult.success(false);
+            return ActionResult.PASS;
         } else if (state.get(CHURN_STATE) == ChurnState.BUTTER && stack.isEmpty()) {
             if (world.isClient()) {
                 return ActionResult.success(true);
