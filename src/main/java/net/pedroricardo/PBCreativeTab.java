@@ -36,6 +36,7 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBBlocks.CUPCAKE_TRAY));
                 entries.add(new ItemStack(PBBlocks.COOKIE_JAR));
                 entries.add(new ItemStack(PBBlocks.BUTTER_CHURN));
+                entries.add(new ItemStack(PBBlocks.PIE));
                 entries.add(new ItemStack(PBItems.WHITE_SPRINKLES));
                 entries.add(new ItemStack(PBItems.ORANGE_SPRINKLES));
                 entries.add(new ItemStack(PBItems.MAGENTA_SPRINKLES));
