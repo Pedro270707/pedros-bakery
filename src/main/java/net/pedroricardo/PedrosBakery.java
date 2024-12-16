@@ -17,6 +17,7 @@ import net.pedroricardo.item.recipes.MixingPatternManager;
 import net.pedroricardo.item.recipes.PBRecipeSerializers;
 import net.pedroricardo.item.recipes.PieColorOverrides;
 import org.joml.Vector2i;
+import net.pedroricardo.network.PBNetworkRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ public class PedrosBakery implements ModInitializer {
 		PBCreativeTab.init();
 		PBRecipeSerializers.init();
 		PBLootFunctionTypes.init();
+		PBNetworkRegistry.init();
 
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(MIXING_PATTERN_MANAGER);
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(PIE_COLOR_OVERRIDES);

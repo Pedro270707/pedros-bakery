@@ -46,6 +46,7 @@ public class PBBlocks {
     public static final Block COOKIE_JAR = register("cookie_jar", new CookieJarBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.GLASS).hardness(0.5f).resistance(0.5f).mapColor(MapColor.OAK_TAN).nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)));
     public static final Block BUTTER_CHURN = register("butter_churn", new ButterChurnBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.WOOD).strength(1.5f).mapColor(MapColor.OAK_TAN).nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)));
     public static final Block PIE = register("pie", new PieBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.WOOL).strength(1.0f).mapColor(MapColor.OAK_TAN).nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)), (name, block) -> PBItems.register(name, new PieItem(block, new Item.Settings())));
+    public static final Block COOKIE_TABLE = register("cookie_table", new CookieTableBlock(AbstractBlock.Settings.copy(Blocks.CRAFTING_TABLE)));
 
     private static Block register(final String name, Block block) {
         return register(name, block, (str, registeredBlock) -> PBItems.register(str, new BlockItem(registeredBlock, new Item.Settings())));
