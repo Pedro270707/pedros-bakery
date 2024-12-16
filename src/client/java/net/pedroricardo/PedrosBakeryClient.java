@@ -38,6 +38,7 @@ import net.pedroricardo.model.PBModelLayers;
 import net.pedroricardo.registry.CakeFeatureRenderer;
 import net.pedroricardo.registry.CakeFeatureRendererRegistry;
 import net.pedroricardo.render.*;
+import net.pedroricardo.render.item.ShapedCookieItemRenderer;
 
 public class PedrosBakeryClient implements ClientModInitializer {
 	public static boolean isRenderingInWorld = false;
@@ -78,8 +79,9 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(CupcakeBlockRenderer.RENDER_CUPCAKE, matrices, vertexConsumers, light, overlay);
 		});
 		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.PIE, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
-			PieBlockRenderer.RENDER_PIE.readComponents(stack);
-			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(PieBlockRenderer.RENDER_PIE, matrices, vertexConsumers, light, overlay);
+//			PieBlockRenderer.RENDER_PIE.readComponents(stack);
+//			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(PieBlockRenderer.RENDER_PIE, matrices, vertexConsumers, light, overlay);
+			ShapedCookieItemRenderer.render(stack, mode, matrices, vertexConsumers, light, overlay);
 		});
 
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
