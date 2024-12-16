@@ -6,6 +6,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -23,7 +24,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
-import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.CupcakeBlockEntity;
 import net.pedroricardo.block.extras.CakeBatter;
@@ -106,7 +106,7 @@ public class CupcakeBlock extends BlockWithEntity {
         CakeTop top = stack.get(PBComponentTypes.TOP);
         if (stack.isOf(PBItems.FROSTING_BOTTLE) && !cupcake.getBatter().isEmpty() && cupcake.getBatter().getTop().orElse(null) != top) {
             cupcake.getBatter().withTop(top);
-            PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.GLASS_BOTTLE));
+            player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
             return ItemActionResult.SUCCESS;
         }
         if (stack.isOf(Items.HONEYCOMB) && !cupcake.getBatter().isEmpty() && cupcake.getBatter().setWaxed(true)) {

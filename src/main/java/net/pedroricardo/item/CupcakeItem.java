@@ -3,6 +3,7 @@ package net.pedroricardo.item;
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
@@ -10,7 +11,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
-import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.CupcakeTrayBlockEntity;
@@ -50,7 +50,9 @@ public class CupcakeItem extends BlockItem {
         context.getWorld().emitGameEvent(context.getPlayer(), GameEvent.FLUID_PICKUP, context.getBlockPos());
         ItemStack newStack = new ItemStack(PBBlocks.CUPCAKE);
         newStack.set(PBComponentTypes.FIXED_SIZE_BATTER, batter);
-        PBHelpers.decrementStackAndAdd(context.getPlayer(), context.getStack(), newStack);
+        if (context.getPlayer() != null) {
+            context.getPlayer().setStackInHand(context.getHand(), ItemUsage.exchangeStack(context.getStack(), context.getPlayer(), newStack));
+        }
         return ActionResult.SUCCESS;
     }
 

@@ -24,7 +24,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.BeaterBlock;
 import net.pedroricardo.block.entity.BeaterBlockEntity;
@@ -32,7 +31,6 @@ import net.pedroricardo.block.extras.*;
 import net.pedroricardo.item.BatterContainerItem;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
-import net.pedroricardo.item.recipes.MixingPatternEntry;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -92,7 +90,7 @@ public interface Liquid {
         @Override
         public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, BeaterBlockEntity beater) {
             Item item = stack.getItem();
-            if (item instanceof BatterContainerItem container && container.addBatter(player, stack, this.flavor(), PedrosBakery.CONFIG.beaterBatterAmount())) {
+            if (item instanceof BatterContainerItem container && container.addBatter(player, hand, stack, this.flavor(), PedrosBakery.CONFIG.beaterBatterAmount())) {
                 BlockState newState = state.with(BeaterBlock.HAS_LIQUID, false);
                 world.setBlockState(pos, newState);
                 beater.setLiquid(null);

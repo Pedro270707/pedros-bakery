@@ -8,10 +8,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -233,7 +230,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             }
 
             clickedBatter.withTop(top);
-            PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.GLASS_BOTTLE));
+            player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
             if (!world.isClient()) {
                 PBHelpers.update(cake, (ServerWorld) world);
             }
@@ -261,9 +258,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
                 Criteria.CONSUME_ITEM.trigger(serverPlayer, stack);
                 serverPlayer.incrementStat(Stats.USED.getOrCreateStat(item));
             }
-            if (!player.isInCreativeMode()) {
-                PBHelpers.decrementStackAndAdd(player, stack, new ItemStack(Items.BUCKET), false);
-            }
+            player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.BUCKET)));
 
             clickedBatter.withTop(null);
             clickedBatter.withFeatures(Map.of());
