@@ -2,13 +2,19 @@ package net.pedroricardo.item;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.util.Identifier;
+import net.pedroricardo.PBCodecs;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.extras.*;
 import net.pedroricardo.block.extras.size.FixedBatterSizeContainer;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 import net.pedroricardo.block.extras.size.HeightOnlyBatterSizeContainer;
+import org.joml.Vector2i;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.UnaryOperator;
 
 public class PBComponentTypes {
     public static final ItemComponentType<CakeTop> TOP = of("top", CakeTops.REGISTRY.getCodec());
@@ -21,6 +27,7 @@ public class PBComponentTypes {
     public static final ItemComponentType<List<CakeFeature>> FEATURES = of("features", CakeFeatures.REGISTRY.getCodec().listOf());
     public static final ItemComponentType<CupcakeTrayBatter> CUPCAKE_TRAY_BATTER = of("cupcake_tray_batter", CupcakeTrayBatter.CODEC);
     public static final ItemComponentType<PieDataComponent> PIE_DATA = of("pie_data", PieDataComponent.CODEC);
+    public static final ItemComponentType<Set<Vector2i>> COOKIE_SHAPE = of("cookie_shape", PBCodecs.VECTOR_2I.listOf().xmap(HashSet::new, ArrayList::new));
 
     private static <T> ItemComponentType<T> of(String id, Codec<T> codec) {
         return new ItemComponentType<>(new Identifier(PedrosBakery.MOD_ID, id), codec);
