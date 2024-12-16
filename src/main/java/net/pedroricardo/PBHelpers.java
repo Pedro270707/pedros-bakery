@@ -3,6 +3,7 @@ package net.pedroricardo;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -13,8 +14,13 @@ import net.minecraft.util.math.BlockPos;
 import net.pedroricardo.item.ItemComponentType;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PBHelpers {
     private PBHelpers() {}
+
+    private static final Map<Item, Map<ItemComponentType<?>, Object>> defaultComponents = new HashMap<>();
 
     public static void update(BlockEntity blockEntity, ServerWorld world) {
         update(world, blockEntity.getPos(), blockEntity);
@@ -34,38 +40,61 @@ public class PBHelpers {
     }
 
     @Nullable
-    public static <T> T get(NbtCompound compound, ItemComponentType<T> component) {
-        return getOrDefault(compound, component, null);
+    public static <T> T addDefaultComponent(Item item, ItemComponentType<T> type, T component) {
+        if (defaultComponents.containsKey(item)) {
+            Object previousValue = defaultComponents.get(item).put(type, component);
+            try {
+                return (T) previousValue;
+            } catch (ClassCastException e) {
+                return null;
+            }
+        }
+        HashMap<ItemComponentType<?>, Object> map = new HashMap<>();
+        map.put(type, component);
+        Object previousValue = defaultComponents.put(item, map);
+        try {
+            return (T) previousValue;
+        } catch (ClassCastException e) {
+            return null;
+        }
     }
 
-    public static <T> T getOrDefault(NbtCompound compound, ItemComponentType<T> component, @Nullable T defaultValue) {
-        if (!compound.contains(component.key().toString())) {
+    @Nullable
+    public static <T> T removeDefaultComponent(Item item, ItemComponentType<T> type) {
+        if (!defaultComponents.containsKey(item)) {
+            return null;
+        }
+        Object previousValue = defaultComponents.get(item).remove(type);
+        try {
+            return (T) previousValue;
+        } catch (ClassCastException e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    public static <T> T get(ItemStack stack, ItemComponentType<T> type) {
+        return getOrDefault(stack, type, null);
+    }
+
+    public static <T> T getOrDefault(ItemStack stack, ItemComponentType<T> type, @Nullable T defaultValue) {
+        NbtCompound compound = stack.getOrCreateNbt();
+        if (!compound.contains(type.key().toString())) {
+            if (defaultComponents.containsKey(stack.getItem()) && defaultComponents.get(stack.getItem()).containsKey(type)) {
+                try {
+                    return (T) defaultComponents.get(stack.getItem()).get(type);
+                } catch (ClassCastException e) {
+                    throw new IllegalStateException("Component " + type + " is not of type " + type.key());
+                }
+            }
             return defaultValue;
         }
-        return component.codec().decode(NbtOps.INSTANCE, compound.get(component.key().toString())).get().map(Pair::getFirst, partialResult -> defaultValue);
+        return type.codec().decode(NbtOps.INSTANCE, compound.get(type.key().toString())).get().map(Pair::getFirst, partialResult -> defaultValue);
     }
 
-    public static <T> void set(NbtCompound compound, ItemComponentType<T> component, @Nullable T value) {
-        compound.put(component.key().toString(), component.codec().encodeStart(NbtOps.INSTANCE, value).get().orThrow());
-    }
-
-    public static boolean contains(NbtCompound compound, ItemComponentType<?> component) {
-        return get(compound, component) != null;
-    }
-
-    // Stack-specific methods for convenience
-    @Nullable
-    public static <T> T get(ItemStack stack, ItemComponentType<T> component) {
-        return get(stack.getOrCreateNbt(), component);
-    }
-
-    public static <T> T getOrDefault(ItemStack stack, ItemComponentType<T> component, @Nullable T defaultValue) {
-        return getOrDefault(stack.getOrCreateNbt(), component, defaultValue);
-    }
-
-    public static <T> void set(ItemStack stack, ItemComponentType<T> component, @Nullable T value) {
+    public static <T> void set(ItemStack stack, ItemComponentType<T> type, @Nullable T value) {
         NbtCompound compound = stack.getOrCreateNbt();
-        set(compound, component, value);
+        compound.put(type.key().toString(), type.codec().encodeStart(NbtOps.INSTANCE, value).get().orThrow());
         stack.setNbt(compound);
     }
 
@@ -76,7 +105,7 @@ public class PBHelpers {
         return newStack;
     }
 
-    public static boolean contains(ItemStack stack, ItemComponentType<?> component) {
-        return get(stack, component) != null;
+    public static boolean contains(ItemStack stack, ItemComponentType<?> type) {
+        return get(stack, type) != null;
     }
 }

@@ -16,6 +16,7 @@ import net.pedroricardo.item.PBItems;
 import net.pedroricardo.item.recipes.MixingPatternManager;
 import net.pedroricardo.item.recipes.PBRecipeSerializers;
 import net.pedroricardo.item.recipes.PieColorOverrides;
+import org.joml.Vector2i;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,49 +46,59 @@ public class PedrosBakery implements ModInitializer {
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(MIXING_PATTERN_MANAGER);
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(PIE_COLOR_OVERRIDES);
 
-		ITEM_TO_FEATURES.put(Items.ENCHANTED_GOLDEN_APPLE, Collections.singletonList(CakeFeatures.GLINT));
-		ITEM_TO_FEATURES.put(Items.NETHER_STAR, Collections.singletonList(CakeFeatures.GLINT));
-		ITEM_TO_FEATURES.put(Items.SOUL_SOIL, Collections.singletonList(CakeFeatures.SOULS));
-		ITEM_TO_FEATURES.put(Items.SOUL_SAND, Collections.singletonList(CakeFeatures.SOULS));
-		ITEM_TO_FEATURES.put(Items.SWEET_BERRIES, Collections.singletonList(CakeFeatures.SWEET_BERRIES));
-		ITEM_TO_FEATURES.put(Items.RED_MUSHROOM, Collections.singletonList(CakeFeatures.RED_MUSHROOM));
-		ITEM_TO_FEATURES.put(Items.BROWN_MUSHROOM, Collections.singletonList(CakeFeatures.BROWN_MUSHROOM));
-		ITEM_TO_FEATURES.put(Items.GLOW_BERRIES, Collections.singletonList(CakeFeatures.GLOW_BERRIES));
-		ITEM_TO_FEATURES.put(Items.ENDER_EYE, Collections.singletonList(CakeFeatures.END_DUST));
-		ITEM_TO_FEATURES.put(Items.HONEY_BOTTLE, Collections.singletonList(CakeFeatures.HONEY));
-		ITEM_TO_FEATURES.put(Items.PAINTING, Collections.singletonList(CakeFeatures.PAINTING));
-		ITEM_TO_FEATURES.put(Items.DANDELION, Collections.singletonList(CakeFeatures.DANDELION));
-		ITEM_TO_FEATURES.put(Items.TORCHFLOWER, Collections.singletonList(CakeFeatures.DANDELION));
-		ITEM_TO_FEATURES.put(Items.POPPY, Collections.singletonList(CakeFeatures.POPPY));
-		ITEM_TO_FEATURES.put(Items.BLUE_ORCHID, Collections.singletonList(CakeFeatures.BLUE_ORCHID));
-		ITEM_TO_FEATURES.put(Items.AZURE_BLUET, Collections.singletonList(CakeFeatures.AZURE_BLUET));
-		ITEM_TO_FEATURES.put(Items.RED_TULIP, Collections.singletonList(CakeFeatures.RED_TULIP));
-		ITEM_TO_FEATURES.put(Items.ORANGE_TULIP, Collections.singletonList(CakeFeatures.ORANGE_TULIP));
-		ITEM_TO_FEATURES.put(Items.WHITE_TULIP, Collections.singletonList(CakeFeatures.WHITE_TULIP));
-		ITEM_TO_FEATURES.put(Items.PINK_TULIP, Collections.singletonList(CakeFeatures.PINK_TULIP));
-		ITEM_TO_FEATURES.put(Items.OXEYE_DAISY, Collections.singletonList(CakeFeatures.OXEYE_DAISY));
-		ITEM_TO_FEATURES.put(Items.CORNFLOWER, Collections.singletonList(CakeFeatures.CORNFLOWER));
-		ITEM_TO_FEATURES.put(Items.WITHER_ROSE, Collections.singletonList(CakeFeatures.WITHER_ROSE));
-		ITEM_TO_FEATURES.put(Items.LILY_OF_THE_VALLEY, Collections.singletonList(CakeFeatures.LILY_OF_THE_VALLEY));
-		ITEM_TO_FEATURES.put(Items.GLASS, Collections.singletonList(CakeFeatures.GLASS));
-		ITEM_TO_FEATURES.put(Items.PLAYER_HEAD, Collections.singletonList(CakeFeatures.PLAYER_HEAD));
-		ITEM_TO_FEATURES.put(Items.GRASS, Collections.singletonList(CakeFeatures.GRASS));
-		ITEM_TO_FEATURES.put(Items.FERN, Collections.singletonList(CakeFeatures.FERN));
-		ITEM_TO_FEATURES.put(PBItems.WHITE_SPRINKLES, Collections.singletonList(CakeFeatures.WHITE_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.ORANGE_SPRINKLES, Collections.singletonList(CakeFeatures.ORANGE_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.MAGENTA_SPRINKLES, Collections.singletonList(CakeFeatures.MAGENTA_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.LIGHT_BLUE_SPRINKLES, Collections.singletonList(CakeFeatures.LIGHT_BLUE_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.YELLOW_SPRINKLES, Collections.singletonList(CakeFeatures.YELLOW_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.LIME_SPRINKLES, Collections.singletonList(CakeFeatures.LIME_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.PINK_SPRINKLES, Collections.singletonList(CakeFeatures.PINK_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.GRAY_SPRINKLES, Collections.singletonList(CakeFeatures.GRAY_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.LIGHT_GRAY_SPRINKLES, Collections.singletonList(CakeFeatures.LIGHT_GRAY_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.CYAN_SPRINKLES, Collections.singletonList(CakeFeatures.CYAN_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.PURPLE_SPRINKLES, Collections.singletonList(CakeFeatures.PURPLE_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.BLUE_SPRINKLES, Collections.singletonList(CakeFeatures.BLUE_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.BROWN_SPRINKLES, Collections.singletonList(CakeFeatures.BROWN_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.GREEN_SPRINKLES, Collections.singletonList(CakeFeatures.GREEN_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.RED_SPRINKLES, Collections.singletonList(CakeFeatures.RED_SPRINKLES));
-		ITEM_TO_FEATURES.put(PBItems.BLACK_SPRINKLES, Collections.singletonList(CakeFeatures.BLACK_SPRINKLES));
+		PBHelpers.addDefaultComponent(Items.ENCHANTED_GOLDEN_APPLE, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GLINT));
+		PBHelpers.addDefaultComponent(Items.NETHER_STAR, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GLINT));
+		PBHelpers.addDefaultComponent(Items.SOUL_SOIL, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.SOULS));
+		PBHelpers.addDefaultComponent(Items.SOUL_SAND, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.SOULS));
+		PBHelpers.addDefaultComponent(Items.SWEET_BERRIES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.SWEET_BERRIES));
+		PBHelpers.addDefaultComponent(Items.RED_MUSHROOM, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.RED_MUSHROOM));
+		PBHelpers.addDefaultComponent(Items.BROWN_MUSHROOM, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.BROWN_MUSHROOM));
+		PBHelpers.addDefaultComponent(Items.GLOW_BERRIES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GLOW_BERRIES));
+		PBHelpers.addDefaultComponent(Items.ENDER_EYE, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.END_DUST));
+		PBHelpers.addDefaultComponent(Items.HONEY_BOTTLE, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.HONEY));
+		PBHelpers.addDefaultComponent(Items.PAINTING, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.PAINTING));
+		PBHelpers.addDefaultComponent(Items.DANDELION, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.DANDELION));
+		PBHelpers.addDefaultComponent(Items.TORCHFLOWER, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.DANDELION));
+		PBHelpers.addDefaultComponent(Items.POPPY, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.POPPY));
+		PBHelpers.addDefaultComponent(Items.BLUE_ORCHID, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.BLUE_ORCHID));
+		PBHelpers.addDefaultComponent(Items.AZURE_BLUET, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.AZURE_BLUET));
+		PBHelpers.addDefaultComponent(Items.RED_TULIP, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.RED_TULIP));
+		PBHelpers.addDefaultComponent(Items.ORANGE_TULIP, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.ORANGE_TULIP));
+		PBHelpers.addDefaultComponent(Items.WHITE_TULIP, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.WHITE_TULIP));
+		PBHelpers.addDefaultComponent(Items.PINK_TULIP, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.PINK_TULIP));
+		PBHelpers.addDefaultComponent(Items.OXEYE_DAISY, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.OXEYE_DAISY));
+		PBHelpers.addDefaultComponent(Items.CORNFLOWER, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.CORNFLOWER));
+		PBHelpers.addDefaultComponent(Items.WITHER_ROSE, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.WITHER_ROSE));
+		PBHelpers.addDefaultComponent(Items.LILY_OF_THE_VALLEY, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.LILY_OF_THE_VALLEY));
+		PBHelpers.addDefaultComponent(Items.GLASS, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GLASS));
+		PBHelpers.addDefaultComponent(Items.PLAYER_HEAD, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.PLAYER_HEAD));
+		PBHelpers.addDefaultComponent(Items.GRASS, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GRASS));
+		PBHelpers.addDefaultComponent(Items.FERN, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.FERN));
+		PBHelpers.addDefaultComponent(PBItems.WHITE_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.WHITE_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.ORANGE_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.ORANGE_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.MAGENTA_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.MAGENTA_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.LIGHT_BLUE_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.LIGHT_BLUE_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.YELLOW_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.YELLOW_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.LIME_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.LIME_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.PINK_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.PINK_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.GRAY_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GRAY_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.LIGHT_GRAY_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.LIGHT_GRAY_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.CYAN_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.CYAN_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.PURPLE_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.PURPLE_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.BLUE_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.BLUE_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.BROWN_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.BROWN_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.GREEN_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.GREEN_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.RED_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.RED_SPRINKLES));
+		PBHelpers.addDefaultComponent(PBItems.BLACK_SPRINKLES, PBComponentTypes.FEATURES, Collections.singletonList(CakeFeatures.BLACK_SPRINKLES));
+
+		Set<Vector2i> set = new HashSet<>();
+		for (int x = 0; x < 16; x++) {
+			for (int y = 0; y < 16; y++) {
+				if (Math.pow(Math.abs(x - 7.5f), 2.0f) + Math.pow(Math.abs(y - 7.5f), 2.0f) <= 60.0f) {
+					set.add(new Vector2i(x, y));
+				}
+			}
+		}
+		PBHelpers.addDefaultComponent(PBItems.SHAPED_COOKIE, PBComponentTypes.COOKIE_SHAPE, set);
 	}
 }

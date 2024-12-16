@@ -27,8 +27,7 @@ public class ShapedCookieItemRenderer {
         if (!PBHelpers.contains(stack, PBComponentTypes.COOKIE_SHAPE)) return;
         Set<Vector2i> shape = PBHelpers.get(stack, PBComponentTypes.COOKIE_SHAPE);
 
-        matrices.translate(1.3333333f, 1.3333333f, 0.45f);
-        matrices.scale(1.6666666f, 1.6666666f, 1.6666666f);
+        matrices.translate(1.0f, 1.0f, 0.5f);
 
         if (!cache.containsKey(shape)) {
             cache.put(shape, getFaces(shape));
