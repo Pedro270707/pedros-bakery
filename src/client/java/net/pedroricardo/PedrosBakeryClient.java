@@ -78,9 +78,8 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(CupcakeBlockRenderer.RENDER_CUPCAKE, matrices, vertexConsumers, light, overlay);
 		});
 		BuiltinItemRendererRegistry.INSTANCE.register(PBBlocks.PIE, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
-//			PieBlockRenderer.RENDER_PIE.readFrom(stack);
-//			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(PieBlockRenderer.RENDER_PIE, matrices, vertexConsumers, light, overlay);
-			ShapedCookieItemRenderer.render(stack, mode, matrices, vertexConsumers, light, overlay);
+			PieBlockRenderer.RENDER_PIE.readFrom(stack);
+			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(PieBlockRenderer.RENDER_PIE, matrices, vertexConsumers, light, overlay);
 		});
 
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
