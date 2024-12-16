@@ -57,6 +57,15 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBItems.BUTTER));
                 entries.add(new ItemStack(PBItems.BUTTER_CHURN_STAFF));
                 entries.add(new ItemStack(PBItems.DOUGH));
+            }).build();
+
+    public static final ItemGroup BAKING_TRAY_ITEM_GROUP = FabricItemGroup.builder().icon(() -> {
+                ItemStack stack = new ItemStack(PBBlocks.BAKING_TRAY.asItem());
+                PBHelpers.set(stack, PBComponentTypes.SIZE, 14);
+                PBHelpers.set(stack, PBComponentTypes.HEIGHT, 8);
+                return stack;
+            }).displayName(Text.translatable("itemGroup.pedrosbakery.baking_trays"))
+            .entries((ctx, entries) -> {
                 addBakingTrays(entries);
             }).build();
 
@@ -81,6 +90,7 @@ public class PBCreativeTab {
 
     public static void init() {
         Registry.register(Registries.ITEM_GROUP, Identifier.of(PedrosBakery.MOD_ID, PedrosBakery.MOD_ID), ITEM_GROUP);
+        Registry.register(Registries.ITEM_GROUP, Identifier.of(PedrosBakery.MOD_ID, "baking_trays"), BAKING_TRAY_ITEM_GROUP);
         PedrosBakery.LOGGER.debug("Registering item group");
     }
 }
