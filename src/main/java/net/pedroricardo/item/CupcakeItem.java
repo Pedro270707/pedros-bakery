@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -52,7 +53,9 @@ public class CupcakeItem extends BlockItem {
         context.getWorld().emitGameEvent(context.getPlayer(), GameEvent.FLUID_PICKUP, context.getBlockPos());
         ItemStack newStack = new ItemStack(PBBlocks.CUPCAKE);
         PBHelpers.set(newStack, PBComponentTypes.FIXED_SIZE_BATTER, batter);
-        PBHelpers.decrementStackAndAdd(context.getPlayer(), context.getStack(), newStack);
+        if (context.getPlayer() != null) {
+            context.getPlayer().setStackInHand(context.getHand(), ItemUsage.exchangeStack(context.getStack(), context.getPlayer(), newStack));
+        }
         return ActionResult.SUCCESS;
     }
 

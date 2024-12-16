@@ -1,12 +1,11 @@
 package net.pedroricardo.item;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.world.World;
+import net.minecraft.item.ItemUsage;
+import net.minecraft.util.Hand;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.CakeFlavor;
@@ -22,7 +21,7 @@ public class CupcakeTrayItem extends BlockItem implements BatterContainerItem {
         super(block, settings);
     }
 
-    public boolean addBatter(PlayerEntity player, ItemStack stack, @Nullable CakeFlavor flavor, int amount) {
+    public boolean addBatter(PlayerEntity player, Hand hand, ItemStack stack, @Nullable CakeFlavor flavor, int amount) {
         if (flavor == null || !stack.isOf(this)) return false;
         ItemStack newStack = stack.copyWithCount(1);
         CupcakeTrayBatter batter = PBHelpers.getOrDefault(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER, CupcakeTrayBatter.getEmpty());
@@ -36,7 +35,7 @@ public class CupcakeTrayItem extends BlockItem implements BatterContainerItem {
         }
         if (changed) {
             PBHelpers.set(newStack, PBComponentTypes.CUPCAKE_TRAY_BATTER, new CupcakeTrayBatter(batterList));
-            PBHelpers.decrementStackAndAdd(player, stack, newStack, false);
+            player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, newStack));
             return true;
         }
         return false;

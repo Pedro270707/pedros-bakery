@@ -13,31 +13,8 @@ import net.minecraft.util.math.BlockPos;
 import net.pedroricardo.item.ItemComponentType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.OptionalInt;
-
 public class PBHelpers {
     private PBHelpers() {}
-
-    public static void decrementStackAndAdd(PlayerEntity player, ItemStack oldStack, ItemStack newStack) {
-        decrementStackAndAdd(player, oldStack, newStack, true);
-    }
-
-    public static void decrementStackAndAdd(PlayerEntity player, ItemStack oldStack, ItemStack newStack, boolean decrementUnlessCreative) {
-        OptionalInt oldStackSlot = OptionalInt.empty();
-        for (int i = 0; i < player.getInventory().main.size(); ++i) {
-            if (player.getInventory().main.get(i).isEmpty() || player.getInventory().main.get(i) != oldStack) continue;
-            oldStackSlot = OptionalInt.of(i);
-            break;
-        }
-        if (!decrementUnlessCreative || !player.isCreative()) {
-            oldStack.decrement(1);
-        }
-        if (oldStack.isEmpty() && oldStackSlot.isPresent()) {
-            player.getInventory().insertStack(oldStackSlot.getAsInt(), newStack);
-        } else if (!player.giveItemStack(newStack)) {
-            player.dropItem(newStack, false);
-        }
-    }
 
     public static void update(BlockEntity blockEntity, ServerWorld world) {
         update(world, blockEntity.getPos(), blockEntity);
