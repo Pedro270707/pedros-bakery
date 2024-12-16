@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.render.*;
@@ -39,6 +40,8 @@ import net.pedroricardo.registry.CakeFeatureRenderer;
 import net.pedroricardo.registry.CakeFeatureRendererRegistry;
 import net.pedroricardo.render.*;
 import net.pedroricardo.render.item.ShapedCookieItemRenderer;
+import net.pedroricardo.screen.CookieTableScreen;
+import net.pedroricardo.screen.PBScreenHandlerTypes;
 
 public class PedrosBakeryClient implements ClientModInitializer {
 	public static boolean isRenderingInWorld = false;
@@ -194,6 +197,8 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		});
 		CakeFeatureRendererRegistry.register(CakeFeatures.SHORT_GRASS, blockOnTopFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.FERN, blockOnTopFeatureRenderer);
+
+		HandledScreens.register(PBScreenHandlerTypes.COOKIE_TABLE, CookieTableScreen::new);
 	}
 
 	public static void drawPlayerHead(MatrixStack matrices, VertexConsumer vertexConsumer, CakeBatter<FullBatterSizeContainer> batter, int light, int overlay, boolean upsideDown) {
