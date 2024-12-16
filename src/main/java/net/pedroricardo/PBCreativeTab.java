@@ -62,8 +62,8 @@ public class PBCreativeTab {
 
     public static final ItemGroup BAKING_TRAY_ITEM_GROUP = FabricItemGroup.builder().icon(() -> {
                 ItemStack stack = new ItemStack(PBBlocks.BAKING_TRAY.asItem());
-                PBHelpers.set(stack, PBComponentTypes.SIZE, 14);
-                PBHelpers.set(stack, PBComponentTypes.HEIGHT, 8);
+                stack.set(PBComponentTypes.SIZE, 14);
+                stack.set(PBComponentTypes.HEIGHT, 8);
                 return stack;
             }).displayName(Text.translatable("itemGroup.pedrosbakery.baking_trays"))
             .entries((ctx, entries) -> {
