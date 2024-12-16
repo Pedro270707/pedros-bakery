@@ -20,7 +20,7 @@ import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.Nullable;
 
-public class CupcakeTrayBlockEntity extends BlockEntity {
+public class CupcakeTrayBlockEntity extends BlockEntity implements ItemComponentProvider {
     private CupcakeTrayBatter batter;
 
     public CupcakeTrayBlockEntity(BlockPos pos, BlockState state) {
@@ -77,8 +77,7 @@ public class CupcakeTrayBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void setStackNbt(ItemStack stack) {
-        super.setStackNbt(stack);
+    public void addComponents(ItemStack stack) {
         PBHelpers.set(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER, this.getBatter());
     }
 

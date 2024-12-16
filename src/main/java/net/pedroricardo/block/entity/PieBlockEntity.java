@@ -21,7 +21,7 @@ import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PieDataComponent;
 import org.jetbrains.annotations.Nullable;
 
-public class PieBlockEntity extends BlockEntity {
+public class PieBlockEntity extends BlockEntity implements ItemComponentProvider {
     private int layers = 0;
     private int slices = 0;
     private int topBakeTime = 0;
@@ -135,12 +135,6 @@ public class PieBlockEntity extends BlockEntity {
         return this.getLayers() == 0;
     }
 
-    @Override
-    public void setStackNbt(ItemStack stack) {
-        super.setStackNbt(stack);
-        PBHelpers.set(stack, PBComponentTypes.PIE_DATA, new PieDataComponent(this.getLayers(), this.getBottomBakeTime(), this.getFillingItem(), this.getTopBakeTime(), this.getSlices()));
-    }
-
     @Nullable
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
@@ -154,5 +148,10 @@ public class PieBlockEntity extends BlockEntity {
         this.setFillingItem(pieData.filling());
         this.setTopBakeTime(pieData.topBakeTime());
         this.setSlices(pieData.slices());
+    }
+
+    @Override
+    public void addComponents(ItemStack stack) {
+        PBHelpers.set(stack, PBComponentTypes.PIE_DATA, new PieDataComponent(this.getLayers(), this.getBottomBakeTime(), this.getFillingItem(), this.getTopBakeTime(), this.getSlices()));
     }
 }

@@ -3,6 +3,7 @@
   "package": "net.pedroricardo.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "CopyComponentsMixin",
     "HijackItemUsageContext",
     "SetBlockStateMixin"
   ],

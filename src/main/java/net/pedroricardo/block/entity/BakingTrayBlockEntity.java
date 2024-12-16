@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlockEntity {
+public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlockEntity, ItemComponentProvider {
     private int size = PedrosBakery.CONFIG.bakingTrayDefaultSize();
     private int height = PedrosBakery.CONFIG.bakingTrayDefaultHeight();
     private CakeBatter<HeightOnlyBatterSizeContainer> cakeBatter = CakeBatter.getHeightOnlyEmpty();
@@ -153,17 +153,16 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         }
     }
 
-    @Override
-    public void setStackNbt(ItemStack stack) {
-        super.setStackNbt(stack);
-        PBHelpers.set(stack, PBComponentTypes.HEIGHT_ONLY_BATTER, this.getCakeBatter());
-        PBHelpers.set(stack, PBComponentTypes.SIZE, this.getSize());
-        PBHelpers.set(stack, PBComponentTypes.HEIGHT, this.getHeight());
-    }
-
     public void readFrom(ItemStack stack) {
         this.setCakeBatter(PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty()).copy());
         this.setSize(PBHelpers.getOrDefault(stack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()));
         this.setHeight(PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()));
+    }
+
+    @Override
+    public void addComponents(ItemStack stack) {
+        PBHelpers.set(stack, PBComponentTypes.HEIGHT_ONLY_BATTER, this.getCakeBatter());
+        PBHelpers.set(stack, PBComponentTypes.SIZE, this.getSize());
+        PBHelpers.set(stack, PBComponentTypes.HEIGHT, this.getHeight());
     }
 }

@@ -12,6 +12,7 @@ import net.minecraft.loot.provider.nbt.ContextLootNbtProvider;
 import net.minecraft.predicate.StatePredicate;
 import net.pedroricardo.block.ButterChurnBlock;
 import net.pedroricardo.block.PBBlocks;
+import net.pedroricardo.datagen.custom.CopyComponentsLootFunction;
 import net.pedroricardo.item.PBItems;
 
 public class PBLootTableProvider extends FabricBlockLootTableProvider {
@@ -46,7 +47,7 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
         this.addDrop(PBBlocks.CAKE_STAND);
         this.addDrop(PBBlocks.PLATE);
         this.addDrop(PBBlocks.EXPANDABLE_BAKING_TRAY);
-        this.addDrop(PBBlocks.CUPCAKE_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.CUPCAKE_TRAY).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY))).build())); // TODO: fix
+        this.addDrop(PBBlocks.CUPCAKE_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.CUPCAKE_TRAY).apply(CopyComponentsLootFunction.builder())).build()));
         this.addDrop(PBBlocks.CUPCAKE);
         this.addDrop(PBBlocks.COOKIE_JAR);
         this.addDrop(PBBlocks.BUTTER_CHURN, LootTable.builder()
@@ -59,6 +60,6 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
         this.addDrop(PBBlocks.PIE, LootTable.builder()
                 .pool(LootPool.builder()
                         .with(ItemEntry.builder(PBBlocks.PIE)
-                                .apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY))))); // TODO: fix
+                                .apply(CopyComponentsLootFunction.builder()))));
     }
 }

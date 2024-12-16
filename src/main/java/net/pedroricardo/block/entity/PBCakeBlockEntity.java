@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEntity {
+public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEntity, ItemComponentProvider {
     private List<CakeBatter<FullBatterSizeContainer>> batterList = Lists.newArrayList();
     private List<BlockPos> parts = Lists.newArrayList();
 
@@ -136,14 +136,13 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
         return BlockEntityUpdateS2CPacket.create(this);
     }
 
-    @Override
-    public void setStackNbt(ItemStack stack) {
-        super.setStackNbt(stack);
-        PBHelpers.set(stack, PBComponentTypes.BATTER_LIST, this.getBatterList());
-    }
-
     public void readFrom(ItemStack stack) {
         this.getBatterList().clear();
         this.getBatterList().addAll(PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST, List.of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
+    }
+
+    @Override
+    public void addComponents(ItemStack stack) {
+        PBHelpers.set(stack, PBComponentTypes.BATTER_LIST, this.getBatterList());
     }
 }

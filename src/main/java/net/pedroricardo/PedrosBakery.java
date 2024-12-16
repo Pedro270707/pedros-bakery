@@ -10,6 +10,7 @@ import net.pedroricardo.block.extras.CakeFeature;
 import net.pedroricardo.block.extras.CakeFeatures;
 import net.pedroricardo.block.extras.CakeFlavors;
 import net.pedroricardo.block.extras.CakeTops;
+import net.pedroricardo.datagen.custom.PBLootFunctionTypes;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import net.pedroricardo.item.recipes.MixingPatternManager;
@@ -39,6 +40,7 @@ public class PedrosBakery implements ModInitializer {
 		PBComponentTypes.init();
 		PBCreativeTab.init();
 		PBRecipeSerializers.init();
+		PBLootFunctionTypes.init();
 
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(MIXING_PATTERN_MANAGER);
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(PIE_COLOR_OVERRIDES);
