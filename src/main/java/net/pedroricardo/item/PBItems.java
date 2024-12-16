@@ -1,5 +1,6 @@
 package net.pedroricardo.item;
 
+import com.google.common.collect.MultimapBuilder;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -8,8 +9,12 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.extras.CakeFeatures;
+import org.joml.Vector2i;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
 
 public class PBItems {
     public static final Item FROSTING_BOTTLE = register("frosting_bottle", new FrostingBottleItem(new Item.Settings().maxCount(1).recipeRemainder(Items.GLASS_BOTTLE)));
@@ -34,6 +39,19 @@ public class PBItems {
     public static final Item BUTTER = register("butter", new Item(new Item.Settings().food(new FoodComponent.Builder().nutrition(1).saturationModifier(0.1f).build())));
     public static final Item BUTTER_CHURN_STAFF = register("butter_churn_staff", new Item(new Item.Settings().maxCount(1).maxDamage(64)));
     public static final Item DOUGH = register("dough", new Item(new Item.Settings()));
+    public static final Item SHAPED_COOKIE;
+
+    static {
+        Set<Vector2i> set = new HashSet<>();
+        for (int x = 0; x < 16; x++) {
+            for (int y = 0; y < 16; y++) {
+                if (Math.pow(Math.abs(x - 7.5f), 2.0f) + Math.pow(Math.abs(y - 7.5f), 2.0f) <= 60.0f) {
+                    set.add(new Vector2i(x, y));
+                }
+            }
+        }
+        SHAPED_COOKIE = register("shaped_cookie", new Item(new Item.Settings().food(new FoodComponent.Builder().nutrition(2).saturationModifier(0.1f).build()).component(PBComponentTypes.COOKIE_SHAPE, set)));
+    }
 
     public static Item register(String id, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(PedrosBakery.MOD_ID, id), item);
