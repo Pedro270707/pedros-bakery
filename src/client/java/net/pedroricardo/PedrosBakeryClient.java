@@ -39,12 +39,29 @@ import net.pedroricardo.network.PBClientNetworkRegistry;
 import net.pedroricardo.registry.CakeFeatureRenderer;
 import net.pedroricardo.registry.CakeFeatureRendererRegistry;
 import net.pedroricardo.render.*;
+import net.pedroricardo.render.item.PixelData;
 import net.pedroricardo.render.item.ShapedCookieItemRenderer;
 import net.pedroricardo.screen.CookieTableScreen;
 import net.pedroricardo.screen.PBScreenHandlerTypes;
+import org.joml.Vector2i;
 
 public class PedrosBakeryClient implements ClientModInitializer {
 	public static boolean isRenderingInWorld = false;
+
+	public static final ShapedCookieItemRenderer SHAPED_COOKIE_RENDERER = new ShapedCookieItemRenderer((pixel, shape) -> {
+		if ((!shape.contains(new Vector2i(pixel.x() + 1, pixel.y())) && shape.contains(new Vector2i(pixel.x(), pixel.y() + 1))) || !shape.contains(new Vector2i(pixel.x(), pixel.y() - 1)) || !shape.contains(new Vector2i(pixel.x(), pixel.y() - 1)) || (!shape.contains(new Vector2i(pixel.x() + 1, pixel.y() - 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() - 2)) && shape.contains(new Vector2i(pixel.x() + 2, pixel.y())))) {
+			return new PixelData(Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_light_border.png"), 0xFFFFFFFF);
+		} else if (!shape.contains(new Vector2i(pixel.x() - 1, pixel.y()))
+				|| !shape.contains(new Vector2i(pixel.x(), pixel.y() + 1))
+				|| (!shape.contains(new Vector2i(pixel.x() - 1, pixel.y() + 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() + 2)) && shape.contains(new Vector2i(pixel.x() - 2, pixel.y())))
+				|| (!shape.contains(new Vector2i(pixel.x() - 1, pixel.y() - 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() - 2)) && shape.contains(new Vector2i(pixel.x() - 2, pixel.y())))
+				|| (!shape.contains(new Vector2i(pixel.x() + 1, pixel.y() + 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() + 2)) && shape.contains(new Vector2i(pixel.x() + 2, pixel.y())))) {
+			return new PixelData(Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_dark_border.png"), 0xFFFFFFFF);
+		} else if (!shape.contains(new Vector2i(pixel.x(), pixel.y() + 2))) {
+			return new PixelData(Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_dark_inner.png"), 0xFFFFFFFF);
+		}
+		return new PixelData(Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_light_inner.png"), 0xFFFFFFFF);
+	});
 
 	@Override
 	public void onInitializeClient() {
@@ -86,7 +103,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			PieBlockRenderer.RENDER_PIE.readFrom(stack);
 			MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(PieBlockRenderer.RENDER_PIE, matrices, vertexConsumers, light, overlay);
 		});
-		BuiltinItemRendererRegistry.INSTANCE.register(PBItems.SHAPED_COOKIE, ShapedCookieItemRenderer::render);
+		BuiltinItemRendererRegistry.INSTANCE.register(PBItems.SHAPED_COOKIE, SHAPED_COOKIE_RENDERER::render);
 
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
 			CakeTop top = PBHelpers.get(stack, PBComponentTypes.TOP);
