@@ -65,5 +65,6 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
                 .pool(LootPool.builder()
                         .with(ItemEntry.builder(PBBlocks.PIE)
                                 .apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).include(PBComponentTypes.PIE_DATA)))));
+        this.addDrop(PBBlocks.COOKIE_TABLE);
     }
 }

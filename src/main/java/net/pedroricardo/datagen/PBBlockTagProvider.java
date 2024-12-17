@@ -18,6 +18,7 @@ public class PBBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
         this.getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).setReplace(false).add(PBBlocks.BEATER, PBBlocks.BAKING_TRAY, PBBlocks.BAKING_TRAY_PART, PBBlocks.EXPANDABLE_BAKING_TRAY, PBBlocks.CUPCAKE_TRAY);
+        this.getOrCreateTagBuilder(BlockTags.AXE_MINEABLE).setReplace(false).add(PBBlocks.COOKIE_TABLE);
         this.getOrCreateTagBuilder(BlockTags.CANDLE_CAKES).setReplace(false).addTag(PBTags.Blocks.CANDLE_CAKES);
 
         this.getOrCreateTagBuilder(PBTags.Blocks.BAKES_CAKE).addOptionalTag(BlockTags.FIRE).addOptionalTag(BlockTags.CAMPFIRES).add(Blocks.MAGMA_BLOCK, Blocks.LAVA, Blocks.LAVA_CAULDRON);
