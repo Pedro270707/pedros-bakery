@@ -144,7 +144,7 @@ public class CookieTableScreenHandler extends ScreenHandler {
 
     private void setShapedCookie() {
         this.output.setStack(0, ItemStack.EMPTY);
-        if (!this.cookieShape.isEmpty()) {
+        if (!this.cookieShape.isEmpty() && !this.input.getStack(0).isEmpty()) {
             ItemStack cookie = new ItemStack(PBItems.SHAPED_COOKIE);
             PBHelpers.set(cookie, PBComponentTypes.COOKIE_SHAPE, new HashSet<>(this.cookieShape));
             this.output.setStack(0, cookie);
