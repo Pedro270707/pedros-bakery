@@ -56,7 +56,10 @@ public class PieBlock extends BlockWithEntity {
         player.getHungerManager().add(PedrosBakery.CONFIG.pieSliceFood(), PedrosBakery.CONFIG.pieSliceSaturation());
         pie.setSlices(pie.getSlices() - 1);
         if (pie.getSlices() == 0) {
+            pie.setFillingItem(ItemStack.EMPTY);
             pie.setLayers(0);
+            pie.setTopBakeTime(0);
+            pie.setBottomBakeTime(0);
         }
         world.setBlockState(pos, state, Block.NOTIFY_ALL);
         world.emitGameEvent(player, GameEvent.EAT, pos);
