@@ -6,6 +6,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
@@ -15,8 +17,7 @@ import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.network.PBNetworkRegistry;
 import org.joml.Vector2i;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Environment(EnvType.CLIENT)
 public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
@@ -35,8 +36,8 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
         int screenX = (this.width - this.backgroundWidth) / 2;
         int screenY = (this.height - this.backgroundHeight) / 2;
         int pixelWidgetWidth = 5, pixelWidgetHeight = 5;
-        for (int x = 0; x < 16; x++) {
-            for (int y = 0; y < 16; y++) {
+        for (int y = 0; y < 16; y++) {
+            for (int x = 0; x < 16; x++) {
                 Vector2i pixel = new Vector2i(x, y);
                 CookieTablePixelWidget widget = new CookieTablePixelWidget(screenX + 48 + x * pixelWidgetWidth, screenY + 18 + y * pixelWidgetHeight, pixelWidgetWidth, pixelWidgetHeight, pixel, (widget1) -> this.togglePixel(widget1.getPixel()));
                 this.addSelectableChild(widget);
@@ -44,6 +45,9 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
                 this.pixelWidgets.put(pixel, widget);
             }
         }
+        EraseButtonWidget eraseButtonWidget = new EraseButtonWidget(screenX + 130, screenY + 89);
+        this.addSelectableChild(eraseButtonWidget);
+        this.addDrawableChild(eraseButtonWidget);
     }
 
     @Override
@@ -71,5 +75,38 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.encodeAsJson(PBCodecs.VECTOR_2I, pixel);
         ClientPlayNetworking.send(PBNetworkRegistry.TOGGLE_COOKIE_SHAPE, buf);
+    }
+
+    public void emptyPixels() {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.encodeAsJson(PBCodecs.VECTOR_2I.listOf().<Set<Vector2i>>xmap(HashSet::new, ArrayList::new), Set.of());
+        ClientPlayNetworking.send(PBNetworkRegistry.SET_COOKIE_SHAPE, buf);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    class EraseButtonWidget extends PressableWidget {
+        public static final Identifier TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "container/cookie_table/erase_button");
+        public static final Identifier TEXTURE_DISABLED = Identifier.of(PedrosBakery.MOD_ID, "container/cookie_table/erase_button_disabled");
+        public static final Identifier TEXTURE_HIGHLIGHTED = Identifier.of(PedrosBakery.MOD_ID, "container/cookie_table/erase_button_highlighted");
+        public static final Identifier TEXTURE_SELECTED = Identifier.of(PedrosBakery.MOD_ID, "container/cookie_table/erase_button_selected");
+
+        public EraseButtonWidget(int x, int y) {
+            super(x, y, 9, 9, Text.translatable("container.cookie_table.clear_canvas"));
+        }
+
+        @Override
+        public void onPress() {
+            CookieTableScreen.this.emptyPixels();
+        }
+
+        @Override
+        public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+            Identifier identifier = !this.active ? TEXTURE_DISABLED : this.isSelected() ? TEXTURE_HIGHLIGHTED : TEXTURE;
+            context.drawTexture(identifier, this.getX(), this.getY(), 0, 0, this.width, this.height);
+        }
+
+        @Override
+        protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+        }
     }
 }

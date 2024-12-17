@@ -1,7 +1,6 @@
 package net.pedroricardo.network;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.nbt.NbtOps;
 import net.pedroricardo.PBCodecs;
 import net.pedroricardo.screen.CookieTableScreenHandler;
 import org.joml.Vector2i;
