@@ -8,6 +8,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.*;
 import net.minecraft.screen.slot.Slot;
+import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
@@ -35,12 +36,7 @@ public class CookieTableScreenHandler extends ScreenHandler {
                 CookieTableScreenHandler.this.onContentChanged(this);
             }
         };
-        this.addSlot(new Slot(this.input, 0, 8, 50) {
-            @Override
-            public int getMaxItemCount() {
-                return 1;
-            }
-        });
+        this.addSlot(new Slot(this.input, 0, 8, 50));
         this.addSlot(new Slot(this.output, 1, 152, 50) {
             @Override
             public boolean canInsert(ItemStack stack) {
@@ -82,7 +78,9 @@ public class CookieTableScreenHandler extends ScreenHandler {
             ItemStack slotStack = slot.getStack();
             copy = slotStack.copy();
             int inventoryStart = 2;
-            int hotbarEnd = 29;
+            int inventoryEnd = 28;
+            int hotbarStart = inventoryEnd + 1;
+            int hotbarEnd = 38;
             if (slotIndex == 1) {
                 if (!this.insertItem(slotStack, inventoryStart, hotbarEnd, true)) {
                     return ItemStack.EMPTY;
@@ -96,6 +94,8 @@ public class CookieTableScreenHandler extends ScreenHandler {
                 if (!this.insertItem(slotStack, 0, 1, false)) {
                     return ItemStack.EMPTY;
                 }
+            } else if (slotIndex >= inventoryStart && slotIndex < hotbarStart ? !this.insertItem(slotStack, hotbarStart, hotbarEnd, false) : !this.insertItem(slotStack, inventoryStart, inventoryEnd, false)) {
+                return ItemStack.EMPTY;
             }
             if (slotStack.isEmpty()) {
                 slot.setStack(ItemStack.EMPTY);
@@ -106,6 +106,7 @@ public class CookieTableScreenHandler extends ScreenHandler {
                 return ItemStack.EMPTY;
             }
             slot.onTakeItem(player, slotStack);
+            this.sendContentUpdates();
         }
         return copy;
     }
@@ -152,12 +153,11 @@ public class CookieTableScreenHandler extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-//        return this.context.get((world, pos) -> {
-//            if (!world.getBlockState(pos).isOf(PBBlocks.COOKIE_TABLE)) {
-//                return false;
-//            }
-//            return player.canInteractWithBlockAt(pos, 4.0);
-//        }, true);
-        return true;
+        return this.context.get((world, pos) -> {
+            if (!world.getBlockState(pos).isOf(PBBlocks.COOKIE_TABLE)) {
+                return false;
+            }
+            return player.canInteractWithBlockAt(pos, 4.0);
+        }, true);
     }
 }
