@@ -209,11 +209,14 @@ public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 			}
 		}
 		if (layers == 3) {
-			matrices.translate(0.0f, 1.5f, 0.0f);
-			matrices.scale(1.0005f, 1.0005f, 1.0005f);
-			matrices.translate(0.0f, -1.5f, 0.0f);
 			for (int i = 0; i < slices; i++) {
+				float off = 3.5f / 16.0f;
+				matrices.push();
+				matrices.translate((i == 0 || i == 1) ? -off : off, 1.5f, (i == 0 || i == 3) ? off : -off);
+				matrices.scale(1.0005f, 1.0005f, 1.0005f);
+				matrices.translate((i == 0 || i == 1) ? off : -off, -1.5f, (i == 0 || i == 3) ? -off : off);
 				top[i].render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(texture)), light, getBakeTimeOverlay(entity.getTopBakeTime(), overlay), getBakeTimeColor(entity.getTopBakeTime(), 0xFFFFFFFF));
+				matrices.pop();
 			}
 		}
 	}
