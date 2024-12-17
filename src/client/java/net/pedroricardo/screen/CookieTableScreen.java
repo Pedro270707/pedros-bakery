@@ -22,7 +22,7 @@ import java.util.*;
 @Environment(EnvType.CLIENT)
 public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
     public static final Identifier TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/gui/container/cookie_table.png");
-    private Map<Vector2i, CookieTablePixelWidget> pixelWidgets = new HashMap<>();
+    private CookieTableCanvasWidget canvas;
 
     public CookieTableScreen(CookieTableScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -35,16 +35,10 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
         super.init();
         int screenX = (this.width - this.backgroundWidth) / 2;
         int screenY = (this.height - this.backgroundHeight) / 2;
-        int pixelWidgetWidth = 5, pixelWidgetHeight = 5;
-        for (int y = 0; y < 16; y++) {
-            for (int x = 0; x < 16; x++) {
-                Vector2i pixel = new Vector2i(x, y);
-                CookieTablePixelWidget widget = new CookieTablePixelWidget(screenX + 48 + x * pixelWidgetWidth, screenY + 18 + y * pixelWidgetHeight, pixelWidgetWidth, pixelWidgetHeight, pixel, (widget1) -> this.togglePixel(widget1.getPixel()));
-                this.addSelectableChild(widget);
-                this.addDrawableChild(widget);
-                this.pixelWidgets.put(pixel, widget);
-            }
-        }
+
+        this.canvas = new CookieTableCanvasWidget(screenX + 48, screenY + 18, 16, 16, 5, 5, this);
+        this.addSelectableChild(this.canvas);
+        this.addDrawableChild(this.canvas);
         EraseButtonWidget eraseButtonWidget = new EraseButtonWidget(screenX + 130, screenY + 89);
         this.addSelectableChild(eraseButtonWidget);
         this.addDrawableChild(eraseButtonWidget);
@@ -71,16 +65,28 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
         super.drawForeground(context, mouseX, mouseY);
     }
 
-    public void togglePixel(Vector2i pixel) {
+    public void setPixel(Vector2i pixel, boolean value) {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.encodeAsJson(PBCodecs.VECTOR_2I, pixel);
-        ClientPlayNetworking.send(PBNetworkRegistry.TOGGLE_COOKIE_SHAPE, buf);
+        buf.writeBoolean(value);
+        ClientPlayNetworking.send(PBNetworkRegistry.SET_COOKIE_PIXEL, buf);
     }
 
     public void emptyPixels() {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.encodeAsJson(PBCodecs.VECTOR_2I.listOf().<Set<Vector2i>>xmap(HashSet::new, ArrayList::new), Set.of());
         ClientPlayNetworking.send(PBNetworkRegistry.SET_COOKIE_SHAPE, buf);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        return this.canvas.mouseDown(mouseX, mouseY) || super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        boolean canvasMouseReleased = this.canvas.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(mouseX, mouseY, button) || canvasMouseReleased;
     }
 
     @Environment(value=EnvType.CLIENT)
