@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.PedrosBakery;
+import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.network.SetCookieShapePayload;
 import net.pedroricardo.network.SetCookiePixelC2SPayload;
 import org.joml.Vector2i;
@@ -68,12 +69,20 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
     }
 
     public void emptyPixels() {
-        ClientPlayNetworking.send(new SetCookieShapePayload(Set.of()));
+        this.setCookieShape(Set.of());
+    }
+
+    public void setCookieShape(Set<Vector2i> shape) {
+        ClientPlayNetworking.send(new SetCookieShapePayload(shape));
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        return this.canvas.mouseDown(mouseX, mouseY) || super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        boolean canvasMouseDown = false;
+        if (!this.getScreenHandler().getCursorStack().contains(PBComponentTypes.COOKIE_SHAPE)) {
+            canvasMouseDown = this.canvas.mouseDown(mouseX, mouseY);
+        }
+        return canvasMouseDown || super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override
