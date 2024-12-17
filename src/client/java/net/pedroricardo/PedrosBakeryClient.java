@@ -50,13 +50,13 @@ public class PedrosBakeryClient implements ClientModInitializer {
 	public static boolean isRenderingInWorld = false;
 
 	public static final ShapedCookieItemRenderer SHAPED_COOKIE_RENDERER = new ShapedCookieItemRenderer((pixel, shape) -> {
-		if ((!shape.contains(new Vector2i(pixel.x() + 1, pixel.y())) && shape.contains(new Vector2i(pixel.x(), pixel.y() + 1))) || !shape.contains(new Vector2i(pixel.x(), pixel.y() - 1)) || !shape.contains(new Vector2i(pixel.x(), pixel.y() - 1)) || (!shape.contains(new Vector2i(pixel.x() + 1, pixel.y() - 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() - 2)) && shape.contains(new Vector2i(pixel.x() + 2, pixel.y())))) {
+		if ((!shape.contains(new Vector2i(pixel.x() - 1, pixel.y())) && shape.contains(new Vector2i(pixel.x(), pixel.y() + 1))) || !shape.contains(new Vector2i(pixel.x(), pixel.y() - 1)) || !shape.contains(new Vector2i(pixel.x(), pixel.y() - 1)) || (!shape.contains(new Vector2i(pixel.x() - 1, pixel.y() - 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() - 2)) && shape.contains(new Vector2i(pixel.x() - 2, pixel.y())))) {
 			return new PixelData(Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_light_border.png"), 0xFFFFFFFF);
-		} else if (!shape.contains(new Vector2i(pixel.x() - 1, pixel.y()))
+		} else if (!shape.contains(new Vector2i(pixel.x() + 1, pixel.y()))
 				|| !shape.contains(new Vector2i(pixel.x(), pixel.y() + 1))
-				|| (!shape.contains(new Vector2i(pixel.x() - 1, pixel.y() + 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() + 2)) && shape.contains(new Vector2i(pixel.x() - 2, pixel.y())))
-				|| (!shape.contains(new Vector2i(pixel.x() - 1, pixel.y() - 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() - 2)) && shape.contains(new Vector2i(pixel.x() - 2, pixel.y())))
-				|| (!shape.contains(new Vector2i(pixel.x() + 1, pixel.y() + 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() + 2)) && shape.contains(new Vector2i(pixel.x() + 2, pixel.y())))) {
+				|| (!shape.contains(new Vector2i(pixel.x() + 1, pixel.y() + 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() + 2)) && shape.contains(new Vector2i(pixel.x() + 2, pixel.y())))
+				|| (!shape.contains(new Vector2i(pixel.x() + 1, pixel.y() - 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() - 2)) && shape.contains(new Vector2i(pixel.x() + 2, pixel.y())))
+				|| (!shape.contains(new Vector2i(pixel.x() - 1, pixel.y() + 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() + 2)) && shape.contains(new Vector2i(pixel.x() - 2, pixel.y())))) {
 			return new PixelData(Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_dark_border.png"), 0xFFFFFFFF);
 		} else if (!shape.contains(new Vector2i(pixel.x(), pixel.y() + 2))) {
 			return new PixelData(Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_dark_inner.png"), 0xFFFFFFFF);
