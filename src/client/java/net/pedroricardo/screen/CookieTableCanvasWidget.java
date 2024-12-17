@@ -1,7 +1,5 @@
 package net.pedroricardo.screen;
 
-import io.wispforest.owo.ui.event.MouseDown;
-import io.wispforest.owo.util.EventSource;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
@@ -42,28 +40,40 @@ public class CookieTableCanvasWidget extends ClickableWidget {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
-        if (this.parent.getScreenHandler().getCursorStack().contains(PBComponentTypes.COOKIE_SHAPE)) {
-            this.parent.setCookieShape(this.parent.getScreenHandler().getCursorStack().get(PBComponentTypes.COOKIE_SHAPE));
-        } else {
-            this.mouseDown(mouseX, mouseY);
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (!this.clicked(mouseX, mouseY)) {
+            return false;
         }
+        if (this.parent.getScreenHandler().getCursorStack().contains(PBComponentTypes.COOKIE_SHAPE)) {
+            if (this.isValidClickButton(button)) {
+                this.parent.setCookieShape(this.parent.getScreenHandler().getCursorStack().get(PBComponentTypes.COOKIE_SHAPE));
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return this.mouseDown(mouseX, mouseY, button);
     }
 
-    public boolean mouseDown(double mouseX, double mouseY) {
+    public boolean mouseDown(double mouseX, double mouseY, int button) {
         if (mouseX < this.getX() || mouseX >= this.getX() + this.getWidth() || mouseY < this.getY() || mouseY >= this.getY() + this.getHeight()) {
             return false;
         }
         Vector2i pixel = new Vector2i((int)((mouseX - this.getX()) / 5.0f), (int)((mouseY - this.getY()) / 5.0f));
-        boolean containsPixel = this.parent.getScreenHandler().getCookieShape().contains(pixel);
-        if (this.currentPixel == null) {
-            this.currentPixel = !containsPixel;
+        if (button == 0) {
+            boolean containsPixel = this.parent.getScreenHandler().getCookieShape().contains(pixel);
+            if (this.currentPixel == null) {
+                this.currentPixel = !containsPixel;
+            }
+            if ((containsPixel && this.currentPixel) || (!containsPixel && !this.currentPixel)) {
+                return false;
+            }
+            this.parent.setPixel(pixel, this.currentPixel);
+        } else if (button == 1) {
+            this.parent.setPixel(pixel, false);
+            return true;
         }
-        if ((containsPixel && this.currentPixel) || (!containsPixel && !this.currentPixel)) {
-            return false;
-        }
-        this.parent.setPixel(pixel, this.currentPixel);
-        return true;
+        return false;
     }
 
     @Override

@@ -82,7 +82,7 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         boolean canvasMouseDown = false;
         if (!this.getScreenHandler().getCursorStack().contains(PBComponentTypes.COOKIE_SHAPE)) {
-            canvasMouseDown = this.canvas.mouseDown(mouseX, mouseY);
+            canvasMouseDown = this.canvas.mouseDown(mouseX, mouseY, button);
         }
         return canvasMouseDown || super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
