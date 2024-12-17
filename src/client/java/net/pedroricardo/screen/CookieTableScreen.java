@@ -13,7 +13,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.PBCodecs;
+import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
+import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.network.PBNetworkRegistry;
 import org.joml.Vector2i;
 
@@ -73,14 +75,22 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
     }
 
     public void emptyPixels() {
+        this.setCookieShape(Set.of());
+    }
+
+    public void setCookieShape(Set<Vector2i> shape) {
         PacketByteBuf buf = PacketByteBufs.create();
-        buf.encodeAsJson(PBCodecs.VECTOR_2I.listOf().<Set<Vector2i>>xmap(HashSet::new, ArrayList::new), Set.of());
+        buf.encodeAsJson(PBCodecs.VECTOR_2I.listOf().<Set<Vector2i>>xmap(HashSet::new, ArrayList::new), shape);
         ClientPlayNetworking.send(PBNetworkRegistry.SET_COOKIE_SHAPE, buf);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        return this.canvas.mouseDown(mouseX, mouseY) || super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        boolean canvasMouseDown = false;
+        if (!PBHelpers.contains(this.getScreenHandler().getCursorStack(), PBComponentTypes.COOKIE_SHAPE)) {
+            canvasMouseDown = this.canvas.mouseDown(mouseX, mouseY);
+        }
+        return canvasMouseDown || super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override

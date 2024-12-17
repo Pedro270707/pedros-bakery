@@ -6,6 +6,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.screen.ScreenTexts;
+import net.pedroricardo.PBHelpers;
+import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 
@@ -26,16 +28,25 @@ public class CookieTableCanvasWidget extends ClickableWidget {
     @Override
     protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
         if (this.isHovered()) {
-            Vector2i pixel = new Vector2i((mouseX - this.getX()) / this.pixelWidth, (mouseY - this.getY()) / this.pixelHeight);
-            context.getMatrices().translate(0.0f, 0.0f, 1000.0f);
-            context.drawBorder(this.getX() + pixel.x() * this.pixelWidth, this.getY() + pixel.y() * this.pixelHeight, this.pixelWidth, this.pixelHeight, 0xFFFFFFFF);
-            context.getMatrices().translate(0.0f, 0.0f, -1000.0f);
+            context.getMatrices().push();
+            context.getMatrices().translate(0.0f, 0.0f, 151.0f);
+            if (PBHelpers.contains(this.parent.getScreenHandler().getCursorStack(), PBComponentTypes.COOKIE_SHAPE)) {
+                context.drawBorder(this.getX(), this.getY(), this.getWidth(), this.getHeight(), 0xFFFFFFFF);
+            } else {
+                Vector2i pixel = new Vector2i((mouseX - this.getX()) / this.pixelWidth, (mouseY - this.getY()) / this.pixelHeight);
+                context.drawBorder(this.getX() + pixel.x() * this.pixelWidth, this.getY() + pixel.y() * this.pixelHeight, this.pixelWidth, this.pixelHeight, 0xFFFFFFFF);
+            }
+            context.getMatrices().pop();
         }
     }
 
     @Override
     public void onClick(double mouseX, double mouseY) {
-        this.mouseDown(mouseX, mouseY);
+        if (PBHelpers.contains(this.parent.getScreenHandler().getCursorStack(), PBComponentTypes.COOKIE_SHAPE)) {
+            this.parent.setCookieShape(PBHelpers.get(this.parent.getScreenHandler().getCursorStack(), PBComponentTypes.COOKIE_SHAPE));
+        } else {
+            this.mouseDown(mouseX, mouseY);
+        }
     }
 
     public boolean mouseDown(double mouseX, double mouseY) {
