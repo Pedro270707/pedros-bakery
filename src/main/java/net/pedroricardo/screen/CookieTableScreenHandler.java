@@ -120,13 +120,13 @@ public class CookieTableScreenHandler extends ScreenHandler {
         }
     }
 
-    public void togglePixel(Vector2i pixel) {
+    public void setPixel(Vector2i pixel, boolean value) {
         if (pixel.x() < 0 || pixel.x() > 15 || pixel.y() < 0 || pixel.y() > 15) return;
         if (this.input.getStack(0).isEmpty()) return;
-        if (this.cookieShape.contains(pixel)) {
-            this.cookieShape.remove(pixel);
-        } else {
+        if (value) {
             this.cookieShape.add(pixel);
+        } else {
+            this.cookieShape.remove(pixel);
         }
         this.setShapedCookie();
     }

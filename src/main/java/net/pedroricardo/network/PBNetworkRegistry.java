@@ -11,11 +11,11 @@ public class PBNetworkRegistry {
 
         PayloadTypeRegistry.playS2C().register(SetCookieShapePayload.ID, SetCookieShapePayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SetCookieShapePayload.ID, SetCookieShapePayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(ToggleCookiePixelC2SPayload.ID, ToggleCookiePixelC2SPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(SetCookiePixelC2SPayload.ID, SetCookiePixelC2SPayload.CODEC);
 
-        ServerPlayNetworking.registerGlobalReceiver(ToggleCookiePixelC2SPayload.ID, (payload, context) -> {
+        ServerPlayNetworking.registerGlobalReceiver(SetCookiePixelC2SPayload.ID, (payload, context) -> {
             if (context.player().currentScreenHandler instanceof CookieTableScreenHandler cookieTable) {
-                cookieTable.togglePixel(payload.pixel());
+                cookieTable.setPixel(payload.pixel(), payload.value());
                 context.responseSender().sendPacket(new SetCookieShapePayload(cookieTable.getCookieShape()));
             }
         });

@@ -4,27 +4,23 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.BeaconScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.network.SetCookieShapePayload;
-import net.pedroricardo.network.ToggleCookiePixelC2SPayload;
+import net.pedroricardo.network.SetCookiePixelC2SPayload;
 import org.joml.Vector2i;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 @Environment(EnvType.CLIENT)
 public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
     public static final Identifier TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/gui/container/cookie_table.png");
-    private Map<Vector2i, CookieTablePixelWidget> pixelWidgets = new HashMap<>();
+    private CookieTableCanvasWidget canvas;
 
     public CookieTableScreen(CookieTableScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -37,16 +33,10 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
         super.init();
         int screenX = (this.width - this.backgroundWidth) / 2;
         int screenY = (this.height - this.backgroundHeight) / 2;
-        int pixelWidgetWidth = 5, pixelWidgetHeight = 5;
-        for (int y = 0; y < 16; y++) {
-            for (int x = 0; x < 16; x++) {
-                Vector2i pixel = new Vector2i(x, y);
-                CookieTablePixelWidget widget = new CookieTablePixelWidget(screenX + 48 + x * pixelWidgetWidth, screenY + 18 + y * pixelWidgetHeight, pixelWidgetWidth, pixelWidgetHeight, pixel, (widget1) -> this.togglePixel(widget1.getPixel()));
-                this.addSelectableChild(widget);
-                this.addDrawableChild(widget);
-                this.pixelWidgets.put(pixel, widget);
-            }
-        }
+
+        this.canvas = new CookieTableCanvasWidget(screenX + 48, screenY + 18, 16, 16, 5, 5, this);
+        this.addSelectableChild(this.canvas);
+        this.addDrawableChild(this.canvas);
         EraseButtonWidget eraseButtonWidget = new EraseButtonWidget(screenX + 130, screenY + 89);
         this.addSelectableChild(eraseButtonWidget);
         this.addDrawableChild(eraseButtonWidget);
@@ -73,12 +63,23 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
         super.drawForeground(context, mouseX, mouseY);
     }
 
-    public void togglePixel(Vector2i pixel) {
-        ClientPlayNetworking.send(new ToggleCookiePixelC2SPayload(pixel));
+    public void setPixel(Vector2i pixel, boolean value) {
+        ClientPlayNetworking.send(new SetCookiePixelC2SPayload(pixel, value));
     }
 
     public void emptyPixels() {
         ClientPlayNetworking.send(new SetCookieShapePayload(Set.of()));
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        return this.canvas.mouseDown(mouseX, mouseY) || super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        boolean canvasMouseReleased = this.canvas.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(mouseX, mouseY, button) || canvasMouseReleased;
     }
 
     @Environment(value=EnvType.CLIENT)
