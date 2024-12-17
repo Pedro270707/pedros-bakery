@@ -76,6 +76,7 @@ public class PBModelProvider extends FabricModelProvider {
                 .register(ButterChurnBlock.ChurnState.MILK, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(PBBlocks.BUTTER_CHURN, "_with_milk")))
                 .register(ButterChurnBlock.ChurnState.BUTTER, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(PBBlocks.BUTTER_CHURN, "_with_butter")))
         ));
+        blockStateModelGenerator.registerCubeWithCustomTextures(PBBlocks.COOKIE_TABLE, Blocks.OAK_LOG, TextureMap::frontSideWithCustomBottom);
 
         blockStateModelGenerator.excludeFromSimpleItemModelGeneration(PBBlocks.CAKE);
         blockStateModelGenerator.excludeFromSimpleItemModelGeneration(PBBlocks.CUPCAKE_TRAY);

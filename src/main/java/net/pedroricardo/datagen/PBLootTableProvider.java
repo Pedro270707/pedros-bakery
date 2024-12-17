@@ -7,8 +7,6 @@ import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.function.CopyNbtLootFunction;
-import net.minecraft.loot.provider.nbt.ContextLootNbtProvider;
 import net.minecraft.predicate.StatePredicate;
 import net.pedroricardo.block.ButterChurnBlock;
 import net.pedroricardo.block.PBBlocks;
@@ -61,5 +59,6 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
                 .pool(LootPool.builder()
                         .with(ItemEntry.builder(PBBlocks.PIE)
                                 .apply(CopyComponentsLootFunction.builder()))));
+        this.addDrop(PBBlocks.COOKIE_TABLE);
     }
 }

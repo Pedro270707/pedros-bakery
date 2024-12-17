@@ -57,6 +57,7 @@ public class PBRecipeProvider extends FabricRecipeProvider {
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBBlocks.BUTTER_CHURN).input('l', ItemTags.LOGS).pattern("l").pattern("l").criterion("has_milk_bucket", conditionsFromItem(Items.MILK_BUCKET)).offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, PBItems.DOUGH, 3).input(Items.WHEAT).input(PBItems.BUTTER).input(Items.WATER_BUCKET).criterion("has_wheat", conditionsFromItem(Items.WHEAT)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBBlocks.PIE).input('i', Items.IRON_NUGGET).pattern("i i").pattern("iii").criterion("has_wheat", conditionsFromItem(Items.WHEAT)).offerTo(exporter);
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBBlocks.COOKIE_TABLE).input('l', ItemTags.LOGS).input('_', ItemTags.WOODEN_SLABS).pattern("__").pattern("ll").criterion("has_wheat", conditionsFromItem(Items.WHEAT)).offerTo(exporter);
 
         ComplexRecipeJsonBuilder.create(PBRecipeSerializers.BAKING_TRAY_INCREASE).offerTo(exporter, "baking_tray_increase");
         ComplexRecipeJsonBuilder.create(PBRecipeSerializers.EXPANDABLE_BAKING_TRAY).offerTo(exporter, "expandable_baking_tray");
