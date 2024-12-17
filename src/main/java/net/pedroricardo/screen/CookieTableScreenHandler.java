@@ -8,6 +8,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.*;
 import net.minecraft.screen.slot.Slot;
+import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import org.joml.Vector2i;
@@ -91,7 +92,7 @@ public class CookieTableScreenHandler extends ScreenHandler {
                 if (!this.insertItem(slotStack, inventoryStart, hotbarEnd, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (slotStack.isOf(PBItems.DOUGH)) {
+            } else if (slotStack.isIn(PBTags.Items.COOKIE_INGREDIENTS)) {
                 if (!this.insertItem(slotStack, 0, 1, false)) {
                     return ItemStack.EMPTY;
                 }
@@ -112,7 +113,7 @@ public class CookieTableScreenHandler extends ScreenHandler {
     @Override
     public void onContentChanged(Inventory inventory) {
         ItemStack itemStack = this.input.getStack(0);
-        if (itemStack.isEmpty()) {
+        if (!itemStack.isIn(PBTags.Items.COOKIE_INGREDIENTS)) {
             this.output.removeStack(0);
         } else {
             this.setShapedCookie();
@@ -143,7 +144,7 @@ public class CookieTableScreenHandler extends ScreenHandler {
         this.output.setStack(0, ItemStack.EMPTY);
         if (!this.cookieShape.isEmpty()) {
             ItemStack cookie = new ItemStack(PBItems.SHAPED_COOKIE);
-            cookie.set(PBComponentTypes.COOKIE_SHAPE, this.cookieShape);
+            cookie.set(PBComponentTypes.COOKIE_SHAPE, new HashSet<>(this.cookieShape));
             this.output.setStack(0, cookie);
         }
         this.sendContentUpdates();
