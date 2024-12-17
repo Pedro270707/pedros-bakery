@@ -35,13 +35,13 @@ public class CookieTableScreenHandler extends ScreenHandler {
                 CookieTableScreenHandler.this.onContentChanged(this);
             }
         };
-        this.addSlot(new Slot(this.input, 0, 8, 35) {
+        this.addSlot(new Slot(this.input, 0, 8, 50) {
             @Override
             public int getMaxItemCount() {
                 return 1;
             }
         });
-        this.addSlot(new Slot(this.output, 1, 152, 35) {
+        this.addSlot(new Slot(this.output, 1, 152, 50) {
             @Override
             public boolean canInsert(ItemStack stack) {
                 return false;
@@ -49,18 +49,18 @@ public class CookieTableScreenHandler extends ScreenHandler {
 
             @Override
             public void onTakeItem(PlayerEntity player, ItemStack stack) {
-                (CookieTableScreenHandler.this.slots.getFirst()).takeStack(1);
+                (CookieTableScreenHandler.this.slots.get(0)).takeStack(1);
                 stack.getItem().onCraft(stack, player.getWorld(), player);
             }
         });
         int i;
         for (i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(this.playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+                this.addSlot(new Slot(this.playerInventory, j + i * 9 + 9, 8 + j * 18, 114 + i * 18));
             }
         }
         for (i = 0; i < 9; ++i) {
-            this.addSlot(new Slot(this.playerInventory, i, 8 + i * 18, 142));
+            this.addSlot(new Slot(this.playerInventory, i, 8 + i * 18, 172));
         }
     }
 
@@ -120,17 +120,34 @@ public class CookieTableScreenHandler extends ScreenHandler {
         }
     }
 
-    public void setCookieShape(Set<Vector2i> cookieShape) {
-        this.cookieShape = cookieShape.stream().filter(pixel -> pixel.x() >= 0 && pixel.x() < 16 && pixel.y() >= 0 && pixel.y() < 16).collect(Collectors.toSet());
+    public void togglePixel(Vector2i pixel) {
+        if (pixel.x() < 0 || pixel.x() > 15 || pixel.y() < 0 || pixel.y() > 15) return;
+        if (this.input.getStack(0).isEmpty()) return;
+        if (this.cookieShape.contains(pixel)) {
+            this.cookieShape.remove(pixel);
+        } else {
+            this.cookieShape.add(pixel);
+        }
         this.setShapedCookie();
     }
 
+    public void setCookieShape(Set<Vector2i> cookieShape) {
+        this.cookieShape = cookieShape.stream().filter(pixel -> pixel.x() >= 0 && pixel.x() <= 15 && pixel.y() >= 0 && pixel.y() <= 15).collect(Collectors.toSet());
+        this.setShapedCookie();
+    }
+
+    public Set<Vector2i> getCookieShape() {
+        return this.cookieShape;
+    }
+
     private void setShapedCookie() {
+        this.output.setStack(0, ItemStack.EMPTY);
         if (!this.cookieShape.isEmpty()) {
             ItemStack cookie = new ItemStack(PBItems.SHAPED_COOKIE);
             PBHelpers.set(cookie, PBComponentTypes.COOKIE_SHAPE, this.cookieShape);
             this.output.setStack(0, cookie);
         }
+        this.sendContentUpdates();
     }
 
     @Override

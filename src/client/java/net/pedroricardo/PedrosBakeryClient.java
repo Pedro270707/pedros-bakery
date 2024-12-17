@@ -35,6 +35,7 @@ import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import net.pedroricardo.model.PBModelLayers;
+import net.pedroricardo.network.PBClientNetworkRegistry;
 import net.pedroricardo.registry.CakeFeatureRenderer;
 import net.pedroricardo.registry.CakeFeatureRendererRegistry;
 import net.pedroricardo.render.*;
@@ -51,6 +52,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		WorldRenderEvents.START.register(context -> isRenderingInWorld = true);
 
 		PBModelLayers.init();
+		PBClientNetworkRegistry.init();
 		BlockEntityRendererFactories.register(PBBlockEntities.CAKE, (ctx) -> new PBCakeBlockRenderer());
 		BlockEntityRendererFactories.register(PBBlockEntities.BEATER, BeaterBlockRenderer::new);
 		BlockEntityRendererFactories.register(PBBlockEntities.BAKING_TRAY, BakingTrayBlockRenderer::new);
