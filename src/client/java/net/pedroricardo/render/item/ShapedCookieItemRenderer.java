@@ -14,7 +14,6 @@ import net.pedroricardo.render.PBRenderHelper;
 import org.joml.Vector2i;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ShapedCookieItemRenderer {
     private final PixelDataGetter pixelDataGetter;
@@ -24,20 +23,16 @@ public class ShapedCookieItemRenderer {
         this.pixelDataGetter = pixelDataGetter;
     }
 
-    public static final Identifier LIGHT_BORDER_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_light_border.png");
-    public static final Identifier DARK_BORDER_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_dark_border.png");
-    public static final Identifier LIGHT_INNER_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_light_inner.png");
-    public static final Identifier DARK_INNER_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_dark_inner.png");
-
     public void render(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         if (!PBHelpers.contains(stack, PBComponentTypes.COOKIE_SHAPE)) return;
         Set<Vector2i> shape = PBHelpers.get(stack, PBComponentTypes.COOKIE_SHAPE);
 
-        matrices.translate(1.0f, 1.0f, 0.4666666f);
+        matrices.scale(-1.0f, 1.0f, -1.0f);
+        matrices.translate(0.0f, 1.0f, -0.5333333f);
 
-//        if (!this.cache.containsKey(shape)) {
+        if (!this.cache.containsKey(shape)) {
             this.cache.put(shape, getFaces(shape));
-//        }
+        }
         Set<Face> quads = this.cache.get(shape);
 
         for (Face face : quads) {
@@ -46,7 +41,6 @@ public class ShapedCookieItemRenderer {
     }
 
     private Set<Face> getFaces(Set<Vector2i> shape) {
-        shape = shape.stream().map(vector -> new Vector2i(-vector.x() + 15, vector.y())).collect(Collectors.toSet());
         return cullQuads(shape);
     }
 
