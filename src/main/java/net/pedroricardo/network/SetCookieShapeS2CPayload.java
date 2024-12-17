@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public record SetCookieShapeC2SPayload(Set<Vector2i> shape) implements CustomPayload {
-    public static final CustomPayload.Id<SetCookieShapeC2SPayload> ID = new CustomPayload.Id<>(Identifier.of(PedrosBakery.MOD_ID, "set_cookie_shape"));
-    public static final PacketCodec<RegistryByteBuf, SetCookieShapeC2SPayload> CODEC = PacketCodec.tuple(PBCodecs.PACKET_VECTOR_2I.collect(PacketCodecs.toList()).xmap(HashSet::new, ArrayList::new), SetCookieShapeC2SPayload::shape, SetCookieShapeC2SPayload::new);
+public record SetCookieShapeS2CPayload(Set<Vector2i> shape) implements CustomPayload {
+    public static final CustomPayload.Id<SetCookieShapeS2CPayload> ID = new CustomPayload.Id<>(Identifier.of(PedrosBakery.MOD_ID, "set_cookie_shape"));
+    public static final PacketCodec<RegistryByteBuf, SetCookieShapeS2CPayload> CODEC = PacketCodec.tuple(PBCodecs.PACKET_VECTOR_2I.collect(PacketCodecs.toList()).xmap(HashSet::new, ArrayList::new), SetCookieShapeS2CPayload::shape, SetCookieShapeS2CPayload::new);
 
     @Override
     public Id<? extends CustomPayload> getId() {

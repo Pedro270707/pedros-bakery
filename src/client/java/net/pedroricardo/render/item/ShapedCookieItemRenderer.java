@@ -13,6 +13,7 @@ import net.pedroricardo.render.PBRenderHelper;
 import org.joml.Vector2i;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ShapedCookieItemRenderer {
     public static final Identifier LIGHT_BORDER_TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_light_border.png");
@@ -48,6 +49,7 @@ public class ShapedCookieItemRenderer {
     }
 
     private static CookieFaces getFaces(Set<Vector2i> shape) {
+        shape = shape.stream().map(vector -> new Vector2i(-vector.x() + 15, vector.y())).collect(Collectors.toSet());
         Set<Vector2i> lightBorder = new HashSet<>();
         Set<Vector2i> darkBorder = new HashSet<>();
         Set<Vector2i> lightInner = new HashSet<>();

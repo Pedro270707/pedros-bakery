@@ -9,11 +9,13 @@ public class PBNetworkRegistry {
     public static void init() {
         PedrosBakery.LOGGER.debug("Registering payload types and receivers");
 
-        PayloadTypeRegistry.playC2S().register(SetCookieShapeC2SPayload.ID, SetCookieShapeC2SPayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(SetCookieShapeS2CPayload.ID, SetCookieShapeS2CPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(ToggleCookiePixelC2SPayload.ID, ToggleCookiePixelC2SPayload.CODEC);
 
-        ServerPlayNetworking.registerGlobalReceiver(SetCookieShapeC2SPayload.ID, (payload, context) -> {
+        ServerPlayNetworking.registerGlobalReceiver(ToggleCookiePixelC2SPayload.ID, (payload, context) -> {
             if (context.player().currentScreenHandler instanceof CookieTableScreenHandler cookieTable) {
-                cookieTable.setCookieShape(payload.shape());
+                cookieTable.togglePixel(payload.pixel());
+                context.responseSender().sendPacket(new SetCookieShapeS2CPayload(cookieTable.getCookieShape()));
             }
         });
     }
