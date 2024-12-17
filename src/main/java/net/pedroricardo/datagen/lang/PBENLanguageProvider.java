@@ -149,6 +149,8 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBTags.Flavors.INEDIBLE, "Inedible");
         builder.add(PBTags.Features.INEDIBLE, "Inedible");
         builder.add(PBTags.Tops.INEDIBLE, "Inedible");
+        builder.add("container.cookie_table", "Cookie Table");
+        builder.add("container.cookie_table.clear_canvas", "Clear canvas");
         builder.add("subtitles." + PBBlocks.BAKING_TRAY.getTranslationKey() + ".done", "Cake baked");
         builder.add("subtitles." + PBBlocks.PIE.getTranslationKey() + ".done", "Pie baked");
         builder.add("itemGroup." + PedrosBakery.MOD_ID, "Pedro's Bakery");
