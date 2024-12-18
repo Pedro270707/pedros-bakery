@@ -164,15 +164,15 @@ public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 		ModelPart[] top;
 		Identifier texture;
 		Identifier pieFlavorTexture;
-		int bakeTime = Math.max(entity.getTopBakeTime(), entity.getBottomBakeTime());
-		if (bakeTime < 500) {
+		int topBakeTime = entity.getTopBakeTime();
+		if (topBakeTime < 500) {
 			pan = this.unraisedPan;
 			bottom = this.unraisedBottom;
 			filling = this.unraisedFilling;
 			top = this.unraisedTop;
 			texture = UNRAISED_TEXTURE;
 			pieFlavorTexture = PIE_FLAVOR_UNRAISED_TEXTURE;
-		} else if (bakeTime < 1800 || bakeTime > 3000) {
+		} else if (topBakeTime < 1800 || topBakeTime > 3000) {
 			pan = this.slightlyRaisedPan;
 			bottom = this.slightlyRaisedBottom;
 			filling = this.slightlyRaisedFilling;
