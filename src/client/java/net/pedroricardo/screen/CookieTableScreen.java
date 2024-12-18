@@ -101,10 +101,10 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
 
     @Environment(value=EnvType.CLIENT)
     class EraseButtonWidget extends PressableWidget {
-        public static final Identifier TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "container/cookie_table/erase_button");
-        public static final Identifier TEXTURE_DISABLED = Identifier.of(PedrosBakery.MOD_ID, "container/cookie_table/erase_button_disabled");
-        public static final Identifier TEXTURE_HIGHLIGHTED = Identifier.of(PedrosBakery.MOD_ID, "container/cookie_table/erase_button_highlighted");
-        public static final Identifier TEXTURE_SELECTED = Identifier.of(PedrosBakery.MOD_ID, "container/cookie_table/erase_button_selected");
+        public static final Identifier TEXTURE = Identifier.of(PedrosBakery.MOD_ID, "textures/gui/sprites/container/cookie_table/erase_button.png");
+        public static final Identifier TEXTURE_DISABLED = Identifier.of(PedrosBakery.MOD_ID, "textures/gui/sprites/container/cookie_table/erase_button_disabled.png");
+        public static final Identifier TEXTURE_HIGHLIGHTED = Identifier.of(PedrosBakery.MOD_ID, "textures/gui/sprites/container/cookie_table/erase_button_highlighted.png");
+        public static final Identifier TEXTURE_SELECTED = Identifier.of(PedrosBakery.MOD_ID, "textures/gui/sprites/container/cookie_table/erase_button_selected.png");
 
         public EraseButtonWidget(int x, int y) {
             super(x, y, 9, 9, Text.translatable("container.cookie_table.clear_canvas"));
@@ -118,7 +118,7 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
         @Override
         public void render(DrawContext context, int mouseX, int mouseY, float delta) {
             Identifier identifier = !this.active ? TEXTURE_DISABLED : this.isSelected() ? TEXTURE_HIGHLIGHTED : TEXTURE;
-            context.drawTexture(identifier, this.getX(), this.getY(), 0, 0, this.width, this.height);
+            context.drawTexture(identifier, this.getX(), this.getY(), 0, 0, 0, this.width, this.height, this.width, this.height);
         }
 
         @Override
