@@ -147,7 +147,7 @@ public class CakeBatter<S extends BatterSizeContainer> {
         if (this.getSizeContainer().bite(world, pos, state, player, blockEntity, biteSize)) {
             player.incrementStat(Stats.EAT_CAKE_SLICE);
             world.emitGameEvent(player, GameEvent.EAT, pos);
-            player.getHungerManager().add(PedrosBakery.CONFIG.cakeBiteFood(), PedrosBakery.CONFIG.cakeBiteSaturation());
+            player.getHungerManager().add(PedrosBakery.CONFIG.cakeBiteFood.get(), PedrosBakery.CONFIG.cakeBiteSaturation.get());
             if (!world.isClient()) {
                 PBHelpers.update(blockEntity, (ServerWorld) world);
             }

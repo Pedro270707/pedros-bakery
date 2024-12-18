@@ -88,7 +88,7 @@ public class CupcakeBlock extends BlockWithEntity {
                 world.emitGameEvent(player, GameEvent.EAT, pos);
                 world.playSound(player, pos, SoundEvents.ENTITY_GENERIC_EAT, SoundCategory.BLOCKS, 1.0f, 0.8f + world.getRandom().nextFloat() * 0.4f);
                 player.playSound(SoundEvents.ENTITY_PLAYER_BURP, 0.5f, 1.0f);
-                player.getHungerManager().add(PedrosBakery.CONFIG.cupcakeFood(), PedrosBakery.CONFIG.cupcakeSaturation());
+                player.getHungerManager().add(PedrosBakery.CONFIG.cupcakeFood.get(), PedrosBakery.CONFIG.cupcakeSaturation.get());
             }
             return result;
         }

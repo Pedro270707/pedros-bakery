@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import net.pedroricardo.PBConfigModel;
+import net.pedroricardo.PBConfig;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.PedrosBakeryClient;
 import net.pedroricardo.block.PBBlocks;
@@ -94,10 +94,10 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     }
 
     public static void renderCakeBatter(List<CakeBatter<FullBatterSizeContainer>> batterList, CakeBatter<FullBatterSizeContainer> batter, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-        renderCakeBatter(batterList, batter, matrices, vertexConsumer, light, overlay, color, PedrosBakery.CONFIG.cakeRenderQuality());
+        renderCakeBatter(batterList, batter, matrices, vertexConsumer, light, overlay, color, PedrosBakery.CONFIG.cakeRenderQuality.get());
     }
 
-    public static void renderCakeBatter(List<CakeBatter<FullBatterSizeContainer>> batterList, CakeBatter<FullBatterSizeContainer> batter, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color, PBConfigModel.CakeRenderQuality quality) {
+    public static void renderCakeBatter(List<CakeBatter<FullBatterSizeContainer>> batterList, CakeBatter<FullBatterSizeContainer> batter, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color, PBConfig.CakeRenderQuality quality) {
         float size = batter.getSizeContainer().getSize();
         float height = batter.getSizeContainer().getHeight();
         float bites = batter.getSizeContainer().getBites();
@@ -215,7 +215,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     }
 
     public static int getBakeTimeColor(int bakeTime, int color) {
-        if (bakeTime <= PedrosBakery.CONFIG.ticksUntilCakeBaked()) {
+        if (bakeTime <= PedrosBakery.CONFIG.ticksUntilCakeBaked.get()) {
             return color;
         }
 
@@ -224,7 +224,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         int green = color >> 8 & 0xFF;
         int blue = color & 0xFF;
 
-        float factor = Math.max(-1.0f/(2.0f * PedrosBakery.CONFIG.ticksUntilCakeBaked()) * bakeTime + 1.5f, 0.25f);
+        float factor = Math.max(-1.0f/(2.0f * PedrosBakery.CONFIG.ticksUntilCakeBaked.get()) * bakeTime + 1.5f, 0.25f);
 
         red = (int)MathHelper.clamp(red * factor, 0, 255);
         green = (int)MathHelper.clamp(green * factor, 0, 255);
@@ -234,10 +234,10 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
     }
 
     public static int getBakeTimeOverlay(int bakeTime, int overlay) {
-        if (bakeTime > PedrosBakery.CONFIG.ticksUntilCakeBaked()) {
+        if (bakeTime > PedrosBakery.CONFIG.ticksUntilCakeBaked.get()) {
             return overlay;
         }
-        return OverlayTexture.getUv(((float) PedrosBakery.CONFIG.ticksUntilCakeBaked() - bakeTime) / (2.0f * PedrosBakery.CONFIG.ticksUntilCakeBaked()), false);
+        return OverlayTexture.getUv(((float) PedrosBakery.CONFIG.ticksUntilCakeBaked.get() - bakeTime) / (2.0f * PedrosBakery.CONFIG.ticksUntilCakeBaked.get()), false);
     }
 
     @Override

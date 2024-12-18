@@ -48,7 +48,7 @@ public class CupcakeItem extends BlockItem {
         int i = (hitVector.getX() > 0.5 ? 2 : 0) | (hitVector.getZ() > 0.5 ? 1 : 0);
         CupcakeTrayBatter trayBatter = tray.getBatter();
         CakeBatter<FixedBatterSizeContainer> batter = trayBatter.stream().get(i);
-        if (batter.isEmpty() || batter.getBakeTime() < PedrosBakery.CONFIG.ticksUntilCakeBaked()) return super.useOnBlock(context);
+        if (batter.isEmpty() || batter.getBakeTime() < PedrosBakery.CONFIG.ticksUntilCakeBaked.get()) return super.useOnBlock(context);
         tray.setBatter(trayBatter.withBatter(i, CakeBatter.getFixedSizeEmpty()));
         context.getWorld().emitGameEvent(context.getPlayer(), GameEvent.FLUID_PICKUP, context.getBlockPos());
         ItemStack newStack = new ItemStack(PBBlocks.CUPCAKE);

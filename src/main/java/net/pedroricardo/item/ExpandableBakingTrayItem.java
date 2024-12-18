@@ -20,7 +20,7 @@ public class ExpandableBakingTrayItem extends BakingTrayItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         float sin45 = MathHelper.sqrt(3)/2.0f;
-        TypedActionResult<ItemStack> result = user.getRotationVector().getY() > sin45 || user.getRotationVector().getY() < -sin45 ? change(user, hand, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayMinHeight(), PedrosBakery.CONFIG.bakingTrayMaxHeight(), PedrosBakery.CONFIG.bakingTrayDefaultHeight()) : change(user, hand, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayMinSize(), PedrosBakery.CONFIG.bakingTrayMaxSize(), PedrosBakery.CONFIG.bakingTrayDefaultSize());
+        TypedActionResult<ItemStack> result = user.getRotationVector().getY() > sin45 || user.getRotationVector().getY() < -sin45 ? change(user, hand, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayMinHeight.get(), PedrosBakery.CONFIG.bakingTrayMaxHeight.get(), PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()) : change(user, hand, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayMinSize.get(), PedrosBakery.CONFIG.bakingTrayMaxSize.get(), PedrosBakery.CONFIG.bakingTrayDefaultSize.get());
         if (result.getResult().isAccepted()) {
             return result;
         }
@@ -37,7 +37,7 @@ public class ExpandableBakingTrayItem extends BakingTrayItem {
         }
         if (PBHelpers.getOrDefault(stack, componentType, -1) != size) {
             CakeBatter<HeightOnlyBatterSizeContainer> batter = PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty());
-            batter.getSizeContainer().setHeight(Math.min(batter.getSizeContainer().getHeight(), PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight())));
+            batter.getSizeContainer().setHeight(Math.min(batter.getSizeContainer().getHeight(), PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight.get())));
             user.setStackInHand(hand, stack);
             return TypedActionResult.success(stack, false);
         }

@@ -51,13 +51,13 @@ public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
             ItemStack stack = inventory.getStack(i);
             if (stack.isOf(Items.IRON_INGOT)) {
                 if (i < (trayIndexInt - trayIndexInt % inventory.getWidth()) || i > trayIndexInt - trayIndexInt % inventory.getWidth() + 2) {
-                    PBHelpers.set(trayStack, PBComponentTypes.HEIGHT, PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) + 2);
+                    PBHelpers.set(trayStack, PBComponentTypes.HEIGHT, PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()) + 2);
                 } else {
-                    PBHelpers.set(trayStack, PBComponentTypes.SIZE, PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()) + 2);
+                    PBHelpers.set(trayStack, PBComponentTypes.SIZE, PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize.get()) + 2);
                 }
             }
         }
-        return PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) <= PedrosBakery.CONFIG.bakingTrayMaxHeight() && PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()) <= PedrosBakery.CONFIG.bakingTrayMaxSize();
+        return PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()) <= PedrosBakery.CONFIG.bakingTrayMaxHeight.get() && PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize.get()) <= PedrosBakery.CONFIG.bakingTrayMaxSize.get();
     }
 
     @Override
@@ -76,9 +76,9 @@ public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
             ItemStack stack = inventory.getStack(i);
             if (stack.isOf(Items.IRON_INGOT)) {
                 if (i < (trayIndex - trayIndex % inventory.getWidth()) || i > trayIndex - trayIndex % inventory.getWidth() + 2) {
-                    PBHelpers.set(trayStack, PBComponentTypes.HEIGHT, Math.min(PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight()) + 2, 16));
+                    PBHelpers.set(trayStack, PBComponentTypes.HEIGHT, Math.min(PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()) + 2, 16));
                 } else {
-                    PBHelpers.set(trayStack, PBComponentTypes.SIZE, Math.min(PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize()) + 2, 16));
+                    PBHelpers.set(trayStack, PBComponentTypes.SIZE, Math.min(PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize.get()) + 2, 16));
                 }
             }
         }
