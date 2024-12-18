@@ -50,10 +50,10 @@ public class PieBlock extends BlockWithEntity {
                 return ActionResult.success(world.isClient());
             }
         }
-        if (pie.isEmpty() || (pie.getTopBakeTime() < PedrosBakery.CONFIG.ticksUntilPieBaked() && pie.getLayers() == 3)
-                || pie.getBottomBakeTime() < PedrosBakery.CONFIG.ticksUntilPieBaked()
+        if (pie.isEmpty() || (pie.getTopBakeTime() < PedrosBakery.CONFIG.ticksUntilPieBaked.get() && pie.getLayers() == 3)
+                || pie.getBottomBakeTime() < PedrosBakery.CONFIG.ticksUntilPieBaked.get()
                 || !player.canConsume(false)) return super.onUse(state, world, pos, player, hit);
-        player.getHungerManager().add(PedrosBakery.CONFIG.pieSliceFood(), PedrosBakery.CONFIG.pieSliceSaturation());
+        player.getHungerManager().add(PedrosBakery.CONFIG.pieSliceFood.get(), PedrosBakery.CONFIG.pieSliceSaturation.get());
         pie.setSlices(pie.getSlices() - 1);
         if (pie.getSlices() == 0) {
             pie.setFillingItem(ItemStack.EMPTY);

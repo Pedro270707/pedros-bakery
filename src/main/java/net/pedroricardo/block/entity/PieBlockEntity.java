@@ -126,7 +126,7 @@ public class PieBlockEntity extends BlockEntity {
             if (!world.isClient()) {
                 PBHelpers.update(blockEntity, (ServerWorld) world);
             }
-            if (blockEntity.getTopBakeTime() == PedrosBakery.CONFIG.ticksUntilPieBaked() || blockEntity.getBottomBakeTime() == PedrosBakery.CONFIG.ticksUntilPieBaked()) {
+            if (blockEntity.getTopBakeTime() == PedrosBakery.CONFIG.ticksUntilPieBaked.get() || blockEntity.getBottomBakeTime() == PedrosBakery.CONFIG.ticksUntilPieBaked.get()) {
                 world.playSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.PIE_DONE, SoundCategory.BLOCKS, 1.25f, 1.0f, true);
             }
         }

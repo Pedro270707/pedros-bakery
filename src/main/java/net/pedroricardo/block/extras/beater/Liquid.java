@@ -90,7 +90,7 @@ public interface Liquid {
         @Override
         public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, BeaterBlockEntity beater) {
             Item item = stack.getItem();
-            if (item instanceof BatterContainerItem container && container.addBatter(player, hand, stack, this.flavor(), PedrosBakery.CONFIG.beaterBatterAmount())) {
+            if (item instanceof BatterContainerItem container && container.addBatter(player, hand, stack, this.flavor(), PedrosBakery.CONFIG.beaterBatterAmount.get())) {
                 BlockState newState = state.with(BeaterBlock.HAS_LIQUID, false);
                 world.setBlockState(pos, newState);
                 beater.setLiquid(null);

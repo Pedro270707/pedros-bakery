@@ -11,7 +11,6 @@ base {
 }
 
 repositories {
-	maven { url 'https://maven.wispforest.io/releases/' }
 	exclusiveContent {
 		forRepository {
 			maven {
@@ -21,6 +20,10 @@ repositories {
 		filter {
 			includeGroup "curse.maven"
 		}
+	}
+	maven {
+		name = "FzzyMaven"
+		url = uri("https://maven.fzzyhmstrs.me/")
 	}
 }
 
@@ -66,8 +69,7 @@ dependencies {
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	annotationProcessor(modImplementation("io.wispforest:owo-lib:${project.owo_version}"))
-	include "io.wispforest:owo-sentinel:${project.owo_version}"
+	modImplementation("me.fzzyhmstrs:fzzy_config:${project.fzzy_config_version}")
 
 	// Prism library
 	modImplementation "curse.maven:prism-fabric-665526:5625110"

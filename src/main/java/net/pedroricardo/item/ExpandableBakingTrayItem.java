@@ -18,7 +18,7 @@ public class ExpandableBakingTrayItem extends BakingTrayItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        TypedActionResult<ItemStack> result = user.getFacing().getAxis().isVertical() ? change(user, hand, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayMinHeight(), PedrosBakery.CONFIG.bakingTrayMaxHeight(), PedrosBakery.CONFIG.bakingTrayDefaultHeight()) : change(user, hand, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayMinSize(), PedrosBakery.CONFIG.bakingTrayMaxSize(), PedrosBakery.CONFIG.bakingTrayDefaultSize());
+        TypedActionResult<ItemStack> result = user.getFacing().getAxis().isVertical() ? change(user, hand, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayMinHeight.get(), PedrosBakery.CONFIG.bakingTrayMaxHeight.get(), PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()) : change(user, hand, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayMinSize.get(), PedrosBakery.CONFIG.bakingTrayMaxSize.get(), PedrosBakery.CONFIG.bakingTrayDefaultSize.get());
         if (result.getResult().isAccepted()) {
             return result;
         }
@@ -35,7 +35,7 @@ public class ExpandableBakingTrayItem extends BakingTrayItem {
         }
         if (stack.getOrDefault(componentType, -1) != size) {
             CakeBatter<HeightOnlyBatterSizeContainer> batter = stack.getOrDefault(PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty());
-            batter.getSizeContainer().setHeight(Math.min(batter.getSizeContainer().getHeight(), stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight())));
+            batter.getSizeContainer().setHeight(Math.min(batter.getSizeContainer().getHeight(), stack.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight.get())));
             user.setStackInHand(hand, stack);
             return TypedActionResult.success(stack, false);
         }

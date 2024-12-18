@@ -1,5 +1,7 @@
 package net.pedroricardo;
 
+import kotlin.jvm.functions.Function0;
+import me.fzzyhmstrs.fzzy_config.api.ConfigApi;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
@@ -18,11 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.function.Supplier;
 
 public class PedrosBakery implements ModInitializer {
 	public static final String MOD_ID = "pedrosbakery";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	public static final net.pedroricardo.PBConfig CONFIG = net.pedroricardo.PBConfig.createAndLoad();
+	public static final PBConfig CONFIG = ConfigApi.registerAndLoadConfig((Supplier<PBConfig>) PBConfig::new);
 
 	public static final MixingPatternManager MIXING_PATTERN_MANAGER = new MixingPatternManager();
 	public static final PieColorOverrides PIE_COLOR_OVERRIDES = new PieColorOverrides();

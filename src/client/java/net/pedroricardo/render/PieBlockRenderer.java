@@ -222,7 +222,7 @@ public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 	}
 
 	public static int getBakeTimeColor(int bakeTime, int color) {
-		if (bakeTime <= PedrosBakery.CONFIG.ticksUntilPieBaked()) {
+		if (bakeTime <= PedrosBakery.CONFIG.ticksUntilPieBaked.get()) {
 			return color;
 		}
 
@@ -231,7 +231,7 @@ public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 		int green = color >> 8 & 0xFF;
 		int blue = color & 0xFF;
 
-		float factor = Math.max(-1.0f/(2.0f * PedrosBakery.CONFIG.ticksUntilPieBaked()) * bakeTime + 1.5f, 0.25f);
+		float factor = Math.max(-1.0f/(2.0f * PedrosBakery.CONFIG.ticksUntilPieBaked.get()) * bakeTime + 1.5f, 0.25f);
 
 		red = (int) MathHelper.clamp(red * factor, 0, 255);
 		green = (int)MathHelper.clamp(green * factor, 0, 255);
@@ -241,9 +241,9 @@ public class PieBlockRenderer implements BlockEntityRenderer<PieBlockEntity> {
 	}
 
 	public static int getBakeTimeOverlay(int bakeTime, int overlay) {
-		if (bakeTime > PedrosBakery.CONFIG.ticksUntilPieBaked()) {
+		if (bakeTime > PedrosBakery.CONFIG.ticksUntilPieBaked.get()) {
 			return overlay;
 		}
-		return OverlayTexture.getUv(((float) PedrosBakery.CONFIG.ticksUntilPieBaked() - bakeTime) / (2.0f * PedrosBakery.CONFIG.ticksUntilPieBaked()), false);
+		return OverlayTexture.getUv(((float) PedrosBakery.CONFIG.ticksUntilPieBaked.get() - bakeTime) / (2.0f * PedrosBakery.CONFIG.ticksUntilPieBaked.get()), false);
 	}
 }

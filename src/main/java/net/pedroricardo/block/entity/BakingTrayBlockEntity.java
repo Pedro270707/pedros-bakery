@@ -39,8 +39,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlockEntity {
-    private int size = PedrosBakery.CONFIG.bakingTrayDefaultSize();
-    private int height = PedrosBakery.CONFIG.bakingTrayDefaultHeight();
+    private int size = PedrosBakery.CONFIG.bakingTrayDefaultSize.get();
+    private int height = PedrosBakery.CONFIG.bakingTrayDefaultHeight.get();
     private CakeBatter<HeightOnlyBatterSizeContainer> cakeBatter = CakeBatter.getHeightOnlyEmpty();
     private List<BlockPos> parts = Lists.newArrayList();
 
@@ -84,7 +84,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
             if (!world.isClient()) {
                 PBHelpers.update(blockEntity, (ServerWorld) world);
             }
-            if (blockEntity.getCakeBatter().getBakeTime() == PedrosBakery.CONFIG.ticksUntilCakeBaked()) {
+            if (blockEntity.getCakeBatter().getBakeTime() == PedrosBakery.CONFIG.ticksUntilCakeBaked.get()) {
                 world.playSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.BAKING_TRAY_DONE, SoundCategory.BLOCKS, 1.25f, 1.0f, true);
             }
         }
@@ -105,8 +105,8 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
         this.cakeBatter = components.getOrDefault(PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty()).copy();
-        this.size = components.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize());
-        this.height = components.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight());
+        this.size = components.getOrDefault(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize.get());
+        this.height = components.getOrDefault(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight.get());
     }
 
     @Override
