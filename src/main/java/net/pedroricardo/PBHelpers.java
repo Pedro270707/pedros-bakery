@@ -78,6 +78,7 @@ public class PBHelpers {
     }
 
     public static <T> T getOrDefault(ItemStack stack, ItemComponentType<T> type, @Nullable T defaultValue) {
+        if (stack.isEmpty()) return defaultValue;
         NbtCompound compound = stack.getOrCreateNbt();
         if (!compound.contains(type.key().toString())) {
             if (defaultComponents.containsKey(stack.getItem()) && defaultComponents.get(stack.getItem()).containsKey(type)) {
@@ -93,6 +94,7 @@ public class PBHelpers {
     }
 
     public static <T> void set(ItemStack stack, ItemComponentType<T> type, @Nullable T value) {
+        if (stack.isEmpty()) return;
         NbtCompound compound = stack.getOrCreateNbt();
         compound.put(type.key().toString(), type.codec().encodeStart(NbtOps.INSTANCE, value).get().orThrow());
         stack.setNbt(compound);
