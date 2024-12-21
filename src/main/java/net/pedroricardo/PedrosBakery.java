@@ -7,6 +7,9 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.resource.ResourceType;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.common.Mod;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.extras.CakeFeature;
 import net.pedroricardo.block.extras.CakeFeatures;
@@ -26,7 +29,8 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class PedrosBakery implements ModInitializer {
+@Mod(value = PedrosBakery.MOD_ID)
+public class PedrosBakery {
 	public static final String MOD_ID = "pedrosbakery";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static final PBConfig CONFIG = ConfigApi.registerAndLoadConfig((Supplier<PBConfig>) PBConfig::new);
@@ -35,8 +39,7 @@ public class PedrosBakery implements ModInitializer {
 	public static final Map<Item, List<CakeFeature>> ITEM_TO_FEATURES = new HashMap<>();
     public static final PieColorOverrides PIE_COLOR_OVERRIDES = new PieColorOverrides();
 
-	@Override
-	public void onInitialize() {
+	public PedrosBakery(IEventBus eventBus, ModContainer container) {
 		PBSounds.init();
 		PBBlocks.init();
 		PBItems.init();
