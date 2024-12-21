@@ -1,12 +1,8 @@
 package net.pedroricardo;
 
-import kotlin.jvm.functions.Function0;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApi;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.resource.ResourceType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.common.Mod;

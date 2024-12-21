@@ -5,6 +5,8 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -27,6 +29,14 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.entity.BeaterBlockEntity;
 import net.pedroricardo.block.entity.PBBlockEntities;
@@ -35,16 +45,16 @@ import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import org.jetbrains.annotations.Nullable;
 
-public class BeaterBlock extends BlockWithEntity {
-    public static final BooleanProperty HAS_LIQUID = BooleanProperty.of("has_liquid");
-    private static final VoxelShape EAST_SHAPE = VoxelShapes.union(Block.createCuboidShape(5, 9, 0, 11, 14, 12), Block.createCuboidShape(6, 0, 1, 10, 10, 4), Block.createCuboidShape(3, 0, 3, 13, 1, 13), Block.createCuboidShape(4, 1, 4, 12, 7, 12));
-    private static final VoxelShape WEST_SHAPE = VoxelShapes.union(Block.createCuboidShape(5, 9, 4, 11, 14, 16), Block.createCuboidShape(6, 0, 12, 10, 10, 15), Block.createCuboidShape(3, 0, 3, 13, 1, 13), Block.createCuboidShape(4, 1, 4, 12, 7, 12));
-    private static final VoxelShape NORTH_SHAPE = VoxelShapes.union(Block.createCuboidShape(0, 9, 5, 12, 14, 11), Block.createCuboidShape(1, 0, 6, 4, 10, 10), Block.createCuboidShape(3, 0, 3, 13, 1, 13), Block.createCuboidShape(4, 1, 4, 12, 7, 12));
-    private static final VoxelShape SOUTH_SHAPE = VoxelShapes.union(Block.createCuboidShape(4, 9, 5, 16, 14, 11), Block.createCuboidShape(12, 0, 6, 15, 10, 10), Block.createCuboidShape(3, 0, 3, 13, 1, 13), Block.createCuboidShape(4, 1, 4, 12, 7, 12));
+public class BeaterBlock extends BaseEntityBlock {
+    public static final BooleanProperty HAS_LIQUID = BooleanProperty.create("has_liquid");
+    private static final VoxelShape EAST_SHAPE = Shapes.or(Block.box(5, 9, 0, 11, 14, 12), Block.box(6, 0, 1, 10, 10, 4), Block.box(3, 0, 3, 13, 1, 13), Block.box(4, 1, 4, 12, 7, 12));
+    private static final VoxelShape WEST_SHAPE = Shapes.or(Block.box(5, 9, 4, 11, 14, 16), Block.box(6, 0, 12, 10, 10, 15), Block.box(3, 0, 3, 13, 1, 13), Block.box(4, 1, 4, 12, 7, 12));
+    private static final VoxelShape NORTH_SHAPE = Shapes.or(Block.box(0, 9, 5, 12, 14, 11), Block.box(1, 0, 6, 4, 10, 10), Block.box(3, 0, 3, 13, 1, 13), Block.box(4, 1, 4, 12, 7, 12));
+    private static final VoxelShape SOUTH_SHAPE = Shapes.or(Block.box(4, 9, 5, 16, 14, 11), Block.box(12, 0, 6, 15, 10, 10), Block.box(3, 0, 3, 13, 1, 13), Block.box(4, 1, 4, 12, 7, 12));
 
-    protected BeaterBlock(Settings settings) {
+    protected BeaterBlock(Properties settings) {
         super(settings);
-        this.setDefaultState(this.getStateManager().getDefaultState().with(HAS_LIQUID, false).with(Properties.POWERED, false).with(Properties.HORIZONTAL_FACING, Direction.NORTH));
+        this.registerDefaultState(this.getStateDefinition().any().setValue(HAS_LIQUID, false).setValue(BlockStateProperties.POWERED, false).setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
     @Nullable

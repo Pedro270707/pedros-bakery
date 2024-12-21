@@ -1,39 +1,28 @@
 package net.pedroricardo.block.multipart;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
-import net.minecraft.world.explosion.Explosion;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.pedroricardo.PBHelpers;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockEntity, E extends MultipartBlockEntityPart<C>> extends BlockWithEntity {
-    public static final BooleanProperty DELEGATE = BooleanProperty.of("delegate");
+public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockEntity, E extends MultipartBlockEntityPart<C>> extends BaseEntityBlock {
+    public static final BooleanProperty DELEGATE = BooleanProperty.create("delegate");
 
-    public MultipartBlockPart(Settings settings) {
+    public MultipartBlockPart(Properties settings) {
         super(settings);
-        this.setDefaultState(this.getStateManager().getDefaultState().with(DELEGATE, true));
+        this.registerDefaultState(this.getStateDefinition().any().setValue(DELEGATE, true));
     }
 
-    public boolean stillValid(WorldView world, BlockPos pos) {
+    public boolean stillValid(LevelAccessor world, BlockPos pos) {
         try {
             E blockEntity = (E) world.getBlockEntity(pos);
             return blockEntity != null && blockEntity.getParent() != null;
@@ -43,7 +32,7 @@ public abstract class MultipartBlockPart<C extends BlockEntity & MultipartBlockE
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(DELEGATE);
     }
 

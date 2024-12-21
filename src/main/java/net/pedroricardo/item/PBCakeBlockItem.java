@@ -1,18 +1,18 @@
 package net.pedroricardo.item;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.extras.CakeBatter;
@@ -24,12 +24,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class PBCakeBlockItem extends BlockItem {
-    public PBCakeBlockItem(Block block, Settings settings) {
+    public PBCakeBlockItem(Block block, Item.Properties settings) {
         super(block, settings);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
         List<CakeBatter<FullBatterSizeContainer>> batterList = PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST, List.of());
         if (batterList.isEmpty()) {
             return;
@@ -38,28 +38,28 @@ public class PBCakeBlockItem extends BlockItem {
         Collections.reverse(reversed);
         for (CakeBatter<FullBatterSizeContainer> batter : reversed) {
             if (batter.getTop().isPresent()) {
-                tooltip.add(Text.translatable("block.pedrosbakery.cake.flavor_and_top", Text.translatable(batter.getFlavor().getTranslationKey()), Text.translatable(batter.getTop().get().getTranslationKey())).formatted(batter.isWaxed() ? Formatting.GOLD : Formatting.GRAY));
+                tooltip.add(Component.translatable("block.pedrosbakery.cake.flavor_and_top", Component.translatable(batter.getFlavor().getTranslationKey()), Component.translatable(batter.getTop().get().getTranslationKey())).withStyle(batter.isWaxed() ? ChatFormatting.GOLD : ChatFormatting.GRAY));
             } else {
-                tooltip.add(Text.translatable("block.pedrosbakery.cake.flavor", Text.translatable(batter.getFlavor().getTranslationKey())).formatted(batter.isWaxed() ? Formatting.GOLD : Formatting.GRAY));
+                tooltip.add(Component.translatable("block.pedrosbakery.cake.flavor", Component.translatable(batter.getFlavor().getTranslationKey())).withStyle(batter.isWaxed() ? ChatFormatting.GOLD : ChatFormatting.GRAY));
             }
         }
     }
 
     @Override
-    protected boolean canPlace(ItemPlacementContext context, BlockState state) {
-        PBCakeBlockEntity blockEntity = new PBCakeBlockEntity(context.getBlockPos(), state);
-        blockEntity.readFrom(context.getStack());
+    protected boolean canPlace(BlockPlaceContext context, BlockState state) {
+        PBCakeBlockEntity blockEntity = new PBCakeBlockEntity(context.getClickedPos(), state);
+        blockEntity.readFrom(context.getItemInHand());
         VoxelShape shape = blockEntity.toShape();
-        if (!context.getWorld().doesNotIntersectEntities(null, shape.offset(context.getBlockPos().getX(), context.getBlockPos().getY(), context.getBlockPos().getZ()))) return false;
+        if (!context.getLevel().isUnobstructed(null, shape.move(context.getClickedPos().getX(), context.getClickedPos().getY(), context.getClickedPos().getZ()))) return false;
         if (shape.isEmpty()) return false;
-        Box box = shape.getBoundingBox().offset(context.getBlockPos());
-        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
+        AABB box = shape.bounds().move(context.getClickedPos());
+        box = new AABB(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
         for (int x = (int)box.minX; x < box.maxX; x++) {
             for (int y = (int)box.minY; y < box.maxY; y++) {
                 for (int z = (int)box.minZ; z < box.maxZ; z++) {
                     BlockPos pos = new BlockPos(x, y, z);
-                    BlockState state1 = context.getWorld().getBlockState(pos);
-                    if (!state1.isReplaceable() || state1.isSolidBlock(context.getWorld(), pos)) return false;
+                    BlockState state1 = context.getLevel().getBlockState(pos);
+                    if (!state1.canBeReplaced() || state1.isSolidRender(context.getLevel(), pos)) return false;
                 }
             }
         }
@@ -67,8 +67,8 @@ public class PBCakeBlockItem extends BlockItem {
     }
 
     @Override
-    public ItemStack getDefaultStack() {
-        ItemStack stack = super.getDefaultStack();
+    public ItemStack getDefaultInstance() {
+        ItemStack stack = super.getDefaultInstance();
         PBHelpers.set(stack, PBComponentTypes.BATTER_LIST, Collections.singletonList(CakeBatter.getFullSizeDefault().withBakeTime(2000)));
         return stack;
     }

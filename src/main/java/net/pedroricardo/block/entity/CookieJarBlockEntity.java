@@ -11,6 +11,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.item.ItemStack;
 import net.pedroricardo.block.CookieJarBlock;
 
 public class CookieJarBlockEntity extends BlockEntity implements Inventory, Clearable {

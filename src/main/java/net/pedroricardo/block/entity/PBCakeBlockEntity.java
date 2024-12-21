@@ -3,13 +3,18 @@ package net.pedroricardo.block.entity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
@@ -19,6 +24,14 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
@@ -40,8 +53,8 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.createNbt();
+    public CompoundTag getUpdateTag() {
+        return this.saveWithoutMetadata();
     }
 
     @Override
@@ -66,9 +79,9 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
         this.batterList = Lists.newArrayList(CakeBatter.listFrom(nbt).iterator());
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public static void tick(Level world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         blockEntity.getBatterList().removeIf(CakeBatter::isEmpty);
-        if (world.isClient()) return;
+        if (world.isClientSide()) return;
         if (blockEntity.getBatterList().isEmpty()) {
             blockEntity.removeAllParts(world);
             world.removeBlock(pos, false);
@@ -90,20 +103,20 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     }
 
     @Override
-    public void updateParts(World world, BlockPos pos, BlockState state) {
+    public void updateParts(Level world, BlockPos pos, BlockState state) {
         if (!(state.getBlock() instanceof MultipartBlock<?, ?, ?> block)) return;
-        VoxelShape shape = block.getFullShape(state, world, pos, ShapeContext.absent());
+        VoxelShape shape = block.getFullShape(state, world, pos, CollisionContext.empty());
         if (shape.isEmpty()) return;
-        Box box = shape.getBoundingBox().offset(pos);
-        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
+        AABB box = shape.bounds().move(pos);
+        box = new AABB(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
         this.removeAllParts(world);
         for (int x = (int)box.minX; x < box.maxX; x++) {
             for (int y = (int)box.minY; y < box.maxY; y++) {
                 for (int z = (int)box.minZ; z < box.maxZ; z++) {
                     BlockPos partPos = new BlockPos(x, y, z);
-                    if (!world.isInBuildLimit(partPos) || VoxelShapes.combineAndSimplify(shape, VoxelShapes.fullCube().offset(partPos.getX() - pos.getX(), partPos.getY() - pos.getY(), partPos.getZ() - pos.getZ()), BooleanBiFunction.AND).isEmpty()) continue;
+                    if (!world.isInWorldBounds(partPos) || Shapes.join(shape, Shapes.block().move(partPos.getX() - pos.getX(), partPos.getY() - pos.getY(), partPos.getZ() - pos.getZ()), BooleanOp.AND).isEmpty()) continue;
                     BlockState partState = world.getBlockState(partPos);
-                    if (partState.isReplaceable() && !partState.isSolidBlock(world, partPos) && !partPos.equals(pos)) {
+                    if (partState.canBeReplaced() && !partState.isSolidRender(world, partPos) && !partPos.equals(pos)) {
                         this.createPart(world, block, partPos, pos);
                     }
                 }
@@ -132,8 +145,8 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
 
     @Nullable
     @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     public void readFrom(ItemStack stack) {

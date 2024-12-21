@@ -1,16 +1,16 @@
 package net.pedroricardo;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtInt;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.pedroricardo.item.ItemComponentType;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,19 +22,19 @@ public class PBHelpers {
 
     private static final Map<Item, Map<ItemComponentType<?>, Object>> defaultComponents = new HashMap<>();
 
-    public static void update(BlockEntity blockEntity, ServerWorld world) {
-        update(world, blockEntity.getPos(), blockEntity);
+    public static void update(BlockEntity blockEntity, ServerLevel world) {
+        update(world, blockEntity.getBlockPos(), blockEntity);
     }
 
-    public static void update(ServerWorld world, BlockPos pos, BlockEntity blockEntity) {
-        blockEntity.markDirty();
-        world.getChunkManager().markForUpdate(pos);
+    public static void update(ServerLevel world, BlockPos pos, BlockEntity blockEntity) {
+        blockEntity.setChanged();
+        world.getChunkSource().blockChanged(pos);
     }
 
-    public static ItemStack splitUnlessCreative(ItemStack stack, int amount, PlayerEntity player) {
+    public static ItemStack splitUnlessCreative(ItemStack stack, int amount, Player player) {
         ItemStack stack1 = stack.copyWithCount(amount);
         if (!player.isCreative()) {
-            stack.decrement(amount);
+            stack.shrink(amount);
         }
         return stack1;
     }
@@ -79,7 +79,7 @@ public class PBHelpers {
 
     public static <T> T getOrDefault(ItemStack stack, ItemComponentType<T> type, @Nullable T defaultValue) {
         if (stack.isEmpty()) return defaultValue;
-        NbtCompound compound = stack.getOrCreateNbt();
+        CompoundTag compound = stack.getOrCreateTag();
         if (!compound.contains(type.key().toString())) {
             if (defaultComponents.containsKey(stack.getItem()) && defaultComponents.get(stack.getItem()).containsKey(type)) {
                 try {
@@ -95,15 +95,15 @@ public class PBHelpers {
 
     public static <T> void set(ItemStack stack, ItemComponentType<T> type, @Nullable T value) {
         if (stack.isEmpty()) return;
-        NbtCompound compound = stack.getOrCreateNbt();
+        CompoundTag compound = stack.getOrCreateTag();
         compound.put(type.key().toString(), type.codec().encodeStart(NbtOps.INSTANCE, value).get().orThrow());
-        stack.setNbt(compound);
+        stack.setTag(compound);
     }
 
-    public static ItemStack copyNbtToNewStack(ItemStack stack, ItemConvertible newStackItem, int count) {
+    public static ItemStack copyNbtToNewStack(ItemStack stack, ItemLike newStackItem, int count) {
         ItemStack newStack = new ItemStack(newStackItem);
-        newStack.setNbt(stack.getOrCreateNbt());
-        newStack.setSubNbt("Count", NbtInt.of(count));
+        newStack.setTag(stack.getOrCreateTag());
+        newStack.addTagElement("Count", IntTag.valueOf(count));
         return newStack;
     }
 

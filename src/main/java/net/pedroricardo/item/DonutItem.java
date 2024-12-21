@@ -9,6 +9,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import net.minecraft.world.item.Item;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.extras.CakeTop;
 import net.pedroricardo.block.tags.PBTags;
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class DonutItem extends Item {
-    public DonutItem(Settings settings) {
+    public DonutItem(Item.Properties settings) {
         super(settings);
     }
 

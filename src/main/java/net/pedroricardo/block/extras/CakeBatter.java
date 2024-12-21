@@ -7,11 +7,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -20,6 +23,12 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.extras.size.BatterSizeContainer;
@@ -38,7 +47,7 @@ public class CakeBatter<S extends BatterSizeContainer> {
     private S sizeContainer;
     private CakeFlavor flavor;
     private Optional<CakeTop> top;
-    private Map<CakeFeature, NbtCompound> features;
+    private Map<CakeFeature, CompoundTag> features;
     private boolean waxed;
 
     public CakeBatter(int bakeTime, S sizeContainer, Optional<CakeTop> top, CakeFlavor cakeFlavor, boolean waxed) {
@@ -49,7 +58,7 @@ public class CakeBatter<S extends BatterSizeContainer> {
         this(bakeTime, sizeContainer, cakeFlavor, Optional.empty(), Maps.newHashMap(), waxed);
     }
 
-    public CakeBatter(int bakeTime, S sizeContainer, CakeFlavor flavor, Optional<CakeTop> top, Map<CakeFeature, NbtCompound> features, boolean waxed) {
+    public CakeBatter(int bakeTime, S sizeContainer, CakeFlavor flavor, Optional<CakeTop> top, Map<CakeFeature, CompoundTag> features, boolean waxed) {
         this.bakeTime = bakeTime;
         this.sizeContainer = sizeContainer;
         this.flavor = flavor;
@@ -76,7 +85,7 @@ public class CakeBatter<S extends BatterSizeContainer> {
                     FullBatterSizeContainer.CODEC.fieldOf("batter_size").orElse(new FullBatterSizeContainer()).forGetter(CakeBatter::getSizeContainer),
                     CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").orElse(CakeFlavors.REGISTRY.get(CakeFlavors.REGISTRY.getDefaultId())).forGetter(CakeBatter::getFlavor),
                     CakeTops.REGISTRY.getCodec().optionalFieldOf("top").forGetter(CakeBatter::getTop),
-                    Codec.unboundedMap(CakeFeatures.REGISTRY.getCodec(), NbtCompound.CODEC).fieldOf("features").orElse(Map.of()).forGetter(CakeBatter::getFeatureMap),
+                    Codec.unboundedMap(CakeFeatures.REGISTRY.getCodec(), CompoundTag.CODEC).fieldOf("features").orElse(Map.of()).forGetter(CakeBatter::getFeatureMap),
                     Codec.BOOL.fieldOf("is_waxed").orElse(false).forGetter(CakeBatter::isWaxed))
             .apply(instance, CakeBatter::new));
 
@@ -104,16 +113,16 @@ public class CakeBatter<S extends BatterSizeContainer> {
         return new CakeBatter<>(0, new FullBatterSizeContainer(), CakeFlavors.VANILLA, Optional.empty(), Map.of(), false);
     }
 
-    public NbtCompound toNbt(NbtCompound nbt, Codec<CakeBatter<S>> codec) {
-        NbtElement result = codec.encodeStart(NbtOps.INSTANCE, this).get().orThrow();
+    public CompoundTag toNbt(CompoundTag nbt, Codec<CakeBatter<S>> codec) {
+        Tag result = codec.encodeStart(NbtOps.INSTANCE, this).get().orThrow();
 
-        if (result instanceof NbtCompound compound) {
+        if (result instanceof CompoundTag compound) {
             return compound;
         }
         return nbt;
     }
 
-    public static <S extends BatterSizeContainer> CakeBatter<S> fromNbt(@Nullable NbtCompound nbt, Codec<CakeBatter<S>> codec, CakeBatter<S> defaultValue) {
+    public static <S extends BatterSizeContainer> CakeBatter<S> fromNbt(@Nullable CompoundTag nbt, Codec<CakeBatter<S>> codec, CakeBatter<S> defaultValue) {
         if (nbt == null) {
             return defaultValue;
         }
@@ -121,13 +130,13 @@ public class CakeBatter<S extends BatterSizeContainer> {
         return dataResult.result().orElse(defaultValue);
     }
 
-    public static List<CakeBatter<FullBatterSizeContainer>> listFrom(@Nullable NbtCompound nbt) {
+    public static List<CakeBatter<FullBatterSizeContainer>> listFrom(@Nullable CompoundTag nbt) {
         if (nbt == null || !nbt.contains("batter", NbtElement.LIST_TYPE)) {
             return Collections.emptyList();
         }
         return nbt.getList("batter", NbtList.COMPOUND_TYPE).stream()
                 .filter(layer -> layer.getType() == NbtElement.COMPOUND_TYPE)
-                .map(layer -> CakeBatter.fromNbt((NbtCompound) layer, FULL_CODEC, getFullSizeDefault())).collect(Collectors.toCollection(Lists::newArrayList));
+                .map(layer -> CakeBatter.fromNbt((CompoundTag) layer, FULL_CODEC, getFullSizeDefault())).collect(Collectors.toCollection(Lists::newArrayList));
     }
 
     public ActionResult bite(World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity, float biteSize) {
@@ -156,7 +165,7 @@ public class CakeBatter<S extends BatterSizeContainer> {
         return ActionResult.FAIL;
     }
 
-    public static void tick(CakeBatter<?> batter, List<? extends CakeBatter<?>> batterList, World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+    public static void tick(CakeBatter<?> batter, List<? extends CakeBatter<?>> batterList, Level world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
         batter.getFlavor().tick(batter, batterList, world, pos, state, blockEntity);
         if (batter.getTop().isPresent()) {
             batter.getTop().get().tick(batter, batterList, world, pos, state, blockEntity);
@@ -206,26 +215,26 @@ public class CakeBatter<S extends BatterSizeContainer> {
         return this.features.keySet().stream().toList();
     }
 
-    public Map<CakeFeature, NbtCompound> getFeatureMap() {
+    public Map<CakeFeature, CompoundTag> getFeatureMap() {
         return this.features;
     }
 
-    public CakeBatter<S> withFeatures(Map<CakeFeature, NbtCompound> features) {
+    public CakeBatter<S> withFeatures(Map<CakeFeature, CompoundTag> features) {
         this.features = features;
         return this;
     }
 
-    public CakeBatter<S> withFeature(CakeFeature feature, NbtCompound nbt) {
-        Map<CakeFeature, NbtCompound> features = Maps.newHashMap(this.getFeatureMap());
+    public CakeBatter<S> withFeature(CakeFeature feature, CompoundTag nbt) {
+        Map<CakeFeature, CompoundTag> features = Maps.newHashMap(this.getFeatureMap());
         features.put(feature, nbt);
         return this.withFeatures(features);
     }
 
     public CakeBatter<S> withFeature(CakeFeature feature) {
-        return this.withFeature(feature, new NbtCompound());
+        return this.withFeature(feature, new CompoundTag());
     }
 
-    public VoxelShape getShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return this.getSizeContainer().getShape(state, world, pos, context);
     }
 
@@ -245,7 +254,7 @@ public class CakeBatter<S extends BatterSizeContainer> {
         return false;
     }
 
-    public void bakeTick(World world, BlockPos pos, BlockState state) {
+    public void bakeTick(Level world, BlockPos pos, BlockState state) {
         if (this.getBakeTime() != Integer.MAX_VALUE) {
             this.withBakeTime(this.getBakeTime() + 1);
         }
@@ -266,10 +275,10 @@ public class CakeBatter<S extends BatterSizeContainer> {
     }
 
     public CakeBatter<S> copy() {
-        return new CakeBatter<>(this.getBakeTime(), ((S) this.getSizeContainer().copy()), this.getFlavor(), this.getTop(), Maps.newHashMap(Maps.transformValues(this.getFeatureMap(), NbtCompound::copy)), this.isWaxed());
+        return new CakeBatter<>(this.getBakeTime(), ((S) this.getSizeContainer().copy()), this.getFlavor(), this.getTop(), Maps.newHashMap(Maps.transformValues(this.getFeatureMap(), CompoundTag::copy)), this.isWaxed());
     }
 
     public <T extends BatterSizeContainer> CakeBatter<T> copy(T sizeContainer) {
-        return new CakeBatter<>(this.getBakeTime(), sizeContainer, this.getFlavor(), this.getTop(), Maps.newHashMap(Maps.transformValues(this.getFeatureMap(), NbtCompound::copy)), this.isWaxed());
+        return new CakeBatter<>(this.getBakeTime(), sizeContainer, this.getFlavor(), this.getTop(), Maps.newHashMap(Maps.transformValues(this.getFeatureMap(), CompoundTag::copy)), this.isWaxed());
     }
 }

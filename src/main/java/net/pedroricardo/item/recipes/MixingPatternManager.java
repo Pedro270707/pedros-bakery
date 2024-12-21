@@ -12,8 +12,10 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.world.item.ItemStack;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.extras.beater.Liquid;
 
@@ -62,8 +64,8 @@ public class MixingPatternManager extends JsonDataLoader implements SimpleSynchr
     }
 
     @Override
-    public Identifier getFabricId() {
-        return Identifier.of(PedrosBakery.MOD_ID, "mixing_patterns");
+    public ResourceLocation getFabricId() {
+        return new ResourceLocation(PedrosBakery.MOD_ID, "mixing_patterns");
     }
 
     @Override

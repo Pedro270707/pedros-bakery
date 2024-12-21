@@ -18,6 +18,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
@@ -32,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-public class BakingTrayBlock extends BlockWithEntity implements MultipartBlock<BakingTrayBlockEntity, BakingTrayBlockEntityPart, BakingTrayBlockPart> {
+public class BakingTrayBlock extends BaseEntityBlock implements MultipartBlock<BakingTrayBlockEntity, BakingTrayBlockEntityPart, BakingTrayBlockPart> {
     protected BakingTrayBlock(Settings settings) {
         super(settings);
     }

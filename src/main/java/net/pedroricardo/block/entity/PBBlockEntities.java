@@ -3,14 +3,19 @@ package net.pedroricardo.block.entity;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraftforge.registries.DeferredRegister;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 
 public class PBBlockEntities {
-    public static final BlockEntityType<? extends PBCakeBlockEntity> CAKE = register(FabricBlockEntityTypeBuilder.create(
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, PedrosBakery.MOD_ID);
+
+    public static final BlockEntityType<? extends PBCakeBlockEntity> CAKE = BLOCK_ENTITY_TYPES.register("cake", BlockEntityType.Builder.of(
             PBCakeBlockEntity::new,
             PBBlocks.CAKE,
             PBBlocks.CANDLE_CAKE,
@@ -29,7 +34,7 @@ public class PBBlockEntities {
             PBBlocks.BROWN_CANDLE_CAKE,
             PBBlocks.GREEN_CANDLE_CAKE,
             PBBlocks.RED_CANDLE_CAKE,
-            PBBlocks.BLACK_CANDLE_CAKE), "cake");
+            PBBlocks.BLACK_CANDLE_CAKE));
 
     public static final BlockEntityType<? extends PBCakeBlockEntityPart> CAKE_PART = register(FabricBlockEntityTypeBuilder.create(
             PBCakeBlockEntityPart::new,

@@ -1,22 +1,11 @@
 package net.pedroricardo.block.extras;
 
 import com.mojang.serialization.Lifecycle;
-import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.DefaultedRegistry;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.SimpleDefaultedRegistry;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.registries.RegistryBuilder;
+import net.minecraftforge.registries.RegistryManager;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 
@@ -30,10 +19,10 @@ public class CakeFlavors {
         return Registry.register(REGISTRY, Identifier.of(PedrosBakery.MOD_ID, name), flavor);
     }
 
-    public static final CakeFlavor VANILLA = register("vanilla", new CakeFlavor(null, Ingredient.ofItems(Items.WHEAT)));
-    public static final CakeFlavor CHOCOLATE = register("chocolate", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.COCOA_BEANS)));
-    public static final CakeFlavor SWEET_BERRY = register("sweet_berry", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.SWEET_BERRIES)));
-    public static final CakeFlavor COAL = register("coal", new CakeFlavor(null, Ingredient.ofItems(Items.COAL)) {
+    public static final CakeFlavor VANILLA = register("vanilla", new CakeFlavor(null, Ingredient.of(Items.WHEAT)));
+    public static final CakeFlavor CHOCOLATE = register("chocolate", new CakeFlavor(VANILLA, Ingredient.of(Items.COCOA_BEANS)));
+    public static final CakeFlavor SWEET_BERRY = register("sweet_berry", new CakeFlavor(VANILLA, Ingredient.of(Items.SWEET_BERRIES)));
+    public static final CakeFlavor COAL = register("coal", new CakeFlavor(null, Ingredient.of(Items.COAL)) {
         @Override
         public ActionResult onTryEat(CakeBatter<?> batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
             super.onTryEat(batter, world, pos, state, player);
@@ -41,7 +30,7 @@ public class CakeFlavors {
             return ActionResult.SUCCESS;
         }
     });
-    public static final CakeFlavor TNT = register("tnt", new CakeFlavor(null, Ingredient.ofItems(Items.TNT)) {
+    public static final CakeFlavor TNT = register("tnt", new CakeFlavor(null, Ingredient.of(Items.TNT)) {
         @Override
         public ActionResult onTryEat(CakeBatter<?> batter, World world, BlockPos pos, BlockState state, PlayerEntity player) {
             super.onTryEat(batter, world, pos, state, player);
@@ -53,9 +42,9 @@ public class CakeFlavors {
             return ActionResult.SUCCESS;
         }
     });
-    public static final CakeFlavor PUMPKIN = register("pumpkin", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.PUMPKIN, Items.PUMPKIN_PIE)));
-    public static final CakeFlavor MELON = register("melon", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.MELON, Items.MELON_SLICE)));
-    public static final CakeFlavor BREAD = register("bread", new CakeFlavor(VANILLA, Ingredient.ofItems(Items.BREAD)));
+    public static final CakeFlavor PUMPKIN = register("pumpkin", new CakeFlavor(VANILLA, Ingredient.of(Items.PUMPKIN, Items.PUMPKIN_PIE)));
+    public static final CakeFlavor MELON = register("melon", new CakeFlavor(VANILLA, Ingredient.of(Items.MELON, Items.MELON_SLICE)));
+    public static final CakeFlavor BREAD = register("bread", new CakeFlavor(VANILLA, Ingredient.of(Items.BREAD)));
 
     public static Optional<CakeFlavor> from(ItemStack item) {
         if (item == null || item.getItem() == Items.AIR) {

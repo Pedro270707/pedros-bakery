@@ -17,6 +17,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.item.Item;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.extras.CakeTop;
 import net.pedroricardo.block.tags.PBTags;
@@ -25,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class FrostingBottleItem extends Item {
-    public FrostingBottleItem(Settings settings) {
+    public FrostingBottleItem(Item.Properties settings) {
         super(settings);
     }
 

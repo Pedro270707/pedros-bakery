@@ -1,20 +1,20 @@
 package net.pedroricardo.block.entity;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.Clearable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Clearable;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.BeaterBlock;
@@ -36,17 +36,17 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
     @Nullable Liquid liquid;
 
     public BeaterBlockEntity(BlockPos pos, BlockState state) {
-        super(PBBlockEntities.BEATER, pos, state);
+        super(PBBlockEntities.BEATER.get(), pos, state);
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.createNbt();
+    public CompoundTag getUpdateTag() {
+        return this.saveWithoutMetadata();
     }
 
     @Override
-    public void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    public void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         if (!this.getItems().isEmpty()) {
             nbt.put("items", ItemStack.CODEC.listOf().xmap(list -> list.stream().filter(stack -> !stack.isEmpty()).toList(), Function.identity()).encodeStart(NbtOps.INSTANCE, this.getItems()).get().orThrow());
             nbt.putInt("mix_time", this.mixTime);
@@ -57,23 +57,23 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
 
-        Optional<Pair<List<ItemStack>, NbtElement>> optional = ItemStack.CODEC.listOf().decode(NbtOps.INSTANCE, nbt.getList("items", NbtElement.COMPOUND_TYPE)).result();
+        Optional<Pair<List<ItemStack>, Tag>> optional = ItemStack.CODEC.listOf().decode(NbtOps.INSTANCE, nbt.getList("items", Tag.TAG_COMPOUND)).result();
         this.items = optional.map(pair -> new ArrayList<>(pair.getFirst())).orElseGet(ArrayList::new);
 
-        if (!this.getItems().isEmpty() && nbt.contains("mix_time", NbtElement.INT_TYPE)) {
+        if (!this.getItems().isEmpty() && nbt.contains("mix_time", Tag.TAG_INT)) {
             this.mixTime = nbt.getInt("mix_time");
         }
         this.liquid = Liquid.fromNbt(nbt).orElse(null);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, BeaterBlockEntity blockEntity) {
+    public static void tick(Level world, BlockPos pos, BlockState state, BeaterBlockEntity blockEntity) {
         if (blockEntity.getItems().isEmpty()) {
             blockEntity.mixTime = 0;
         }
-        if (state.contains(Properties.POWERED) && state.get(Properties.POWERED)) {
+        if (state.hasProperty(BlockStateProperties.POWERED) && state.getValue(BlockStateProperties.POWERED)) {
             blockEntity.powered = true;
             ++blockEntity.poweredTicks;
             if (!blockEntity.getItems().isEmpty()) {
@@ -85,12 +85,12 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
         if (blockEntity.updateLiquid() && blockEntity.tryToMix(world, state, pos, blockEntity)) {
             blockEntity.mixTime = 0;
         }
-        if (!world.isClient()) {
-            PBHelpers.update((ServerWorld) world, pos, blockEntity);
+        if (!world.isClientSide()) {
+            PBHelpers.update((ServerLevel) world, pos, blockEntity);
         }
     }
 
-    private boolean tryToMix(World world, BlockState state, BlockPos pos, BeaterBlockEntity beater) {
+    private boolean tryToMix(Level world, BlockState state, BlockPos pos, BeaterBlockEntity beater) {
         if (beater.getMixTime() <= 200) return false;
         Optional<MixingPatternEntry> optional = PedrosBakery.MIXING_PATTERN_MANAGER.getFirstMatch(beater.getItems(), beater.getLiquid());
         if (optional.isEmpty()) return false;
@@ -113,10 +113,10 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
     public void setItems(List<ItemStack> items) {
         this.items = items.stream().filter(stack -> !stack.isEmpty()).collect(Collectors.toCollection(ArrayList::new));
         this.mixTime = 0;
-        if (this.getWorld() != null) {
-            if (!this.getWorld().isClient()) PBHelpers.update(this, (ServerWorld) this.getWorld());
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide()) PBHelpers.update(this, (ServerLevel) this.getLevel());
         } else {
-            this.markDirty();
+            this.setChanged();
         }
     }
 
@@ -134,10 +134,10 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
 
     public void setLiquid(@Nullable Liquid liquid) {
         this.liquid = liquid;
-        if (this.getWorld() != null) {
-            if (!this.getWorld().isClient()) PBHelpers.update(this, (ServerWorld) this.getWorld());
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide()) PBHelpers.update(this, (ServerLevel) this.getLevel());
         } else {
-            this.markDirty();
+            this.setChanged();
         }
     }
 
@@ -146,9 +146,9 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
      * @return whether there is liquid or not
      */
     public boolean updateLiquid() {
-        if (this.getCachedState().contains(BeaterBlock.HAS_LIQUID)) {
-            if (!this.getCachedState().get(BeaterBlock.HAS_LIQUID) || this.getLiquid() == null) {
-                this.getWorld().setBlockState(this.getPos(), this.getCachedState().with(BeaterBlock.HAS_LIQUID, false));
+        if (this.getBlockState().hasProperty(BeaterBlock.HAS_LIQUID)) {
+            if (!this.getBlockState().getValue(BeaterBlock.HAS_LIQUID) || this.getLiquid() == null) {
+                this.getLevel().setBlockAndUpdate(this.getBlockPos(), this.getBlockState().setValue(BeaterBlock.HAS_LIQUID, false));
                 this.setLiquid(null);
                 return false;
             }
@@ -162,7 +162,7 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
      * @return whether there is liquid or not
      */
     public boolean hasLiquid() {
-        return this.getCachedState().contains(BeaterBlock.HAS_LIQUID) && this.getCachedState().get(BeaterBlock.HAS_LIQUID) && this.getLiquid() != null;
+        return this.getBlockState().hasProperty(BeaterBlock.HAS_LIQUID) && this.getBlockState().getValue(BeaterBlock.HAS_LIQUID) && this.getLiquid() != null;
     }
 
     public int getMixTime() {
@@ -170,13 +170,13 @@ public class BeaterBlockEntity extends BlockEntity implements Clearable {
     }
 
     @Override
-    public void clear() {
+    public void clearContent() {
         this.setItems(List.of());
     }
 
     @Nullable
     @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 }

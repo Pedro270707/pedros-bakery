@@ -4,26 +4,21 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsage;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.nbt.Tag;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.BlockHitResult;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.BeaterBlock;
@@ -41,29 +36,29 @@ import java.util.Optional;
 public interface Liquid {
     Codec<Liquid> CODEC = Type.CODEC.dispatch(Liquid::getType, type -> type.getCodec().codec());
 
-    ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, BeaterBlockEntity beater);
+    InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, BeaterBlockEntity beater);
 
     Type getType();
 
-    default NbtCompound toNbt(NbtCompound nbt) {
+    default CompoundTag toNbt(CompoundTag nbt) {
         nbt.put("liquid", CODEC.encodeStart(NbtOps.INSTANCE, this).get().orThrow());
         return nbt;
     }
 
-    static Optional<Liquid> fromNbt(@Nullable NbtCompound nbt) {
-        if (nbt == null || !nbt.contains("liquid", NbtElement.COMPOUND_TYPE)) {
+    static Optional<Liquid> fromNbt(@Nullable CompoundTag nbt) {
+        if (nbt == null || !nbt.contains("liquid", Tag.TAG_COMPOUND)) {
             return Optional.empty();
         }
         DataResult<Liquid> dataResult = CODEC.parse(NbtOps.INSTANCE, nbt.getCompound("liquid"));
         return dataResult.result();
     }
 
-    enum Type implements StringIdentifiable {
+    enum Type implements StringRepresentable {
         MIXTURE("mixture", Mixture.getCodec()),
         FROSTING("frosting", Frosting.getCodec()),
         MILK("milk", Milk.getCodec());
 
-        public static final StringIdentifiable.Codec<Type> CODEC;
+        public static final StringRepresentable.EnumCodec<Type> CODEC;
         private final String name;
         private final MapCodec<? extends Liquid> codec;
 
@@ -72,7 +67,7 @@ public interface Liquid {
             this.codec = codec;
         }
 
-        public String asString() {
+        public String getSerializedName() {
             return this.name;
         }
 
@@ -81,27 +76,27 @@ public interface Liquid {
         }
 
         static {
-            CODEC = StringIdentifiable.createCodec(Type::values);
+            CODEC = StringRepresentable.fromEnum(Type::values);
         }
     }
 
     record Mixture(CakeFlavor flavor) implements Liquid {
         @Override
-        public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, BeaterBlockEntity beater) {
-            ItemStack stack = player.getStackInHand(hand);
+        public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, BeaterBlockEntity beater) {
+            ItemStack stack = player.getItemInHand(hand);
             Item item = stack.getItem();
             if (item instanceof BatterContainerItem container && container.addBatter(player, hand, stack, this.flavor(), PedrosBakery.CONFIG.beaterBatterAmount.get())) {
-                BlockState newState = state.with(BeaterBlock.HAS_LIQUID, false);
-                world.setBlockState(pos, newState);
+                BlockState newState = state.setValue(BeaterBlock.HAS_LIQUID, false);
+                world.setBlockAndUpdate(pos, newState);
                 beater.setLiquid(null);
-                beater.getItems().forEach(beaterStack -> ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), beaterStack));
+                beater.getItems().forEach(beaterStack -> Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), beaterStack));
                 beater.setItems(List.of());
-                world.emitGameEvent(GameEvent.FLUID_PICKUP, pos, GameEvent.Emitter.of(player, newState));
-                return ActionResult.SUCCESS;
+                world.gameEvent(GameEvent.FLUID_PICKUP, pos, GameEvent.Context.of(player, newState));
+                return InteractionResult.SUCCESS;
             }
             beater.addItem(PBHelpers.splitUnlessCreative(stack, 1, player));
-            world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-            return ActionResult.SUCCESS;
+            world.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+            return InteractionResult.SUCCESS;
         }
 
         @Override
@@ -128,7 +123,7 @@ public interface Liquid {
 
     record Frosting(CakeTop top) implements Liquid {
         @Override
-        public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, BeaterBlockEntity beater) {
+        public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, BeaterBlockEntity beater) {
             ItemStack stack = player.getStackInHand(hand);
             if (stack.isOf(Items.GLASS_BOTTLE)) {
                 ItemStack frostingStack = new ItemStack(PBItems.FROSTING_BOTTLE);
@@ -174,7 +169,7 @@ public interface Liquid {
 
     record Milk() implements Liquid {
         @Override
-        public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, BeaterBlockEntity beater) {
+        public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, BeaterBlockEntity beater) {
             ItemStack stack = player.getStackInHand(hand);
             if (stack.isOf(Items.BUCKET)) {
                 if (!world.isClient()) {

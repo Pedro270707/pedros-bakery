@@ -1,25 +1,25 @@
 package net.pedroricardo.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.function.BooleanBiFunction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PBSounds;
 import net.pedroricardo.PedrosBakery;
@@ -42,50 +42,50 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     private List<BlockPos> parts = Lists.newArrayList();
 
     public BakingTrayBlockEntity(BlockPos pos, BlockState state) {
-        super(PBBlockEntities.BAKING_TRAY, pos, state);
+        super(PBBlockEntities.BAKING_TRAY.get(), pos, state);
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.createNbt();
+    public CompoundTag getUpdateTag() {
+        return this.saveWithoutMetadata();
     }
 
     @Override
-    public void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.putInt("size", this.size);
         nbt.putInt("height", this.height);
-        nbt.put("batter", this.getCakeBatter().toNbt(new NbtCompound(), CakeBatter.WITH_HEIGHT_CODEC));
-        nbt.put("parts", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.parts).result().orElse(new NbtList()));
+        nbt.put("batter", this.getCakeBatter().toNbt(new CompoundTag(), CakeBatter.WITH_HEIGHT_CODEC));
+        nbt.put("parts", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.parts).result().orElse(new ListTag()));
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
-        if (nbt.contains("size", NbtElement.INT_TYPE)) {
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
+        if (nbt.contains("size", Tag.TAG_INT)) {
             this.size = nbt.getInt("size");
         }
-        if (nbt.contains("height", NbtElement.INT_TYPE)) {
+        if (nbt.contains("height", Tag.TAG_INT)) {
             this.height = nbt.getInt("height");
         }
-        if (nbt.contains("batter", NbtElement.COMPOUND_TYPE)) {
+        if (nbt.contains("batter", Tag.TAG_COMPOUND)) {
             this.cakeBatter = CakeBatter.fromNbt(nbt.getCompound("batter"), CakeBatter.WITH_HEIGHT_CODEC, CakeBatter.getHeightOnlyEmpty());
         }
         this.parts = Lists.newArrayList(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(Lists.newArrayList()).iterator());
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, BakingTrayBlockEntity blockEntity) {
-        if (world.getBlockState(pos.down()).isIn(PBTags.Blocks.BAKES_CAKE) && !blockEntity.getCakeBatter().isEmpty()) {
+    public static void tick(Level world, BlockPos pos, BlockState state, BakingTrayBlockEntity blockEntity) {
+        if (world.getBlockState(pos.below()).is(PBTags.Blocks.BAKES_CAKE) && !blockEntity.getCakeBatter().isEmpty()) {
             blockEntity.getCakeBatter().bakeTick(world, pos, state);
-            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
-            if (!world.isClient()) {
-                PBHelpers.update(blockEntity, (ServerWorld) world);
+            world.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
+            if (!world.isClientSide()) {
+                PBHelpers.update(blockEntity, (ServerLevel) world);
             }
             if (blockEntity.getCakeBatter().getBakeTime() == PedrosBakery.CONFIG.ticksUntilCakeBaked.get()) {
-                world.playSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.BAKING_TRAY_DONE, SoundCategory.BLOCKS, 1.25f, 1.0f, true);
+                world.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.BAKING_TRAY_DONE.get(), SoundSource.BLOCKS, 1.25f, 1.0f, true);
             }
         }
-        if (!world.isClient()) {
+        if (!world.isClientSide()) {
             blockEntity.updateParts(world, pos, state);
         }
     }
@@ -99,7 +99,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         if (this.cakeBatter.getSizeContainer().getHeight() > this.getHeight()) {
             this.cakeBatter.getSizeContainer().setHeight(this.getHeight());
         }
-        this.markDirty();
+        this.setChanged();
     }
 
     public int getSize() {
@@ -108,7 +108,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
 
     public void setSize(int size) {
         this.size = size;
-        this.markDirty();
+        this.setChanged();
     }
 
     public int getHeight() {
@@ -117,13 +117,13 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
 
     public void setHeight(int height) {
         this.height = height;
-        this.markDirty();
+        this.setChanged();
     }
 
     @Nullable
     @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
@@ -132,20 +132,20 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     }
 
     @Override
-    public void updateParts(World world, BlockPos pos, BlockState state) {
+    public void updateParts(Level world, BlockPos pos, BlockState state) {
         if (!(state.getBlock() instanceof MultipartBlock<?, ?, ?> block)) return;
-        VoxelShape shape = block.getFullShape(state, world, pos, ShapeContext.absent());
+        VoxelShape shape = block.getFullShape(state, world, pos, CollisionContext.empty());
         if (shape.isEmpty()) return;
-        Box box = shape.getBoundingBox().offset(pos);
-        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
+        AABB box = shape.bounds().move(pos);
+        box = new AABB(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
         this.removeAllParts(world);
         for (int x = (int)box.minX; x < box.maxX; x++) {
             for (int y = (int)box.minY; y < box.maxY; y++) {
                 for (int z = (int)box.minZ; z < box.maxZ; z++) {
                     BlockPos partPos = new BlockPos(x, y, z);
-                    if (!world.isInBuildLimit(partPos) || VoxelShapes.combineAndSimplify(shape, VoxelShapes.fullCube().offset(partPos.getX() - pos.getX(), partPos.getY() - pos.getY(), partPos.getZ() - pos.getZ()), BooleanBiFunction.AND).isEmpty()) continue;
+                    if (!world.isInWorldBounds(partPos) || Shapes.join(shape, Shapes.block().move(partPos.getX() - pos.getX(), partPos.getY() - pos.getY(), partPos.getZ() - pos.getZ()), BooleanOp.AND).isEmpty()) continue;
                     BlockState partState = world.getBlockState(partPos);
-                    if (partState.isReplaceable() && !partState.isSolidBlock(world, partPos) && !partPos.equals(pos)) {
+                    if (partState.canBeReplaced() && !partState.isSolidRender(world, partPos) && !partPos.equals(pos)) {
                         this.createPart(world, block, partPos, pos);
                     }
                 }
