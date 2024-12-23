@@ -1,20 +1,20 @@
 package net.pedroricardo.mixin;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(WorldChunk.class)
+@Mixin(LevelChunk.class)
 public class SetBlockStateMixin {
-    @Inject(method = "setBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/ChunkSection;setBlockState(IIILnet/minecraft/block/BlockState;)Lnet/minecraft/block/BlockState;", shift = At.Shift.BEFORE))
+    @Inject(method = "setBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/LevelChunkSection;getBlockState(III)Lnet/minecraft/world/level/block/state/BlockState;", shift = At.Shift.BEFORE))
     private void pedrosbakery$removePartsWhenReplaced(BlockPos pos, BlockState state, boolean moved, CallbackInfoReturnable<BlockState> cir) {
-        if (((WorldChunk)(Object) this).getWorld().getBlockState(pos).getBlock() instanceof MultipartBlock<?, ?, ?> multipartBlock && ((WorldChunk)(Object) this).getWorld().getBlockState(pos) != state) {
-            multipartBlock.removePartsWhenReplaced(((WorldChunk)(Object) this).getWorld().getBlockState(pos), ((WorldChunk)(Object) this).getWorld(), pos, state, moved);
+        if (((LevelChunk)(Object) this).getLevel().getBlockState(pos).getBlock() instanceof MultipartBlock<?, ?, ?> multipartBlock && ((LevelChunk)(Object) this).getLevel().getBlockState(pos) != state) {
+            multipartBlock.removePartsWhenReplaced(((LevelChunk)(Object) this).getLevel().getBlockState(pos), ((LevelChunk)(Object) this).getLevel(), pos, state, moved);
         }
     }
 }

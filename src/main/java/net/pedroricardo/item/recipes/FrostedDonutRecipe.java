@@ -1,31 +1,31 @@
 package net.pedroricardo.item.recipes;
 
-import net.minecraft.inventory.RecipeInputInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialCraftingRecipe;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.item.FrostingBottleItem;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 
-public class FrostedDonutRecipe extends SpecialCraftingRecipe {
-    public FrostedDonutRecipe(Identifier id, CraftingRecipeCategory category) {
+public class FrostedDonutRecipe extends CustomRecipe {
+    public FrostedDonutRecipe(ResourceLocation id, CraftingBookCategory category) {
         super(id, category);
     }
 
     @Override
-    public boolean matches(RecipeInputInventory inventory, World world) {
+    public boolean matches(CraftingContainer inventory, Level world) {
         ItemStack donutStack = ItemStack.EMPTY;
         ItemStack bottleStack = ItemStack.EMPTY;
-        for (int i = 0; i < inventory.size(); ++i) {
-            ItemStack itemStack2 = inventory.getStack(i);
+        for (int i = 0; i < inventory.getContainerSize(); ++i) {
+            ItemStack itemStack2 = inventory.getItem(i);
             if (itemStack2.isEmpty()) continue;
-            if (itemStack2.isOf(PBItems.DONUT)) {
+            if (itemStack2.is(PBItems.DONUT.get())) {
                 if (!donutStack.isEmpty()) {
                     return false;
                 }
@@ -45,13 +45,13 @@ public class FrostedDonutRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registryManager) {
+    public ItemStack assemble(CraftingContainer inventory, RegistryAccess registryManager) {
         ItemStack donutStack = ItemStack.EMPTY;
         ItemStack bottleStack = ItemStack.EMPTY;
-        for (int i = 0; i < inventory.size(); ++i) {
-            ItemStack itemStack2 = inventory.getStack(i);
+        for (int i = 0; i < inventory.getContainerSize(); ++i) {
+            ItemStack itemStack2 = inventory.getItem(i);
             if (itemStack2.isEmpty()) continue;
-            if (itemStack2.isOf(PBItems.DONUT)) {
+            if (itemStack2.is(PBItems.DONUT.get())) {
                 donutStack = itemStack2;
             } else if (itemStack2.getItem() instanceof FrostingBottleItem && PBHelpers.contains(itemStack2, PBComponentTypes.TOP)) {
                 bottleStack = itemStack2;
@@ -63,12 +63,12 @@ public class FrostedDonutRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean fits(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return width * height >= 2;
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return PBRecipeSerializers.FROSTED_DONUT;
+        return PBRecipeSerializers.FROSTED_DONUT.get();
     }
 }

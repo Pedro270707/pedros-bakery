@@ -1,17 +1,16 @@
 package net.pedroricardo.block;
 
-import com.mojang.serialization.MapCodec;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.util.function.BooleanBiFunction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.pedroricardo.block.entity.PBBlockEntities;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.entity.PBCakeBlockEntityPart;
@@ -21,33 +20,33 @@ import net.pedroricardo.block.multipart.MultipartBlockPart;
 import org.jetbrains.annotations.Nullable;
 
 public class PBCakeBlockPart extends MultipartBlockPart<PBCakeBlockEntity, PBCakeBlockEntityPart> {
-    protected PBCakeBlockPart(Settings settings) {
+    protected PBCakeBlockPart(Properties settings) {
         super(settings);
     }
 
     @Override
-    public PBCakeBlockEntityPart createBlockEntity(BlockPos pos, BlockState state, BlockPos parentPos) {
+    public PBCakeBlockEntityPart newBlockEntity(BlockPos pos, BlockState state, BlockPos parentPos) {
         return new PBCakeBlockEntityPart(pos, state, parentPos);
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         if (!(world.getBlockEntity(pos) instanceof MultipartBlockEntityPart<?> cake) || cake.getParentPos() == null || !(world.getBlockState(cake.getParentPos()).getBlock() instanceof MultipartBlock<?, ?, ?> block)) {
-            return VoxelShapes.empty();
+            return Shapes.empty();
         }
         BlockPos offset = cake.getParentPos().subtract(pos);
-        return VoxelShapes.combineAndSimplify(block.getFullShape(world.getBlockState(cake.getParentPos()), world, cake.getParentPos(), context).offset(offset.getX(), offset.getY(), offset.getZ()), VoxelShapes.fullCube(), BooleanBiFunction.AND);
+        return Shapes.join(block.getFullShape(world.getBlockState(cake.getParentPos()), world, cake.getParentPos(), context).move(offset.getX(), offset.getY(), offset.getZ()), Shapes.block(), BooleanOp.AND);
     }
 
     @Nullable
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new PBCakeBlockEntityPart(pos, state);
     }
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, PBBlockEntities.CAKE_PART, PBCakeBlockEntityPart::tick);
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+        return createTickerHelper(type, PBBlockEntities.CAKE_PART.get(), PBCakeBlockEntityPart::tick);
     }
 }

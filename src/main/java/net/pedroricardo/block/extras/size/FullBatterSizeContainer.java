@@ -2,18 +2,18 @@ package net.pedroricardo.block.extras.size;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Objects;
 
@@ -41,7 +41,7 @@ public class FullBatterSizeContainer extends BatterSizeContainer {
     }
 
     @Override
-    public boolean bite(World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity, float biteSize) {
+    public boolean bite(Level world, BlockPos pos, BlockState state, Player player, BlockEntity blockEntity, float biteSize) {
         if (this.isEmpty()) return false;
         this.setBites(this.getBites() + biteSize);
         return true;
@@ -82,14 +82,14 @@ public class FullBatterSizeContainer extends BatterSizeContainer {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        if (this.isEmpty()) return VoxelShapes.empty();
-        Direction direction = state.getOrEmpty(Properties.HORIZONTAL_FACING).orElse(Direction.NORTH);
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+        if (this.isEmpty()) return Shapes.empty();
+        Direction direction = state.getOptionalValue(BlockStateProperties.HORIZONTAL_FACING).orElse(Direction.NORTH);
         return switch (direction) {
-            default -> Block.createCuboidShape(8 - this.getSize() / 2.0, 0, 8 - this.getSize() / 2.0, 8 + this.getSize() / 2.0 - this.getBites(), this.getHeight(), 8 + this.getSize() / 2.0);
-            case SOUTH -> Block.createCuboidShape(8 - this.getSize() / 2.0 + this.getBites(), 0, 8 - this.getSize() / 2.0, 8 + this.getSize() / 2.0, this.getHeight(), 8 + this.getSize() / 2.0);
-            case WEST -> Block.createCuboidShape(8 - this.getSize() / 2.0, 0, 8 - this.getSize() / 2.0 + this.getBites(), 8 + this.getSize() / 2.0, this.getHeight(), 8 + this.getSize() / 2.0);
-            case EAST -> Block.createCuboidShape(8 - this.getSize() / 2.0, 0, 8 - this.getSize() / 2.0, 8 + this.getSize() / 2.0, this.getHeight(), 8 + this.getSize() / 2.0 - this.getBites());
+            default -> Block.box(8 - this.getSize() / 2.0, 0, 8 - this.getSize() / 2.0, 8 + this.getSize() / 2.0 - this.getBites(), this.getHeight(), 8 + this.getSize() / 2.0);
+            case SOUTH -> Block.box(8 - this.getSize() / 2.0 + this.getBites(), 0, 8 - this.getSize() / 2.0, 8 + this.getSize() / 2.0, this.getHeight(), 8 + this.getSize() / 2.0);
+            case WEST -> Block.box(8 - this.getSize() / 2.0, 0, 8 - this.getSize() / 2.0 + this.getBites(), 8 + this.getSize() / 2.0, this.getHeight(), 8 + this.getSize() / 2.0);
+            case EAST -> Block.box(8 - this.getSize() / 2.0, 0, 8 - this.getSize() / 2.0, 8 + this.getSize() / 2.0, this.getHeight(), 8 + this.getSize() / 2.0 - this.getBites());
         };
     }
 

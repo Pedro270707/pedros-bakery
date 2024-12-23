@@ -1,13 +1,14 @@
 package net.pedroricardo.screen;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.CraftingResultInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.*;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.ResultContainer;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.tags.PBTags;
@@ -19,35 +20,35 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CookieTableScreenHandler extends ScreenHandler {
-    protected final ScreenHandlerContext context;
-    protected final PlayerInventory playerInventory;
-    protected final Inventory input;
-    protected final CraftingResultInventory output = new CraftingResultInventory();
+public class CookieTableScreenHandler extends AbstractContainerMenu {
+    protected final ContainerLevelAccess context;
+    protected final Inventory playerInventory;
+    protected final Container input;
+    protected final ResultContainer output = new ResultContainer();
     protected Set<Vector2i> cookieShape = new HashSet<>();
 
-    public CookieTableScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-        super(PBScreenHandlerTypes.COOKIE_TABLE, syncId);
+    public CookieTableScreenHandler(int syncId, Inventory playerInventory, ContainerLevelAccess context) {
+        super(PBScreenHandlerTypes.COOKIE_TABLE.get(), syncId);
         this.context = context;
         this.playerInventory = playerInventory;
-        this.input = new SimpleInventory(1) {
+        this.input = new SimpleContainer(1) {
             @Override
-            public void markDirty() {
-                super.markDirty();
-                CookieTableScreenHandler.this.onContentChanged(this);
+            public void setChanged() {
+                super.setChanged();
+                CookieTableScreenHandler.this.slotsChanged(this);
             }
         };
         this.addSlot(new Slot(this.input, 0, 8, 50));
         this.addSlot(new Slot(this.output, 1, 152, 50) {
             @Override
-            public boolean canInsert(ItemStack stack) {
+            public boolean mayPlace(ItemStack stack) {
                 return false;
             }
 
             @Override
-            public void onTakeItem(PlayerEntity player, ItemStack stack) {
-                (CookieTableScreenHandler.this.slots.get(0)).takeStack(1);
-                stack.getItem().onCraft(stack, player.getWorld(), player);
+            public void onTake(Player player, ItemStack stack) {
+                (CookieTableScreenHandler.this.slots.get(0)).remove(1);
+                stack.getItem().onCraftedBy(stack, player.level(), player);
             }
         });
         int i;
@@ -61,62 +62,62 @@ public class CookieTableScreenHandler extends ScreenHandler {
         }
     }
 
-    public CookieTableScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
+    public CookieTableScreenHandler(int syncId, Inventory playerInventory) {
+        this(syncId, playerInventory, ContainerLevelAccess.NULL);
     }
 
     @Override
-    public void onClosed(PlayerEntity player) {
-        super.onClosed(player);
-        this.context.run((world, pos) -> this.dropInventory(player, this.input));
+    public void removed(Player player) {
+        super.removed(player);
+        this.context.execute((world, pos) -> this.clearContainer(player, this.input));
     }
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slotIndex) {
+    public ItemStack quickMoveStack(Player player, int slotIndex) {
         ItemStack copy = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
-        if (slot.hasStack()) {
-            ItemStack slotStack = slot.getStack();
+        if (slot.hasItem()) {
+            ItemStack slotStack = slot.getItem();
             copy = slotStack.copy();
             int inventoryStart = 2;
             int inventoryEnd = 28;
             int hotbarStart = inventoryEnd + 1;
             int hotbarEnd = 38;
             if (slotIndex == 1) {
-                if (!this.insertItem(slotStack, inventoryStart, hotbarEnd, true)) {
+                if (!this.moveItemStackTo(slotStack, inventoryStart, hotbarEnd, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onQuickTransfer(slotStack, copy);
+                slot.onQuickCraft(slotStack, copy);
             } else if (slotIndex == 0) {
-                if (!this.insertItem(slotStack, inventoryStart, hotbarEnd, false)) {
+                if (!this.moveItemStackTo(slotStack, inventoryStart, hotbarEnd, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (slotStack.isIn(PBTags.Items.COOKIE_INGREDIENTS)) {
-                if (!this.insertItem(slotStack, 0, 1, false)) {
+            } else if (slotStack.is(PBTags.Items.COOKIE_INGREDIENTS)) {
+                if (!this.moveItemStackTo(slotStack, 0, 1, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (slotIndex >= inventoryStart && slotIndex < hotbarStart ? !this.insertItem(slotStack, hotbarStart, hotbarEnd, false) : !this.insertItem(slotStack, inventoryStart, inventoryEnd, false)) {
+            } else if (slotIndex >= inventoryStart && slotIndex < hotbarStart ? !this.moveItemStackTo(slotStack, hotbarStart, hotbarEnd, false) : !this.moveItemStackTo(slotStack, inventoryStart, inventoryEnd, false)) {
                 return ItemStack.EMPTY;
             }
             if (slotStack.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             } else {
-                slot.markDirty();
+                slot.setChanged();
             }
             if (slotStack.getCount() == copy.getCount()) {
                 return ItemStack.EMPTY;
             }
-            slot.onTakeItem(player, slotStack);
-            this.sendContentUpdates();
+            slot.onTake(player, slotStack);
+            this.broadcastChanges();
         }
         return copy;
     }
 
     @Override
-    public void onContentChanged(Inventory inventory) {
-        ItemStack itemStack = this.input.getStack(0);
-        if (!itemStack.isIn(PBTags.Items.COOKIE_INGREDIENTS)) {
-            this.output.removeStack(0);
+    public void slotsChanged(Container inventory) {
+        ItemStack itemStack = this.input.getItem(0);
+        if (!itemStack.is(PBTags.Items.COOKIE_INGREDIENTS)) {
+            this.output.removeItemNoUpdate(0);
         } else {
             this.setShapedCookie();
         }
@@ -124,7 +125,7 @@ public class CookieTableScreenHandler extends ScreenHandler {
 
     public void setPixel(Vector2i pixel, boolean value) {
         if (pixel.x() < 0 || pixel.x() > 15 || pixel.y() < 0 || pixel.y() > 15) return;
-        if (this.input.getStack(0).isEmpty()) return;
+        if (this.input.getItem(0).isEmpty()) return;
         if (value) {
             this.cookieShape.add(pixel);
         } else {
@@ -143,22 +144,22 @@ public class CookieTableScreenHandler extends ScreenHandler {
     }
 
     private void setShapedCookie() {
-        this.output.setStack(0, ItemStack.EMPTY);
-        if (!this.cookieShape.isEmpty() && !this.input.getStack(0).isEmpty() && this.input.getStack(0).isIn(PBTags.Items.COOKIE_INGREDIENTS)) {
-            ItemStack cookie = new ItemStack(PBItems.SHAPED_COOKIE);
+        this.output.setItem(0, ItemStack.EMPTY);
+        if (!this.cookieShape.isEmpty() && !this.input.getItem(0).isEmpty() && this.input.getItem(0).is(PBTags.Items.COOKIE_INGREDIENTS)) {
+            ItemStack cookie = new ItemStack(PBItems.SHAPED_COOKIE.get());
             PBHelpers.set(cookie, PBComponentTypes.COOKIE_SHAPE, new HashSet<>(this.cookieShape));
-            this.output.setStack(0, cookie);
+            this.output.setItem(0, cookie);
         }
-        this.sendContentUpdates();
+        this.broadcastChanges();
     }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
-        return this.context.get((world, pos) -> {
-            if (!world.getBlockState(pos).isOf(PBBlocks.COOKIE_TABLE)) {
+    public boolean stillValid(Player player) {
+        return this.context.evaluate((world, pos) -> {
+            if (!world.getBlockState(pos).is(PBBlocks.COOKIE_TABLE.get())) {
                 return false;
             }
-            return player.squaredDistanceTo((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5) <= 64.0;
+            return player.distanceToSqr((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5) <= 64.0;
         }, true);
     }
 }

@@ -9,12 +9,12 @@ import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedEnum;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedFloat;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedInt;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedNumber;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public class PBConfig extends Config {
     public PBConfig() {
-        super(Identifier.of(PedrosBakery.MOD_ID, "config"));
+        super(new ResourceLocation(PedrosBakery.MOD_ID, "config"));
     }
 
     public ValidatedInt bakingTrayMinSize = new ValidatedInt(4, 16, 1, ValidatedNumber.WidgetType.SLIDER);

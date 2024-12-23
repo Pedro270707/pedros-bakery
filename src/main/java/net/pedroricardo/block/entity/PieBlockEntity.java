@@ -1,21 +1,18 @@
 package net.pedroricardo.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PBSounds;
 import net.pedroricardo.PedrosBakery;
@@ -32,21 +29,21 @@ public class PieBlockEntity extends BlockEntity implements ItemComponentProvider
     private int bottomBakeTime = 0;
 
     public PieBlockEntity(BlockPos pos, BlockState state) {
-        super(PBBlockEntities.PIE, pos, state);
+        super(PBBlockEntities.PIE.get(), pos, state);
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.createNbt();
+    public CompoundTag getUpdateTag() {
+        return this.saveWithoutMetadata();
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
         this.layers = nbt.getInt("layers");
         this.slices = nbt.getInt("slices");
         this.topBakeTime = nbt.getInt("top_bake_time");
-        this.fillingItem = ItemStack.fromNbt(nbt.getCompound("filling_item"));
+        this.fillingItem = ItemStack.of(nbt.getCompound("filling_item"));
         this.bottomBakeTime = nbt.getInt("bottom_bake_time");
         if (this.isEmpty()) {
             this.setBottomBakeTime(0);
@@ -63,15 +60,15 @@ public class PieBlockEntity extends BlockEntity implements ItemComponentProvider
     }
 
     @Override
-    public void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    public void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.putInt("layers", this.layers);
         nbt.putInt("slices", this.slices);
         if (this.getLayers() >= 1) {
             nbt.putInt("bottom_bake_time", this.bottomBakeTime);
         }
         if (this.getLayers() >= 2 && !this.fillingItem.isEmpty()) {
-            nbt.put("filling_item", this.fillingItem.writeNbt(new NbtCompound()));
+            nbt.put("filling_item", this.fillingItem.save(new CompoundTag()));
         }
         if (this.getLayers() >= 3) {
             nbt.putInt("top_bake_time", this.topBakeTime);
@@ -107,7 +104,7 @@ public class PieBlockEntity extends BlockEntity implements ItemComponentProvider
     }
 
     public void setLayers(int layers) {
-        this.layers = MathHelper.clamp(layers, 0, 3);
+        this.layers = Mth.clamp(layers, 0, 3);
     }
 
     public int getSlices() {
@@ -115,20 +112,20 @@ public class PieBlockEntity extends BlockEntity implements ItemComponentProvider
     }
 
     public void setSlices(int slices) {
-        this.slices = MathHelper.clamp(slices, 0, 4);
+        this.slices = Mth.clamp(slices, 0, 4);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, PieBlockEntity blockEntity) {
-        if (world.getBlockState(pos.down()).isIn(PBTags.Blocks.BAKES_CAKE)) {
+    public static void tick(Level world, BlockPos pos, BlockState state, PieBlockEntity blockEntity) {
+        if (world.getBlockState(pos.below()).is(PBTags.Blocks.BAKES_CAKE)) {
             boolean isEmpty = blockEntity.isEmpty();
             blockEntity.setBottomBakeTime(isEmpty ? 0 : blockEntity.getBottomBakeTime() + 1);
             blockEntity.setTopBakeTime(isEmpty || blockEntity.getLayers() < 3 ? 0 : blockEntity.getTopBakeTime() + 1);
-            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
-            if (!world.isClient()) {
-                PBHelpers.update(blockEntity, (ServerWorld) world);
+            world.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
+            if (!world.isClientSide()) {
+                PBHelpers.update(blockEntity, (ServerLevel) world);
             }
             if (blockEntity.getTopBakeTime() == PedrosBakery.CONFIG.ticksUntilPieBaked.get() || blockEntity.getBottomBakeTime() == PedrosBakery.CONFIG.ticksUntilPieBaked.get()) {
-                world.playSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.PIE_DONE, SoundCategory.BLOCKS, 1.25f, 1.0f, true);
+                world.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.PIE_DONE.get(), SoundSource.BLOCKS, 1.25f, 1.0f, true);
             }
         }
     }
@@ -145,7 +142,7 @@ public class PieBlockEntity extends BlockEntity implements ItemComponentProvider
     }
 
     public void readFrom(ItemStack stack) {
-        PieDataComponent pieData = PBHelpers.getOrDefault(stack, PBComponentTypes.PIE_DATA, PieDataComponent.EMPTY);
+        PieDataComponent pieData = PBHelpers.getOrDefault(stack, PBComponentTypes.PIE_DATA.get(), PieDataComponent.EMPTY);
         this.setLayers(pieData.layers());
         this.setBottomBakeTime(pieData.bottomBakeTime());
         this.setFillingItem(pieData.filling());
@@ -155,6 +152,6 @@ public class PieBlockEntity extends BlockEntity implements ItemComponentProvider
 
     @Override
     public void addComponents(ItemStack stack) {
-        PBHelpers.set(stack, PBComponentTypes.PIE_DATA, new PieDataComponent(this.getLayers(), this.getBottomBakeTime(), this.getFillingItem(), this.getTopBakeTime(), this.getSlices()));
+        PBHelpers.set(stack, PBComponentTypes.PIE_DATA.get(), new PieDataComponent(this.getLayers(), this.getBottomBakeTime(), this.getFillingItem(), this.getTopBakeTime(), this.getSlices()));
     }
 }

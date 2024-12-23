@@ -1,15 +1,11 @@
 package net.pedroricardo.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 import net.pedroricardo.block.multipart.MultipartBlockEntityPart;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,12 +15,12 @@ public class PBCakeBlockEntityPart extends MultipartBlockEntityPart<PBCakeBlockE
     }
 
     public PBCakeBlockEntityPart(BlockPos pos, BlockState state, BlockPos parentPos) {
-        super(PBBlockEntities.CAKE_PART, pos, state, parentPos);
+        super(PBBlockEntities.CAKE_PART.get(), pos, state, parentPos);
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.createNbt();
+    public CompoundTag getUpdateTag() {
+        return this.saveWithoutMetadata();
     }
 
     @Nullable

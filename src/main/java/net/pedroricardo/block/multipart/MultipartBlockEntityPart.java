@@ -1,16 +1,14 @@
 package net.pedroricardo.block.multipart;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class MultipartBlockEntityPart<T extends BlockEntity & MultipartBlockEntity> extends BlockEntity {
@@ -23,27 +21,27 @@ public abstract class MultipartBlockEntityPart<T extends BlockEntity & Multipart
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
         this.parentPos = BlockPos.CODEC.parse(NbtOps.INSTANCE, nbt.get("parent_pos")).result().orElse(null);
     }
 
     @Override
-    public void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    public void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         if (this.parentPos != null) {
-            NbtElement parentPosNbt = BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, this.parentPos).result().orElse(null);
+            Tag parentPosNbt = BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, this.parentPos).result().orElse(null);
             nbt.put("parent_pos", parentPosNbt);
         }
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, MultipartBlockEntityPart<?> blockEntity) {
+    public static void tick(Level world, BlockPos pos, BlockState state, MultipartBlockEntityPart<?> blockEntity) {
     }
 
     @Override
-    public void setStackNbt(ItemStack stack) {
+    public void saveToItem(ItemStack stack) {
         if (this.getParent() != null) {
-            this.getParent().setStackNbt(stack);
+            this.getParent().saveToItem(stack);
         }
     }
 
@@ -54,9 +52,9 @@ public abstract class MultipartBlockEntityPart<T extends BlockEntity & Multipart
 
     @Nullable
     public T getParent() {
-        if (this.getParentPos() == null || !this.hasWorld()) return null;
+        if (this.getParentPos() == null || !this.hasLevel()) return null;
         try {
-            T blockEntity = (T) this.getWorld().getBlockEntity(this.parentPos);
+            T blockEntity = (T) this.getLevel().getBlockEntity(this.parentPos);
             return blockEntity;
         } catch (ClassCastException ignored) {
             return null;

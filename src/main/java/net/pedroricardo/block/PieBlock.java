@@ -1,24 +1,24 @@
 package net.pedroricardo.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.PBBlockEntities;
@@ -26,33 +26,33 @@ import net.pedroricardo.block.entity.PieBlockEntity;
 import net.pedroricardo.item.PBItems;
 import org.jetbrains.annotations.Nullable;
 
-public class PieBlock extends BlockWithEntity {
-    protected PieBlock(Settings settings) {
+public class PieBlock extends BaseEntityBlock {
+    protected PieBlock(Properties settings) {
         super(settings);
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ActionResult useWithItem = this.onUseWithItem(player.getStackInHand(hand), state, world, pos, player, hand, hit);
-        if (useWithItem != ActionResult.PASS) return useWithItem;
-        if (!(world.getBlockEntity(pos) instanceof PieBlockEntity pie)) return ActionResult.PASS;
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        InteractionResult useWithItem = this.onUseWithItem(player.getItemInHand(hand), state, world, pos, player, hand, hit);
+        if (useWithItem != InteractionResult.PASS) return useWithItem;
+        if (!(world.getBlockEntity(pos) instanceof PieBlockEntity pie)) return InteractionResult.PASS;
         if (pie.getLayers() == 2) {
             if (pie.getFillingItem().isEmpty()) {
                 pie.setLayers(1);
-                return ActionResult.PASS;
+                return InteractionResult.PASS;
             }
-            if (player.isSneaking()) {
+            if (player.isCrouching()) {
                 ItemStack stack = pie.getFillingItem();
                 pie.setFillingItem(ItemStack.EMPTY);
                 pie.setLayers(1);
-                player.giveItemStack(stack);
-                return ActionResult.success(world.isClient());
+                player.addItem(stack);
+                return InteractionResult.sidedSuccess(world.isClientSide());
             }
         }
         if (pie.isEmpty() || (pie.getTopBakeTime() < PedrosBakery.CONFIG.ticksUntilPieBaked.get() && pie.getLayers() == 3)
                 || pie.getBottomBakeTime() < PedrosBakery.CONFIG.ticksUntilPieBaked.get()
-                || !player.canConsume(false)) return super.onUse(state, world, pos, player, hand, hit);
-        player.getHungerManager().add(PedrosBakery.CONFIG.pieSliceFood.get(), PedrosBakery.CONFIG.pieSliceSaturation.get());
+                || !player.canEat(false)) return super.use(state, world, pos, player, hand, hit);
+        player.getFoodData().eat(PedrosBakery.CONFIG.pieSliceFood.get(), PedrosBakery.CONFIG.pieSliceSaturation.get());
         pie.setSlices(pie.getSlices() - 1);
         if (pie.getSlices() == 0) {
             pie.setFillingItem(ItemStack.EMPTY);
@@ -60,61 +60,61 @@ public class PieBlock extends BlockWithEntity {
             pie.setTopBakeTime(0);
             pie.setBottomBakeTime(0);
         }
-        world.setBlockState(pos, state, Block.NOTIFY_ALL);
-        world.emitGameEvent(player, GameEvent.EAT, pos);
-        return ActionResult.success(world.isClient());
+        world.setBlock(pos, state, Block.UPDATE_ALL);
+        world.gameEvent(player, GameEvent.EAT, pos);
+        return InteractionResult.sidedSuccess(world.isClientSide());
     }
 
-    private ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!(world.getBlockEntity(pos) instanceof PieBlockEntity pie) || stack.isEmpty()) return ActionResult.PASS;
+    private InteractionResult onUseWithItem(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        if (!(world.getBlockEntity(pos) instanceof PieBlockEntity pie) || stack.isEmpty()) return InteractionResult.PASS;
         if (pie.getLayers() == 1 && pie.getSlices() == 4) {
             pie.setFillingItem(PBHelpers.splitUnlessCreative(stack, 1, player));
             pie.setLayers(2);
-            world.setBlockState(pos, state);
-            if (!world.isClient()) {
-                PBHelpers.update(pie, (ServerWorld) world);
+            world.setBlockAndUpdate(pos, state);
+            if (!world.isClientSide()) {
+                PBHelpers.update(pie, (ServerLevel) world);
             }
-            return ActionResult.success(world.isClient());
+            return InteractionResult.sidedSuccess(world.isClientSide());
         }
-        if (stack.isOf(PBItems.DOUGH)) {
+        if (stack.is(PBItems.DOUGH.get())) {
             if (pie.isEmpty()) {
                 pie.setLayers(1);
                 pie.setSlices(4);
                 pie.setBottomBakeTime(0);
                 if (!player.isCreative()) {
-                    stack.decrement(1);
+                    stack.shrink(1);
                 }
-                return ActionResult.success(world.isClient());
+                return InteractionResult.sidedSuccess(world.isClientSide());
             } else if (pie.getLayers() == 2 && pie.getSlices() == 4) {
                 pie.setLayers(3);
                 pie.setTopBakeTime(0);
                 if (!player.isCreative()) {
-                    stack.decrement(1);
+                    stack.shrink(1);
                 }
-                return ActionResult.success(world.isClient());
+                return InteractionResult.sidedSuccess(world.isClientSide());
             }
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return createCuboidShape(1.0, 0.0, 1.0, 15.0, 4.0, 15.0);
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+        return box(1.0, 0.0, 1.0, 15.0, 4.0, 15.0);
     }
 
     @Override
-    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, PBBlockEntities.PIE, PieBlockEntity::tick);
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+        return createTickerHelper(type, PBBlockEntities.PIE.get(), PieBlockEntity::tick);
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new PieBlockEntity(pos, state);
     }
 
     @Override
-    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        super.onPlaced(world, pos, state, placer, stack);
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(world, pos, state, placer, stack);
         if (world.getBlockEntity(pos) instanceof PieBlockEntity pie) {
             pie.readFrom(stack);
         }

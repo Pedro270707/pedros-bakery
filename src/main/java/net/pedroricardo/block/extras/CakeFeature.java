@@ -1,15 +1,14 @@
 package net.pedroricardo.block.extras;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 import org.jetbrains.annotations.NotNull;
@@ -17,40 +16,35 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class CakeFeature {
-    private final RegistryEntry.Reference<CakeFeature> registryEntry = CakeFeatures.REGISTRY.createEntry(this);
-
     @NotNull
     public String getTranslationKey() {
-        return "feature.pedrosbakery." + CakeFeatures.REGISTRY.getId(this).getPath();
+        return "feature.pedrosbakery." + CakeFeatures.registrySupplier.get().getKey(this).getPath();
     }
 
-    public ActionResult onTryEat(CakeBatter<?> batter, World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity) {
-        return ActionResult.PASS;
+    public InteractionResult onTryEat(CakeBatter<?> batter, Level world, BlockPos pos, BlockState state, Player player, BlockEntity blockEntity) {
+        return InteractionResult.PASS;
     }
 
-    public void tick(CakeBatter<?> batter, List<? extends CakeBatter<?>> batterList, World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+    public void tick(CakeBatter<?> batter, List<? extends CakeBatter<?>> batterList, Level world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
     }
 
-    public boolean canBeApplied(PlayerEntity player, ItemStack stack, CakeBatter<FullBatterSizeContainer> layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public boolean canBeApplied(Player player, ItemStack stack, CakeBatter<FullBatterSizeContainer> layer, Level world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         return !layer.getFeatures().contains(this);
     }
 
-    public void onPlaced(PlayerEntity player, ItemStack stack, CakeBatter<FullBatterSizeContainer> layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+    public void onPlaced(Player player, ItemStack stack, CakeBatter<FullBatterSizeContainer> layer, Level world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
     }
 
-    public RegistryEntry.Reference<CakeFeature> getRegistryEntry() {
-        return this.registryEntry;
+    public boolean is(TagKey<CakeFeature> tag) {
+        if (CakeFeatures.registrySupplier.get() == null || CakeFeatures.registrySupplier.get().getHolder(this).isEmpty()) return false;
+        return CakeFeatures.registrySupplier.get().getHolder(this).get().is(tag);
     }
 
-    public boolean isIn(TagKey<CakeFeature> tag) {
-        return this.getRegistryEntry().isIn(tag);
-    }
-
-    public NbtCompound getNbt(CakeBatter<?> batter) {
+    public CompoundTag getNbt(CakeBatter<?> batter) {
         return batter.getFeatureMap().get(this);
     }
 
-    public void writeNbt(CakeBatter<?> batter, NbtCompound data) {
+    public void writeNbt(CakeBatter<?> batter, CompoundTag data) {
         if (batter.getFeatureMap().containsKey(this)) {
             batter.getFeatureMap().put(this, data);
         }

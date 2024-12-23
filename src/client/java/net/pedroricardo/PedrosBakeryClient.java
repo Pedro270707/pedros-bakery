@@ -113,7 +113,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			return top.color();
 		}, PBItems.FROSTING_BOTTLE);
 		ModelPredicateProviderRegistry.register(Identifier.of(PedrosBakery.MOD_ID, "empty"), (stack, world, entity, seed) -> {
-			if (!stack.isOf(PBBlocks.CUPCAKE.asItem())) return 0.0f;
+			if (!stack.is(PBBlocks.CUPCAKE.asItem())) return 0.0f;
 			return PBHelpers.getOrDefault(stack, PBComponentTypes.FIXED_SIZE_BATTER, CakeBatter.getFixedSizeEmpty()).isEmpty() ? 1.0f : 0.0f;
 		});
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
@@ -124,7 +124,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			return top.color();
 		}, PBItems.DONUT);
 		ModelPredicateProviderRegistry.register(Identifier.of(PedrosBakery.MOD_ID, "frosted"), (stack, world, entity, seed) -> {
-			if (!stack.isOf(PBItems.DONUT)) return 0.0f;
+			if (!stack.is(PBItems.DONUT)) return 0.0f;
 			return PBHelpers.contains(stack, PBComponentTypes.TOP) ? 1.0f : 0.0f;
 		});
 

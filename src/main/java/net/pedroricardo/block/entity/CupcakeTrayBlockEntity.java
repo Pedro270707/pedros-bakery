@@ -1,20 +1,17 @@
 package net.pedroricardo.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PBSounds;
 import net.pedroricardo.PedrosBakery;
@@ -27,39 +24,39 @@ public class CupcakeTrayBlockEntity extends BlockEntity implements ItemComponent
     private CupcakeTrayBatter batter;
 
     public CupcakeTrayBlockEntity(BlockPos pos, BlockState state) {
-        super(PBBlockEntities.CUPCAKE_TRAY, pos, state);
+        super(PBBlockEntities.CUPCAKE_TRAY.get(), pos, state);
         this.batter = CupcakeTrayBatter.getEmpty();
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.createNbt();
+    public CompoundTag getUpdateTag() {
+        return this.saveWithoutMetadata();
     }
 
     @Override
-    public void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    public void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         this.getBatter().toNbt(nbt);
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
         this.batter = CupcakeTrayBatter.fromNbt(nbt);
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, CupcakeTrayBlockEntity blockEntity) {
-        if (world.getBlockState(pos.down()).isIn(PBTags.Blocks.BAKES_CAKE)) {
+    public static void tick(Level world, BlockPos pos, BlockState state, CupcakeTrayBlockEntity blockEntity) {
+        if (world.getBlockState(pos.below()).is(PBTags.Blocks.BAKES_CAKE)) {
             blockEntity.getBatter().stream().forEach(batter -> {
                 if (batter.isEmpty()) return;
                 batter.bakeTick(world, pos, state);
                 if (batter.getBakeTime() == PedrosBakery.CONFIG.ticksUntilCakeBaked.get()) {
-                    world.playSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.BAKING_TRAY_DONE, SoundCategory.BLOCKS, 1.25f, 1.0f, true);
+                    world.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.BAKING_TRAY_DONE.get(), SoundSource.BLOCKS, 1.25f, 1.0f, true);
                 }
             });
-            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
-            if (!world.isClient()) {
-                PBHelpers.update(blockEntity, (ServerWorld) world);
+            world.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
+            if (!world.isClientSide()) {
+                PBHelpers.update(blockEntity, (ServerLevel) world);
             }
         }
     }
@@ -70,7 +67,7 @@ public class CupcakeTrayBlockEntity extends BlockEntity implements ItemComponent
 
     public void setBatter(CupcakeTrayBatter batter) {
         this.batter = batter;
-        this.markDirty();
+        this.setChanged();
     }
 
     @Nullable
@@ -81,10 +78,10 @@ public class CupcakeTrayBlockEntity extends BlockEntity implements ItemComponent
 
     @Override
     public void addComponents(ItemStack stack) {
-        PBHelpers.set(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER, this.getBatter());
+        PBHelpers.set(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER.get(), this.getBatter());
     }
 
     public void readFrom(ItemStack stack) {
-        this.setBatter(PBHelpers.getOrDefault(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER, CupcakeTrayBatter.getEmpty()));
+        this.setBatter(PBHelpers.getOrDefault(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER.get(), CupcakeTrayBatter.getEmpty()));
     }
 }

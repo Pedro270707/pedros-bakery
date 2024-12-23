@@ -11,7 +11,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.pedroricardo.item.ItemComponentType;
+import net.pedroricardo.item.DataComponentType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class PBHelpers {
     private PBHelpers() {}
 
-    private static final Map<Item, Map<ItemComponentType<?>, Object>> defaultComponents = new HashMap<>();
+    private static final Map<Item, Map<DataComponentType<?>, Object>> defaultComponents = new HashMap<>();
 
     public static void update(BlockEntity blockEntity, ServerLevel world) {
         update(world, blockEntity.getBlockPos(), blockEntity);
@@ -40,7 +40,7 @@ public class PBHelpers {
     }
 
     @Nullable
-    public static <T> T addDefaultComponent(Item item, ItemComponentType<T> type, T component) {
+    public static <T> T addDefaultComponent(Item item, DataComponentType<T> type, T component) {
         if (defaultComponents.containsKey(item)) {
             Object previousValue = defaultComponents.get(item).put(type, component);
             try {
@@ -49,7 +49,7 @@ public class PBHelpers {
                 return null;
             }
         }
-        HashMap<ItemComponentType<?>, Object> map = new HashMap<>();
+        HashMap<DataComponentType<?>, Object> map = new HashMap<>();
         map.put(type, component);
         Object previousValue = defaultComponents.put(item, map);
         try {
@@ -60,7 +60,7 @@ public class PBHelpers {
     }
 
     @Nullable
-    public static <T> T removeDefaultComponent(Item item, ItemComponentType<T> type) {
+    public static <T> T removeDefaultComponent(Item item, DataComponentType<T> type) {
         if (!defaultComponents.containsKey(item)) {
             return null;
         }
@@ -73,11 +73,11 @@ public class PBHelpers {
     }
 
     @Nullable
-    public static <T> T get(ItemStack stack, ItemComponentType<T> type) {
+    public static <T> T get(ItemStack stack, DataComponentType<T> type) {
         return getOrDefault(stack, type, null);
     }
 
-    public static <T> T getOrDefault(ItemStack stack, ItemComponentType<T> type, @Nullable T defaultValue) {
+    public static <T> T getOrDefault(ItemStack stack, DataComponentType<T> type, @Nullable T defaultValue) {
         if (stack.isEmpty()) return defaultValue;
         CompoundTag compound = stack.getOrCreateTag();
         if (!compound.contains(type.key().toString())) {
@@ -93,7 +93,7 @@ public class PBHelpers {
         return type.codec().decode(NbtOps.INSTANCE, compound.get(type.key().toString())).get().map(Pair::getFirst, partialResult -> defaultValue);
     }
 
-    public static <T> void set(ItemStack stack, ItemComponentType<T> type, @Nullable T value) {
+    public static <T> void set(ItemStack stack, DataComponentType<T> type, @Nullable T value) {
         if (stack.isEmpty()) return;
         CompoundTag compound = stack.getOrCreateTag();
         compound.put(type.key().toString(), type.codec().encodeStart(NbtOps.INSTANCE, value).get().orThrow());
@@ -107,7 +107,7 @@ public class PBHelpers {
         return newStack;
     }
 
-    public static boolean contains(ItemStack stack, ItemComponentType<?> type) {
+    public static boolean contains(ItemStack stack, DataComponentType<?> type) {
         return get(stack, type) != null;
     }
 }

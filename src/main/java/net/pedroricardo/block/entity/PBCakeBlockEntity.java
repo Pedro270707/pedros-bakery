@@ -1,32 +1,19 @@
 package net.pedroricardo.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.item.ItemStack;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.function.BooleanBiFunction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -49,7 +36,7 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     private List<BlockPos> parts = Lists.newArrayList();
 
     public PBCakeBlockEntity(BlockPos pos, BlockState state) {
-        super(PBBlockEntities.CAKE, pos, state);
+        super(PBBlockEntities.CAKE.get(), pos, state);
     }
 
     @Override
@@ -58,24 +45,24 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     }
 
     @Override
-    public void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
-        NbtList list = new NbtList();
+    public void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
+        ListTag list = new ListTag();
         for (CakeBatter<FullBatterSizeContainer> layer : this.batterList) {
-            list.add(layer.toNbt(new NbtCompound(), CakeBatter.FULL_CODEC));
+            list.add(layer.toNbt(new CompoundTag(), CakeBatter.FULL_CODEC));
         }
         nbt.put("batter", list);
-        nbt.put("parts", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.parts).result().orElse(new NbtList()));
+        nbt.put("parts", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.parts).result().orElse(new ListTag()));
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
         this.readCakeNbt(nbt);
         this.parts = Lists.newArrayList(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(Lists.newArrayList()).iterator());
     }
 
-    protected void readCakeNbt(NbtCompound nbt) {
+    protected void readCakeNbt(CompoundTag nbt) {
         this.batterList = Lists.newArrayList(CakeBatter.listFrom(nbt).iterator());
     }
 
@@ -85,11 +72,11 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
         if (blockEntity.getBatterList().isEmpty()) {
             blockEntity.removeAllParts(world);
             world.removeBlock(pos, false);
-            world.emitGameEvent(null, GameEvent.BLOCK_DESTROY, pos);
-            PBHelpers.update((ServerWorld) world, pos, blockEntity);
+            world.gameEvent(null, GameEvent.BLOCK_DESTROY, pos);
+            PBHelpers.update((ServerLevel) world, pos, blockEntity);
         } else {
             blockEntity.getBatterList().forEach(batter -> CakeBatter.tick(batter, blockEntity.getBatterList(), world, pos, state, blockEntity));
-            blockEntity.markDirty();
+            blockEntity.setChanged();
         }
         blockEntity.updateParts(world, pos, state);
     }
@@ -129,16 +116,16 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     }
 
     public VoxelShape toShape() {
-        return toShape(this.getBatterList(), this.getCachedState(), this.getWorld(), this.getPos());
+        return toShape(this.getBatterList(), this.getBlockState(), this.getLevel(), this.getBlockPos());
     }
 
-    public static VoxelShape toShape(List<CakeBatter<FullBatterSizeContainer>> batterList, BlockState state, World world, BlockPos pos) {
-        VoxelShape shape = VoxelShapes.empty();
+    public static VoxelShape toShape(List<CakeBatter<FullBatterSizeContainer>> batterList, BlockState state, Level world, BlockPos pos) {
+        VoxelShape shape = Shapes.empty();
         float currentHeight = 0;
         for (CakeBatter<FullBatterSizeContainer> batter : batterList) {
-            VoxelShape batterShape = batter.getShape(state, world, pos, ShapeContext.absent());
-            shape = VoxelShapes.union(shape, batterShape.offset(0.0, currentHeight, 0.0));
-            currentHeight += (float) batterShape.getMax(Direction.Axis.Y);
+            VoxelShape batterShape = batter.getShape(state, world, pos, CollisionContext.empty());
+            shape = Shapes.or(shape, batterShape.move(0.0, currentHeight, 0.0));
+            currentHeight += (float) batterShape.max(Direction.Axis.Y);
         }
         return shape;
     }
@@ -151,11 +138,11 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
 
     public void readFrom(ItemStack stack) {
         this.getBatterList().clear();
-        this.getBatterList().addAll(PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST, List.of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
+        this.getBatterList().addAll(PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST.get(), List.of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
     }
 
     @Override
     public void addComponents(ItemStack stack) {
-        PBHelpers.set(stack, PBComponentTypes.BATTER_LIST, this.getBatterList());
+        PBHelpers.set(stack, PBComponentTypes.BATTER_LIST.get(), this.getBatterList());
     }
 }

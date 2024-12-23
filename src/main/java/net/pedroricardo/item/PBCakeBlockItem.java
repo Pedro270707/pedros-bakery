@@ -30,7 +30,7 @@ public class PBCakeBlockItem extends BlockItem {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
-        List<CakeBatter<FullBatterSizeContainer>> batterList = PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST, List.of());
+        List<CakeBatter<FullBatterSizeContainer>> batterList = PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST.get(), List.of());
         if (batterList.isEmpty()) {
             return;
         }
@@ -69,7 +69,7 @@ public class PBCakeBlockItem extends BlockItem {
     @Override
     public ItemStack getDefaultInstance() {
         ItemStack stack = super.getDefaultInstance();
-        PBHelpers.set(stack, PBComponentTypes.BATTER_LIST, Collections.singletonList(CakeBatter.getFullSizeDefault().withBakeTime(2000)));
+        PBHelpers.set(stack, PBComponentTypes.BATTER_LIST.get(), Collections.singletonList(CakeBatter.getFullSizeDefault().withBakeTime(2000)));
         return stack;
     }
 }

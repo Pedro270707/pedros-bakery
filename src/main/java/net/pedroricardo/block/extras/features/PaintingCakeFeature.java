@@ -1,22 +1,18 @@
 package net.pedroricardo.block.extras.features;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.decoration.painting.PaintingEntity;
-import net.minecraft.entity.decoration.painting.PaintingVariant;
-import net.minecraft.entity.decoration.painting.PaintingVariants;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.PaintingVariantTags;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.tags.PaintingVariantTags;
+import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.decoration.PaintingVariant;
+import net.minecraft.world.entity.decoration.PaintingVariants;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.CakeFeature;
@@ -28,43 +24,43 @@ import java.util.Optional;
 
 public class PaintingCakeFeature extends CakeFeature {
     @Override
-    public void onPlaced(PlayerEntity player, ItemStack stack, CakeBatter<FullBatterSizeContainer> batter, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
-        if (world.isClient()) return;
-        NbtCompound nbt = this.getNbt(batter);
-        if (stack.getOrCreateNbt().contains(PaintingEntity.VARIANT_NBT_KEY)) {
-            nbt.putString("variant", stack.getNbt().getString(PaintingEntity.VARIANT_NBT_KEY));
+    public void onPlaced(Player player, ItemStack stack, CakeBatter<FullBatterSizeContainer> batter, Level world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+        if (world.isClientSide()) return;
+        CompoundTag nbt = this.getNbt(batter);
+        if (stack.getOrCreateTag().contains(Painting.VARIANT_TAG)) {
+            nbt.putString("variant", stack.getTag().getString(Painting.VARIANT_TAG));
         } else {
-            ArrayList<RegistryEntry<PaintingVariant>> list = new ArrayList<>();
-            Registries.PAINTING_VARIANT.iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
+            ArrayList<Holder<PaintingVariant>> list = new ArrayList<>();
+            BuiltInRegistries.PAINTING_VARIANT.getTagOrEmpty(PaintingVariantTags.PLACEABLE).forEach(list::add);
             if (list.isEmpty()) {
-                Map<CakeFeature, NbtCompound> featureMap = batter.getFeatureMap();
+                Map<CakeFeature, CompoundTag> featureMap = batter.getFeatureMap();
                 featureMap.remove(this);
                 batter.withFeatures(featureMap);
                 return;
             }
-            Optional<RegistryEntry<PaintingVariant>> optional = Util.getRandomOrEmpty(list, world.getRandom());
+            Optional<Holder<PaintingVariant>> optional = Util.getRandomSafe(list, world.getRandom());
             if (optional.isEmpty()) {
                 return;
             }
-            nbt.putString("variant", optional.get().getKey().orElse(PaintingVariants.KEBAB).getValue().toString());
+            nbt.putString("variant", optional.get().toString());
         }
         this.writeNbt(batter, nbt);
     }
 
     @Override
-    public boolean canBeApplied(PlayerEntity player, ItemStack stack, CakeBatter<FullBatterSizeContainer> layer, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
-        ArrayList<RegistryEntry<PaintingVariant>> list = new ArrayList<>();
-        Registries.PAINTING_VARIANT.iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
+    public boolean canBeApplied(Player player, ItemStack stack, CakeBatter<FullBatterSizeContainer> layer, Level world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+        ArrayList<Holder<PaintingVariant>> list = new ArrayList<>();
+        BuiltInRegistries.PAINTING_VARIANT.getTagOrEmpty(PaintingVariantTags.PLACEABLE).forEach(list::add);
         if (list.isEmpty()) {
             return false;
         }
         if (super.canBeApplied(player, stack, layer, world, pos, state, blockEntity)) return true;
-        if (!stack.getOrCreateNbt().contains(PaintingEntity.VARIANT_NBT_KEY)) return true;
+        if (!stack.getOrCreateTag().contains(Painting.VARIANT_TAG)) return true;
         String variantOnLayer = this.getNbt(layer).getString("variant");
-        return variantOnLayer == null || !variantOnLayer.equals(stack.getOrCreateNbt().getString(PaintingEntity.VARIANT_NBT_KEY));
+        return variantOnLayer == null || !variantOnLayer.equals(stack.getOrCreateTag().getString(Painting.VARIANT_TAG));
     }
 
-    public RegistryEntry<PaintingVariant> getPainting(CakeBatter<?> layer) {
-        return PaintingEntity.readVariantFromNbt(this.getNbt(layer)).orElse(Registries.PAINTING_VARIANT.entryOf(PaintingVariants.KEBAB));
+    public Holder<PaintingVariant> getPainting(CakeBatter<?> layer) {
+        return Painting.loadVariant(this.getNbt(layer)).orElse(BuiltInRegistries.PAINTING_VARIANT.getHolderOrThrow(PaintingVariants.KEBAB));
     }
 }

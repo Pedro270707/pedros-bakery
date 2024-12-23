@@ -1,15 +1,14 @@
 package net.pedroricardo.item;
 
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.extras.CakeTop;
 import net.pedroricardo.block.tags.PBTags;
@@ -23,20 +22,20 @@ public class DonutItem extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        CakeTop top = PBHelpers.get(stack, PBComponentTypes.TOP);
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag context) {
+        CakeTop top = PBHelpers.get(stack, PBComponentTypes.TOP.get());
         if (top == null) {
             return;
         }
-        tooltip.add(Text.translatable("item.pedrosbakery.donut.top", Text.translatable(top.getTranslationKey())).formatted(Formatting.GRAY));
+        tooltip.add(Component.translatable("item.pedrosbakery.donut.top", Component.translatable(top.getTranslationKey())).withStyle(ChatFormatting.GRAY));
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getStackInHand(hand);
-        CakeTop top = PBHelpers.get(stack, PBComponentTypes.TOP);
-        if (top != null && top.isIn(PBTags.Tops.INEDIBLE)) {
-            return TypedActionResult.fail(stack);
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+        ItemStack stack = user.getItemInHand(hand);
+        CakeTop top = PBHelpers.get(stack, PBComponentTypes.TOP.get());
+        if (top != null && top.is(PBTags.Tops.INEDIBLE)) {
+            return InteractionResultHolder.fail(stack);
         }
         return super.use(world, user, hand);
     }

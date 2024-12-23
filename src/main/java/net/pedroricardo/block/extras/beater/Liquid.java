@@ -8,6 +8,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -15,6 +18,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -36,7 +41,7 @@ import java.util.Optional;
 public interface Liquid {
     Codec<Liquid> CODEC = Type.CODEC.dispatch(Liquid::getType, type -> type.getCodec().codec());
 
-    InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, BeaterBlockEntity beater);
+    InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, BeaterBlockEntity beater);
 
     Type getType();
 
@@ -82,7 +87,7 @@ public interface Liquid {
 
     record Mixture(CakeFlavor flavor) implements Liquid {
         @Override
-        public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, BeaterBlockEntity beater) {
+        public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, BeaterBlockEntity beater) {
             ItemStack stack = player.getItemInHand(hand);
             Item item = stack.getItem();
             if (item instanceof BatterContainerItem container && container.addBatter(player, hand, stack, this.flavor(), PedrosBakery.CONFIG.beaterBatterAmount.get())) {
@@ -105,7 +110,7 @@ public interface Liquid {
         }
 
         public static MapCodec<Mixture> getCodec() {
-            return RecordCodecBuilder.mapCodec(instance -> instance.group(CakeFlavors.REGISTRY.getCodec().fieldOf("flavor").forGetter(Mixture::flavor)).apply(instance, Mixture::new));
+            return RecordCodecBuilder.mapCodec(instance -> instance.group(CakeFlavors.registrySupplier.get().getCodec().fieldOf("flavor").forGetter(Mixture::flavor)).apply(instance, Mixture::new));
         }
 
         @Override
@@ -123,26 +128,26 @@ public interface Liquid {
 
     record Frosting(CakeTop top) implements Liquid {
         @Override
-        public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, BeaterBlockEntity beater) {
-            ItemStack stack = player.getStackInHand(hand);
-            if (stack.isOf(Items.GLASS_BOTTLE)) {
-                ItemStack frostingStack = new ItemStack(PBItems.FROSTING_BOTTLE);
-                PBHelpers.set(frostingStack, PBComponentTypes.TOP, this.top());
-                player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, frostingStack));
-                player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
+        public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, BeaterBlockEntity beater) {
+            ItemStack stack = player.getItemInHand(hand);
+            if (stack.is(Items.GLASS_BOTTLE)) {
+                ItemStack frostingStack = new ItemStack(PBItems.FROSTING_BOTTLE.get());
+                PBHelpers.set(frostingStack, PBComponentTypes.TOP.get(), this.top());
+                player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, frostingStack));
+                player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
 
-                BlockState newState = state.with(BeaterBlock.HAS_LIQUID, false);
-                world.setBlockState(pos, newState);
+                BlockState newState = state.setValue(BeaterBlock.HAS_LIQUID, false);
+                world.setBlockAndUpdate(pos, newState);
                 beater.setLiquid(null);
-                beater.getItems().forEach(beaterStack -> ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), beaterStack));
+                beater.getItems().forEach(beaterStack -> Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), beaterStack));
                 beater.setItems(List.of());
-                world.emitGameEvent(GameEvent.FLUID_PICKUP, pos, GameEvent.Emitter.of(player, newState));
-                world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
-                return ActionResult.SUCCESS;
+                world.gameEvent(GameEvent.FLUID_PICKUP, pos, GameEvent.Context.of(player, newState));
+                world.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
+                return InteractionResult.SUCCESS;
             }
             beater.addItem(PBHelpers.splitUnlessCreative(stack, 1, player));
-            world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-            return ActionResult.SUCCESS;
+            world.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+            return InteractionResult.SUCCESS;
         }
 
         @Override
@@ -151,7 +156,7 @@ public interface Liquid {
         }
 
         public static MapCodec<Frosting> getCodec() {
-            return RecordCodecBuilder.mapCodec(instance -> instance.group(CakeTops.REGISTRY.getCodec().fieldOf("top").forGetter(Frosting::top)).apply(instance, Frosting::new));
+            return RecordCodecBuilder.mapCodec(instance -> instance.group(CakeTops.registrySupplier.get().getCodec().fieldOf("top").forGetter(Frosting::top)).apply(instance, Frosting::new));
         }
 
         @Override
@@ -169,23 +174,23 @@ public interface Liquid {
 
     record Milk() implements Liquid {
         @Override
-        public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, BeaterBlockEntity beater) {
-            ItemStack stack = player.getStackInHand(hand);
-            if (stack.isOf(Items.BUCKET)) {
-                if (!world.isClient()) {
-                    player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.MILK_BUCKET)));
-                    world.setBlockState(pos, state.with(BeaterBlock.HAS_LIQUID, false));
+        public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit, BeaterBlockEntity beater) {
+            ItemStack stack = player.getItemInHand(hand);
+            if (stack.is(Items.BUCKET)) {
+                if (!world.isClientSide()) {
+                    player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, new ItemStack(Items.MILK_BUCKET)));
+                    world.setBlockAndUpdate(pos, state.setValue(BeaterBlock.HAS_LIQUID, false));
                     beater.setLiquid(null);
-                    beater.getItems().forEach(beaterStack -> ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), beaterStack));
+                    beater.getItems().forEach(beaterStack -> Containers.dropItemStack(world, pos.getX(), pos.getY(), pos.getZ(), beaterStack));
                     beater.setItems(List.of());
-                    world.emitGameEvent(player, GameEvent.FLUID_PICKUP, pos);
-                    world.playSound(null, pos, SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                    world.gameEvent(player, GameEvent.FLUID_PICKUP, pos);
+                    world.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
                 }
-                return ActionResult.success(world.isClient());
+                return InteractionResult.sidedSuccess(world.isClientSide());
             }
             beater.addItem(PBHelpers.splitUnlessCreative(stack, 1, player));
-            world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-            return ActionResult.SUCCESS;
+            world.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+            return InteractionResult.SUCCESS;
         }
 
         @Override

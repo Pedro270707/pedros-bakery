@@ -1,20 +1,16 @@
 package net.pedroricardo.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Clearable;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Clearable;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.pedroricardo.PBHelpers;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,22 +22,22 @@ public class ItemStandBlockEntity extends BlockEntity implements Clearable {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.createNbt();
+    public CompoundTag getUpdateTag() {
+        return this.saveWithoutMetadata();
     }
 
     @Override
-    public void writeNbt(NbtCompound nbt) {
-        super.writeNbt(nbt);
+    public void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         if (!this.stack.isEmpty()) {
-            nbt.put("item", this.stack.writeNbt(new NbtCompound()));
+            nbt.put("item", this.stack.save(new CompoundTag()));
         }
     }
 
     @Override
-    public void readNbt(NbtCompound nbt) {
-        super.readNbt(nbt);
-        this.stack = ItemStack.fromNbt(nbt.getCompound("item"));
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
+        this.stack = ItemStack.of(nbt.getCompound("item"));
     }
 
     public ItemStack getStack() {
@@ -50,10 +46,10 @@ public class ItemStandBlockEntity extends BlockEntity implements Clearable {
 
     public void setStack(ItemStack stack) {
         this.stack = stack;
-        if (this.getWorld() != null) {
-            if (!this.getWorld().isClient()) PBHelpers.update(this, (ServerWorld) this.getWorld());
+        if (this.getLevel() != null) {
+            if (!this.getLevel().isClientSide()) PBHelpers.update(this, (ServerLevel) this.getLevel());
         } else {
-            this.markDirty();
+            this.setChanged();
         }
     }
 
@@ -64,7 +60,7 @@ public class ItemStandBlockEntity extends BlockEntity implements Clearable {
     }
 
     @Override
-    public void clear() {
+    public void clearContent() {
         this.setStack(ItemStack.EMPTY);
     }
 }

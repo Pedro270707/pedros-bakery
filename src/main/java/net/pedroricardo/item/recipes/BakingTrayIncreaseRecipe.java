@@ -1,14 +1,14 @@
 package net.pedroricardo.item.recipes;
 
-import net.minecraft.inventory.RecipeInputInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialCraftingRecipe;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
@@ -17,26 +17,26 @@ import net.pedroricardo.item.PBComponentTypes;
 
 import java.util.OptionalInt;
 
-public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
-    public BakingTrayIncreaseRecipe(Identifier id, CraftingRecipeCategory category) {
+public class BakingTrayIncreaseRecipe extends CustomRecipe {
+    public BakingTrayIncreaseRecipe(ResourceLocation id, CraftingBookCategory category) {
         super(id, category);
     }
 
     @Override
-    public boolean matches(RecipeInputInventory inventory, World world) {
-        if (!this.fits(inventory.getWidth(), inventory.getHeight())) {
+    public boolean matches(CraftingContainer inventory, Level world) {
+        if (!this.canCraftInDimensions(inventory.getWidth(), inventory.getHeight())) {
             return false;
         }
         OptionalInt trayIndex = OptionalInt.empty();
         boolean hasIronIngots = false;
-        for (int i = 0; i < inventory.size(); i++) {
-            ItemStack stack = inventory.getStack(i);
-            if (stack.isOf(Items.AIR)) continue;
-            if (stack.isOf(Items.IRON_INGOT)) {
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            ItemStack stack = inventory.getItem(i);
+            if (stack.is(Items.AIR)) continue;
+            if (stack.is(Items.IRON_INGOT)) {
                 hasIronIngots = true;
                 continue;
             }
-            if (stack.isOf(PBBlocks.BAKING_TRAY.asItem())) {
+            if (stack.is(PBBlocks.BAKING_TRAY.get().asItem())) {
                 if (trayIndex.isPresent()) return false;
                 else {
                     trayIndex = OptionalInt.of(i);
@@ -45,11 +45,11 @@ public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
         }
         if (!hasIronIngots || trayIndex.isEmpty()) return false;
         int trayIndexInt = trayIndex.getAsInt();
-        ItemStack trayStack = inventory.getStack(trayIndexInt).copy();
+        ItemStack trayStack = inventory.getItem(trayIndexInt).copy();
         if (!PBHelpers.getOrDefault(trayStack, PBComponentTypes.FULL_BATTER, CakeBatter.getFullSizeEmpty()).isEmpty()) return false;
-        for (int i = 0; i < inventory.size(); i++) {
-            ItemStack stack = inventory.getStack(i);
-            if (stack.isOf(Items.IRON_INGOT)) {
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            ItemStack stack = inventory.getItem(i);
+            if (stack.is(Items.IRON_INGOT)) {
                 if (i < (trayIndexInt - trayIndexInt % inventory.getWidth()) || i > trayIndexInt - trayIndexInt % inventory.getWidth() + 2) {
                     PBHelpers.set(trayStack, PBComponentTypes.HEIGHT, PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()) + 2);
                 } else {
@@ -61,20 +61,20 @@ public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registryManager) {
+    public ItemStack assemble(CraftingContainer inventory, RegistryAccess registryManager) {
         ItemStack trayStack = ItemStack.EMPTY;
         int trayIndex = 0;
-        for (int i = 0; i < inventory.size(); i++) {
-            ItemStack stack = inventory.getStack(i);
-            if (stack.isOf(PBBlocks.BAKING_TRAY.asItem())) {
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            ItemStack stack = inventory.getItem(i);
+            if (stack.is(PBBlocks.BAKING_TRAY.get().asItem())) {
                 trayStack = stack.copy();
                 trayIndex = i;
                 break;
             }
         }
-        for (int i = 0; i < inventory.size(); i++) {
-            ItemStack stack = inventory.getStack(i);
-            if (stack.isOf(Items.IRON_INGOT)) {
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            ItemStack stack = inventory.getItem(i);
+            if (stack.is(Items.IRON_INGOT)) {
                 if (i < (trayIndex - trayIndex % inventory.getWidth()) || i > trayIndex - trayIndex % inventory.getWidth() + 2) {
                     PBHelpers.set(trayStack, PBComponentTypes.HEIGHT, Math.min(PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()) + 2, 16));
                 } else {
@@ -86,12 +86,12 @@ public class BakingTrayIncreaseRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean fits(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return PBRecipeSerializers.BAKING_TRAY_INCREASE;
+        return PBRecipeSerializers.BAKING_TRAY_INCREASE.get();
     }
 }

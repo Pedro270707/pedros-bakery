@@ -1,16 +1,19 @@
 package net.pedroricardo;
 
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 public class PBSounds {
-    public static final SoundEvent BAKING_TRAY_DONE = register("block.baking_tray.done");
-    public static final SoundEvent PIE_DONE = register("block.pie.done");
+    public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Registries.SOUND_EVENT, PedrosBakery.MOD_ID);
 
-    private static SoundEvent register(String id) {
-        return Registry.register(Registries.SOUND_EVENT, Identifier.of(PedrosBakery.MOD_ID, id), SoundEvent.of(Identifier.of(PedrosBakery.MOD_ID, id)));
+    public static final RegistryObject<SoundEvent> BAKING_TRAY_DONE = register("block.baking_tray.done");
+    public static final RegistryObject<SoundEvent> PIE_DONE = register("block.pie.done");
+
+    private static RegistryObject<SoundEvent> register(String id) {
+        return SOUND_EVENTS.register(id, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(PedrosBakery.MOD_ID, id)));
     }
 
     public static void init() {

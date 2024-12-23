@@ -1,11 +1,11 @@
 package net.pedroricardo.item;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsage;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.level.block.Block;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.CakeFlavor;
@@ -17,14 +17,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class CupcakeTrayItem extends BlockItem implements BatterContainerItem {
-    public CupcakeTrayItem(Block block, Settings settings) {
+    public CupcakeTrayItem(Block block, Properties settings) {
         super(block, settings);
     }
 
-    public boolean addBatter(PlayerEntity player, Hand hand, ItemStack stack, @Nullable CakeFlavor flavor, int amount) {
-        if (flavor == null || !stack.isOf(this)) return false;
+    public boolean addBatter(Player player, InteractionHand hand, ItemStack stack, @Nullable CakeFlavor flavor, int amount) {
+        if (flavor == null || !stack.is(this)) return false;
         ItemStack newStack = stack.copyWithCount(1);
-        CupcakeTrayBatter batter = PBHelpers.getOrDefault(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER, CupcakeTrayBatter.getEmpty());
+        CupcakeTrayBatter batter = PBHelpers.getOrDefault(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER.get(), CupcakeTrayBatter.getEmpty());
         List<CakeBatter<FixedBatterSizeContainer>> batterList = Lists.newArrayList(batter.stream().iterator());
         boolean changed = false;
         for (int i = 0; i < batter.stream().size(); i++) {
@@ -34,17 +34,17 @@ public class CupcakeTrayItem extends BlockItem implements BatterContainerItem {
             }
         }
         if (changed) {
-            PBHelpers.set(newStack, PBComponentTypes.CUPCAKE_TRAY_BATTER, new CupcakeTrayBatter(batterList));
-            player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, newStack));
+            PBHelpers.set(newStack, PBComponentTypes.CUPCAKE_TRAY_BATTER.get(), new CupcakeTrayBatter(batterList));
+            player.setItemInHand(hand, ItemUtils.createFilledResult(stack, player, newStack));
             return true;
         }
         return false;
     }
 
     @Override
-    public ItemStack getDefaultStack() {
-        ItemStack stack = super.getDefaultStack();
-        PBHelpers.set(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER, CupcakeTrayBatter.getEmpty());
+    public ItemStack getDefaultInstance() {
+        ItemStack stack = super.getDefaultInstance();
+        PBHelpers.set(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER.get(), CupcakeTrayBatter.getEmpty());
         return stack;
     }
 }

@@ -5,16 +5,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.mojang.serialization.JsonOps;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.resource.JsonDataLoader;
-import net.minecraft.resource.ResourceManager;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.ItemStack;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.extras.beater.Liquid;
@@ -24,19 +19,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class MixingPatternManager extends JsonDataLoader implements SimpleSynchronousResourceReloadListener {
+public class MixingPatternManager extends SimpleJsonResourceReloadListener implements ResourceManagerReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-    private ImmutableMap<Identifier, MixingPattern> patterns = ImmutableMap.of();
+    private ImmutableMap<ResourceLocation, MixingPattern> patterns = ImmutableMap.of();
 
     public MixingPatternManager() {
         super(GSON, "mixing_patterns");
     }
 
     @Override
-    protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
-        ImmutableMap.Builder<Identifier, MixingPattern> builder = ImmutableMap.builder();
-        for (Map.Entry<Identifier, JsonElement> entry : prepared.entrySet()) {
-            Identifier identifier = entry.getKey();
+    protected void apply(Map<ResourceLocation, JsonElement> prepared, ResourceManager manager, ProfilerFiller profiler) {
+        ImmutableMap.Builder<ResourceLocation, MixingPattern> builder = ImmutableMap.builder();
+        for (Map.Entry<ResourceLocation, JsonElement> entry : prepared.entrySet()) {
+            ResourceLocation identifier = entry.getKey();
             try {
                 MixingPattern recipe = MixingPattern.Serializer.fromJson(entry.getValue());
                 if (recipe != null) {
@@ -64,11 +59,6 @@ public class MixingPatternManager extends JsonDataLoader implements SimpleSynchr
     }
 
     @Override
-    public ResourceLocation getFabricId() {
-        return new ResourceLocation(PedrosBakery.MOD_ID, "mixing_patterns");
-    }
-
-    @Override
-    public void reload(ResourceManager manager) {
+    public void onResourceManagerReload(ResourceManager manager) {
     }
 }

@@ -1,26 +1,26 @@
 package net.pedroricardo.block.tags;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.extras.*;
 
 public class PBTags {
     public static class Blocks {
-        public static final TagKey<Block> BAKES_CAKE = of(RegistryKeys.BLOCK, "bakes_cake");
-        public static final TagKey<Block> CAKES = of(RegistryKeys.BLOCK, "cakes");
-        public static final TagKey<Block> CANDLE_CAKES = of(RegistryKeys.BLOCK, "candle_cakes");
+        public static final TagKey<Block> BAKES_CAKE = of(Registries.BLOCK, "bakes_cake");
+        public static final TagKey<Block> CAKES = of(Registries.BLOCK, "cakes");
+        public static final TagKey<Block> CANDLE_CAKES = of(Registries.BLOCK, "candle_cakes");
     }
 
     public static class Items {
-        public static final TagKey<Item> CAKE_STAND_ITEM = of(RegistryKeys.ITEM, "cake_stand_item");
-        public static final TagKey<Item> COOKIES = of(RegistryKeys.ITEM, "cookies");
-        public static final TagKey<Item> COOKIE_INGREDIENTS = of(RegistryKeys.ITEM, "cookie_ingredients");
+        public static final TagKey<Item> CAKE_STAND_ITEM = of(Registries.ITEM, "cake_stand_item");
+        public static final TagKey<Item> COOKIES = of(Registries.ITEM, "cookies");
+        public static final TagKey<Item> COOKIE_INGREDIENTS = of(Registries.ITEM, "cookie_ingredients");
     }
 
     public static class Flavors {
@@ -35,8 +35,8 @@ public class PBTags {
         public static final TagKey<CakeFeature> INEDIBLE = of(CakeFeatures.REGISTRY_KEY, "inedible");
     }
 
-    private static <T> TagKey<T> of(RegistryKey<Registry<T>> registryKey, String id) {
-        return TagKey.of(registryKey, Identifier.of(PedrosBakery.MOD_ID, id));
+    private static <T> TagKey<T> of(ResourceKey<Registry<T>> registryKey, String id) {
+        return TagKey.create(registryKey, new ResourceLocation(PedrosBakery.MOD_ID, id));
     }
 
     public static void init() {

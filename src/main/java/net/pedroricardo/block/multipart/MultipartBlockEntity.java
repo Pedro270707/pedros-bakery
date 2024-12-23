@@ -1,9 +1,9 @@
 package net.pedroricardo.block.multipart;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
@@ -14,28 +14,28 @@ public interface MultipartBlockEntity {
      * Removes all current parts (if any) and places new parts in the world.
      * Call this in your ticker method.
      */
-    void updateParts(World world, BlockPos pos, BlockState state);
+    void updateParts(Level world, BlockPos pos, BlockState state);
 
     /**
      * Silently removes all the parts (without delegation or particles).
      */
-    default void removeAllParts(World world) {
+    default void removeAllParts(Level world) {
         for (BlockPos pos : this.getParts()) {
             BlockState state = world.getBlockState(pos);
-            if (state.getBlock() instanceof MultipartBlockPart<?, ?> && state.contains(MultipartBlockPart.DELEGATE)) {
-                world.setBlockState(pos, state.with(MultipartBlockPart.DELEGATE, false));
+            if (state.getBlock() instanceof MultipartBlockPart<?, ?> && state.hasProperty(MultipartBlockPart.DELEGATE)) {
+                world.setBlockAndUpdate(pos, state.setValue(MultipartBlockPart.DELEGATE, false));
                 world.removeBlock(pos, false);
             }
         }
         this.getParts().clear();
-        ((BlockEntity)this).markDirty();
+        ((BlockEntity)this).setChanged();
     }
 
-    default void createPart(World world, MultipartBlock<?, ?, ?> block, BlockPos pos, BlockPos parentPos) {
-        BlockState state = block.getPart().getDefaultState();
-        MultipartBlockEntityPart<?> blockEntity = block.getPart().createBlockEntity(pos, state, parentPos);
-        world.setBlockState(pos, state);
-        world.addBlockEntity(blockEntity);
+    default void createPart(Level world, MultipartBlock<?, ?, ?> block, BlockPos pos, BlockPos parentPos) {
+        BlockState state = block.getPart().defaultBlockState();
+        MultipartBlockEntityPart<?> blockEntity = block.getPart().newBlockEntity(pos, state, parentPos);
+        world.setBlockAndUpdate(pos, state);
+        world.setBlockEntity(blockEntity);
         this.getParts().add(pos);
     }
 }

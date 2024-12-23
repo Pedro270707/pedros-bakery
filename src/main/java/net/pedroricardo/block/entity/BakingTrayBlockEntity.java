@@ -154,15 +154,15 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     }
 
     public void readFrom(ItemStack stack) {
-        this.setCakeBatter(PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty()).copy());
-        this.setSize(PBHelpers.getOrDefault(stack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize.get()));
-        this.setHeight(PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()));
+        this.setCakeBatter(PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT_ONLY_BATTER.get(), CakeBatter.getHeightOnlyEmpty()).copy());
+        this.setSize(PBHelpers.getOrDefault(stack, PBComponentTypes.SIZE.get(), PedrosBakery.CONFIG.bakingTrayDefaultSize.get()));
+        this.setHeight(PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT.get(), PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()));
     }
 
     @Override
     public void addComponents(ItemStack stack) {
-        PBHelpers.set(stack, PBComponentTypes.HEIGHT_ONLY_BATTER, this.getCakeBatter());
-        PBHelpers.set(stack, PBComponentTypes.SIZE, this.getSize());
-        PBHelpers.set(stack, PBComponentTypes.HEIGHT, this.getHeight());
+        PBHelpers.set(stack, PBComponentTypes.HEIGHT_ONLY_BATTER.get(), this.getCakeBatter());
+        PBHelpers.set(stack, PBComponentTypes.SIZE.get(), this.getSize());
+        PBHelpers.set(stack, PBComponentTypes.HEIGHT.get(), this.getHeight());
     }
 }

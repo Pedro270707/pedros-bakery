@@ -2,16 +2,16 @@ package net.pedroricardo.block.extras.size;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.Objects;
 
@@ -30,7 +30,7 @@ public class FixedBatterSizeContainer extends BatterSizeContainer {
     }
 
     @Override
-    public boolean bite(World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity, float biteSize) {
+    public boolean bite(Level world, BlockPos pos, BlockState state, Player player, BlockEntity blockEntity, float biteSize) {
         if (!this.isEmpty()) {
             this.setEmpty(true);
             return true;
@@ -53,8 +53,8 @@ public class FixedBatterSizeContainer extends BatterSizeContainer {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return this.isEmpty() ? VoxelShapes.empty() : Block.createCuboidShape(5.5, 0.0, 5.5, 10.5, 4.0, 10.5);
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+        return this.isEmpty() ? Shapes.empty() : Block.box(5.5, 0.0, 5.5, 10.5, 4.0, 10.5);
     }
 
     @Override

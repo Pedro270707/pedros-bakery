@@ -2,9 +2,9 @@ package net.pedroricardo.block.extras;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.pedroricardo.block.extras.size.FixedBatterSizeContainer;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,14 +37,14 @@ public record CupcakeTrayBatter(CakeBatter<FixedBatterSizeContainer> topLeft, Ca
         return new CupcakeTrayBatter(this.topLeft(), this.topRight(), this.bottomLeft(), this.bottomRight());
     }
 
-    public static CupcakeTrayBatter fromNbt(@Nullable NbtCompound nbt) {
-        if (nbt == null || !nbt.contains("batter", NbtElement.COMPOUND_TYPE)) {
+    public static CupcakeTrayBatter fromNbt(@Nullable CompoundTag nbt) {
+        if (nbt == null || !nbt.contains("batter", Tag.TAG_COMPOUND)) {
             return CupcakeTrayBatter.getEmpty();
         }
         return CODEC.parse(NbtOps.INSTANCE, nbt.getCompound("batter")).result().orElse(CupcakeTrayBatter.getEmpty());
     }
 
-    public NbtCompound toNbt(NbtCompound nbt) {
+    public CompoundTag toNbt(CompoundTag nbt) {
         if (this.equals(CupcakeTrayBatter.getEmpty())) {
             return nbt;
         }

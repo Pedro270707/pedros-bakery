@@ -8,23 +8,22 @@ import com.google.gson.JsonParseException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.resource.JsonDataLoader;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.text.TextColor;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.Item;
 import net.pedroricardo.PedrosBakery;
 
 import java.util.Map;
 import java.util.Optional;
 
-public class PieColorOverrides extends JsonDataLoader implements SimpleSynchronousResourceReloadListener {
+public class PieColorOverrides extends SimpleJsonResourceReloadListener implements ResourceManagerReloadListener {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-    public static final MapCodec<Map<Item, TextColor>> CODEC = Codec.unboundedMap(Registries.ITEM.getCodec(), TextColor.CODEC).fieldOf("overrides");
+    public static final MapCodec<Map<Item, TextColor>> CODEC = Codec.unboundedMap(BuiltInRegistries.ITEM.byNameCodec(), TextColor.CODEC).fieldOf("overrides");
     private ImmutableMap<Item, TextColor> overrides = ImmutableMap.of();
 
     public PieColorOverrides() {
@@ -32,10 +31,10 @@ public class PieColorOverrides extends JsonDataLoader implements SimpleSynchrono
     }
 
     @Override
-    protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
+    protected void apply(Map<ResourceLocation, JsonElement> prepared, ResourceManager manager, ProfilerFiller profiler) {
         ImmutableMap.Builder<Item, TextColor> builder = ImmutableMap.builder();
-        for (Map.Entry<Identifier, JsonElement> entry : prepared.entrySet()) {
-            Identifier identifier = entry.getKey();
+        for (Map.Entry<ResourceLocation, JsonElement> entry : prepared.entrySet()) {
+            ResourceLocation identifier = entry.getKey();
             try {
                 Map<Item, TextColor> map = CODEC.codec().parse(JsonOps.INSTANCE, entry.getValue()).get().orThrow();
                 builder.putAll(map);
@@ -55,11 +54,6 @@ public class PieColorOverrides extends JsonDataLoader implements SimpleSynchrono
     }
 
     @Override
-    public Identifier getFabricId() {
-        return Identifier.of(PedrosBakery.MOD_ID, "pie_color_overrides");
-    }
-
-    @Override
-    public void reload(ResourceManager manager) {
+    public void onResourceManagerReload(ResourceManager manager) {
     }
 }

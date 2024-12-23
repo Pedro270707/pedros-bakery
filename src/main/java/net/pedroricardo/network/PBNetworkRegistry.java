@@ -1,9 +1,6 @@
 package net.pedroricardo.network;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.pedroricardo.PBCodecs;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.screen.CookieTableScreenHandler;
@@ -14,8 +11,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PBNetworkRegistry {
-    public static final Identifier SET_COOKIE_SHAPE = new Identifier(PedrosBakery.MOD_ID, "set_cookie_shape");
-    public static final Identifier SET_COOKIE_PIXEL = new Identifier(PedrosBakery.MOD_ID, "set_cookie_pixel");
+    public static final ResourceLocation SET_COOKIE_SHAPE = new ResourceLocation(PedrosBakery.MOD_ID, "set_cookie_shape");
+    public static final ResourceLocation SET_COOKIE_PIXEL = new ResourceLocation(PedrosBakery.MOD_ID, "set_cookie_pixel");
 
     public static void init() {
         PedrosBakery.LOGGER.debug("Registering payload types and receivers");

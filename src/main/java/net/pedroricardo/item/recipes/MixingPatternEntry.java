@@ -1,8 +1,8 @@
 package net.pedroricardo.item.recipes;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
-public record MixingPatternEntry(Identifier id, MixingPattern entry) {
+public record MixingPatternEntry(ResourceLocation id, MixingPattern entry) {
     @Override
     public boolean equals(Object o) {
         if (this == o) {

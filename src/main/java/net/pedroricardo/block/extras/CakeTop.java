@@ -1,17 +1,16 @@
 package net.pedroricardo.block.extras;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -20,7 +19,6 @@ public class CakeTop {
     private final CakeTop base;
     private final Ingredient ingredient;
     private final int color;
-    private final RegistryEntry.Reference<CakeTop> registryEntry = CakeTops.REGISTRY.createEntry(this);
 
     public CakeTop(CakeTop base, Ingredient ingredient, int color) {
         this.base = base;
@@ -29,28 +27,28 @@ public class CakeTop {
     }
 
     @NotNull
-    public Identifier getCakeTextureLocation() {
-        return CakeTops.REGISTRY.getId(this).withPrefixedPath("textures/entity/cake/top/").withSuffixedPath(".png");
+    public ResourceLocation getCakeTextureLocation() {
+        return CakeTops.registrySupplier.get().getKey(this).withPrefix("textures/entity/cake/top/").withSuffix(".png");
     }
 
     @NotNull
-    public Identifier getCupcakeTextureLocation() {
-        return CakeTops.REGISTRY.getId(this).withPrefixedPath("textures/entity/cupcake/top/").withSuffixedPath(".png");
+    public ResourceLocation getCupcakeTextureLocation() {
+        return CakeTops.registrySupplier.get().getKey(this).withPrefix("textures/entity/cupcake/top/").withSuffix(".png");
     }
 
     @NotNull
     public String getTranslationKey() {
-        return "top.pedrosbakery." + CakeTops.REGISTRY.getId(this).getPath();
+        return "top.pedrosbakery." + CakeTops.registrySupplier.get().getKey(this).getPath();
     }
 
-    public ActionResult onTryEat(CakeBatter<?> layer, World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity) {
-        return ActionResult.PASS;
+    public InteractionResult onTryEat(CakeBatter<?> layer, Level world, BlockPos pos, BlockState state, Player player, BlockEntity blockEntity) {
+        return InteractionResult.PASS;
     }
 
-    public void onDrink(ItemStack stack, World world, LivingEntity user) {
+    public void onDrink(ItemStack stack, Level world, LivingEntity user) {
     }
 
-    public void tick(CakeBatter<?> batter, List<? extends CakeBatter<?>> batterList, World world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+    public void tick(CakeBatter<?> batter, List<? extends CakeBatter<?>> batterList, Level world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
     }
 
     public final CakeTop base() {
@@ -65,11 +63,8 @@ public class CakeTop {
         return this.color;
     }
 
-    public RegistryEntry.Reference<CakeTop> getRegistryEntry() {
-        return this.registryEntry;
-    }
-
-    public boolean isIn(TagKey<CakeTop> tag) {
-        return this.getRegistryEntry().isIn(tag);
+    public boolean is(TagKey<CakeTop> tag) {
+        if (CakeTops.registrySupplier.get() == null || CakeTops.registrySupplier.get().getHolder(this).isEmpty()) return false;
+        return CakeTops.registrySupplier.get().getHolder(this).get().is(tag);
     }
 }

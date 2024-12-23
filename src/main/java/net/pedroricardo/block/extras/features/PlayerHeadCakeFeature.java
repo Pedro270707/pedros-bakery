@@ -1,15 +1,15 @@
 package net.pedroricardo.block.extras.features;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.SkullItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.PlayerHeadItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.CakeFeature;
@@ -19,14 +19,14 @@ import org.jetbrains.annotations.Nullable;
 public class PlayerHeadCakeFeature extends CakeFeature {
     @Nullable
     public GameProfile getProfile(CakeBatter<?> batter) {
-        if (!this.getNbt(batter).contains("owner", NbtElement.STRING_TYPE)) {
+        if (!this.getNbt(batter).contains("owner", Tag.TAG_STRING)) {
             return null;
         }
         return new GameProfile(null, this.getNbt(batter).getString("owner"));
     }
 
     public void setSkullOwner(CakeBatter<?> batter, @Nullable String skullOwner) {
-        NbtCompound nbt = this.getNbt(batter);
+        CompoundTag nbt = this.getNbt(batter);
         if (skullOwner == null) {
             nbt.remove("owner");
         } else {
@@ -36,8 +36,8 @@ public class PlayerHeadCakeFeature extends CakeFeature {
     }
 
     @Override
-    public void onPlaced(PlayerEntity player, ItemStack stack, CakeBatter<FullBatterSizeContainer> batter, World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
-        if (!stack.isOf(Items.PLAYER_HEAD)) return;
-        this.setSkullOwner(batter, stack.getOrCreateNbt().getString(SkullItem.SKULL_OWNER_KEY));
+    public void onPlaced(Player player, ItemStack stack, CakeBatter<FullBatterSizeContainer> batter, Level world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
+        if (!stack.is(Items.PLAYER_HEAD)) return;
+        this.setSkullOwner(batter, stack.getOrCreateTag().getString(PlayerHeadItem.TAG_SKULL_OWNER));
     }
 }

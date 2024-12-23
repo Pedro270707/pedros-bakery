@@ -1,121 +1,126 @@
 package net.pedroricardo.block.extras;
 
-import com.mojang.serialization.Lifecycle;
-import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.EndPortalBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.passive.FoxEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.SimpleRegistry;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Fox;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.registries.*;
 import net.pedroricardo.PedrosBakery;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CakeTops {
-    public static final RegistryKey<Registry<CakeTop>> REGISTRY_KEY = RegistryKey.ofRegistry(Identifier.of(PedrosBakery.MOD_ID, "cake_top"));
-    public static SimpleRegistry<CakeTop> REGISTRY = FabricRegistryBuilder.from(new SimpleRegistry<>(REGISTRY_KEY, Lifecycle.stable(), true)).buildAndRegister();
+import java.util.function.Supplier;
 
-    private static CakeTop register(String name, CakeTop top) {
-        return Registry.register(REGISTRY, Identifier.of(PedrosBakery.MOD_ID, name), top);
+public class CakeTops {
+    public static final ResourceKey<Registry<CakeTop>> REGISTRY_KEY = ResourceKey.createRegistryKey(new ResourceLocation(PedrosBakery.MOD_ID, "cake_top"));
+    public static final DeferredRegister<CakeTop> CAKE_TOPS = DeferredRegister.create(REGISTRY_KEY, PedrosBakery.MOD_ID);
+    public static Supplier<IForgeRegistry<CakeTop>> registrySupplier; // Note: registry supplier value may be NULL
+
+    @SubscribeEvent
+    @SuppressWarnings("unused")
+    public static void newRegistryEvent(@NotNull NewRegistryEvent event) {
+        registrySupplier = event.create(new RegistryBuilder<CakeTop>()
+                .setName(REGISTRY_KEY.location())
+                .hasTags());
     }
 
-    public static final CakeTop SUGAR = register("sugar", new CakeTop(null, Ingredient.ofItems(Items.SUGAR), 0xFFFDF4D8) {
+    public static final RegistryObject<CakeTop> SUGAR = CAKE_TOPS.register("sugar", () -> new CakeTop(null, Ingredient.of(Items.SUGAR), 0xFFFDF4D8) {
         @Override
-        public void onDrink(ItemStack stack, World world, LivingEntity user) {
+        public void onDrink(ItemStack stack, Level world, LivingEntity user) {
             super.onDrink(stack, world, user);
-            user.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 50, 2));
+            user.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 50, 2));
         }
     });
-    public static final CakeTop CHOCOLATE = register("chocolate", new CakeTop(SUGAR, Ingredient.ofItems(Items.COCOA_BEANS), 0xFF594939) {
+    public static final RegistryObject<CakeTop> CHOCOLATE = CAKE_TOPS.register("chocolate", () -> new CakeTop(SUGAR.get(), Ingredient.of(Items.COCOA_BEANS), 0xFF594939) {
         @Override
-        public void onDrink(ItemStack stack, World world, LivingEntity user) {
+        public void onDrink(ItemStack stack, Level world, LivingEntity user) {
             super.onDrink(stack, world, user);
-            user.addStatusEffect(new StatusEffectInstance(StatusEffects.LUCK, 100, 0));
+            user.addEffect(new MobEffectInstance(MobEffects.LUCK, 100, 0));
         }
     });
-    public static final CakeTop SCULK = register("sculk", new CakeTop(SUGAR, Ingredient.ofItems(Items.SCULK), 0xFF052A32) {
+    public static final RegistryObject<CakeTop> SCULK = CAKE_TOPS.register("sculk", () -> new CakeTop(SUGAR.get(), Ingredient.of(Items.SCULK), 0xFF052A32) {
         @Override
-        public void onDrink(ItemStack stack, World world, LivingEntity user) {
+        public void onDrink(ItemStack stack, Level world, LivingEntity user) {
             super.onDrink(stack, world, user);
-            user.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 100, 0));
+            user.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0));
         }
     });
-    public static final CakeTop CHORUS = register("chorus", new CakeTop(SUGAR, Ingredient.ofItems(Items.CHORUS_FRUIT), 0xFFA381A2) {
+    public static final RegistryObject<CakeTop> CHORUS = CAKE_TOPS.register("chorus", () -> new CakeTop(SUGAR.get(), Ingredient.of(Items.CHORUS_FRUIT), 0xFFA381A2) {
         @Override
-        public void onDrink(ItemStack stack, World world, LivingEntity user) {
+        public void onDrink(ItemStack stack, Level world, LivingEntity user) {
             super.onDrink(stack, world, user);
-            if (!world.isClient()) {
+            if (!world.isClientSide()) {
                 for (int i = 0; i < 16; ++i) {
-                    SoundCategory soundCategory;
+                    SoundSource soundCategory;
                     SoundEvent soundEvent;
                     double d = user.getX() + (user.getRandom().nextDouble() - 0.5) * 16.0;
-                    double e = MathHelper.clamp(user.getY() + (double)(user.getRandom().nextInt(16) - 8), world.getBottomY(), (world.getBottomY() + ((ServerWorld)world).getLogicalHeight() - 1));
+                    double e = Mth.clamp(user.getY() + (double)(user.getRandom().nextInt(16) - 8), world.getMinBuildHeight(), (world.getMinBuildHeight() + ((ServerLevel) world).getLogicalHeight() - 1));
                     double f = user.getZ() + (user.getRandom().nextDouble() - 0.5) * 16.0;
-                    if (user.hasVehicle()) {
+                    if (user.isPassenger()) {
                         user.stopRiding();
                     }
-                    Vec3d vec3d = user.getPos();
-                    if (!user.teleport(d, e, f, true)) continue;
-                    world.emitGameEvent(GameEvent.TELEPORT, vec3d, GameEvent.Emitter.of(user));
-                    if (user instanceof FoxEntity) {
-                        soundEvent = SoundEvents.ENTITY_FOX_TELEPORT;
-                        soundCategory = SoundCategory.NEUTRAL;
+                    Vec3 vec3d = user.position();
+                    if (!user.randomTeleport(d, e, f, true)) continue;
+                    world.gameEvent(GameEvent.TELEPORT, vec3d, GameEvent.Context.of(user));
+                    if (user instanceof Fox) {
+                        soundEvent = SoundEvents.FOX_TELEPORT;
+                        soundCategory = SoundSource.NEUTRAL;
                     } else {
-                        soundEvent = SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT;
-                        soundCategory = SoundCategory.PLAYERS;
+                        soundEvent = SoundEvents.CHORUS_FRUIT_TELEPORT;
+                        soundCategory = SoundSource.PLAYERS;
                     }
                     world.playSound(null, user.getX(), user.getY(), user.getZ(), soundEvent, soundCategory, 1.0f, 1.0f);
-                    user.onLanding();
+                    user.resetFallDistance();
                     break;
                 }
             }
         }
 
         @Override
-        public ActionResult onTryEat(CakeBatter layer, World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity cake) {
-            if (world instanceof ServerWorld) {
-                RegistryKey<World> registryKey = world.getRegistryKey() == World.END ? World.OVERWORLD : World.END;
-                ServerWorld serverWorld = ((ServerWorld)world).getServer().getWorld(registryKey);
+        public InteractionResult onTryEat(CakeBatter layer, Level world, BlockPos pos, BlockState state, Player player, BlockEntity cake) {
+            if (world instanceof ServerLevel) {
+                ResourceKey<Level> registryKey = world.dimension() == Level.END ? Level.OVERWORLD : Level.END;
+                ServerLevel serverWorld = ((ServerLevel)world).getServer().getLevel(registryKey);
                 if (serverWorld == null) {
-                    return ActionResult.PASS;
+                    return InteractionResult.PASS;
                 }
-                player.moveToWorld(serverWorld);
+                player.changeDimension(serverWorld);
             }
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
     });
-    public static final CakeTop RED_MUSHROOM = register("red_mushroom", new CakeTop(SUGAR, Ingredient.ofItems(Items.RED_MUSHROOM), 0xFFC92B29));
-    public static final CakeTop BROWN_MUSHROOM = register("brown_mushroom", new CakeTop(SUGAR, Ingredient.ofItems(Items.BROWN_MUSHROOM), 0xFF977251));
-    public static final CakeTop SWEET_BERRY = register("sweet_berry", new CakeTop(SUGAR, Ingredient.ofItems(Items.SWEET_BERRIES), 0xFFF6C9BD));
-    public static final CakeTop DIRT = register("dirt", new CakeTop(SUGAR, Ingredient.ofItems(Items.DIRT), 0xFF79553A));
-    public static final CakeTop GRASS = register("grass", new CakeTop(SUGAR, Ingredient.ofItems(Items.GRASS, Items.TALL_GRASS), 0xFF486E3E));
+    public static final RegistryObject<CakeTop> RED_MUSHROOM = CAKE_TOPS.register("red_mushroom", () -> new CakeTop(SUGAR.get(), Ingredient.of(Items.RED_MUSHROOM), 0xFFC92B29));
+    public static final RegistryObject<CakeTop> BROWN_MUSHROOM = CAKE_TOPS.register("brown_mushroom", () -> new CakeTop(SUGAR.get(), Ingredient.of(Items.BROWN_MUSHROOM), 0xFF977251));
+    public static final RegistryObject<CakeTop> SWEET_BERRY = CAKE_TOPS.register("sweet_berry", () -> new CakeTop(SUGAR.get(), Ingredient.of(Items.SWEET_BERRIES), 0xFFF6C9BD));
+    public static final RegistryObject<CakeTop> DIRT = CAKE_TOPS.register("dirt", () -> new CakeTop(SUGAR.get(), Ingredient.of(Items.DIRT), 0xFF79553A));
+    public static final RegistryObject<CakeTop> GRASS = CAKE_TOPS.register("grass", () -> new CakeTop(SUGAR.get(), Ingredient.of(Items.GRASS, Items.TALL_GRASS), 0xFF486E3E));
 
     @Nullable
     public static CakeTop from(ItemStack item) {
-        if (item == null || item.getItem() == Items.AIR) {
+        if (item == null || item.getItem() == Items.AIR || registrySupplier.get() == null) {
             return null;
         }
-        for (CakeTop flavor : REGISTRY.stream().toList()) {
+        for (CakeTop flavor : registrySupplier.get().getValues().stream().toList()) {
             if (flavor.ingredient().test(item)) {
                 return flavor;
             }

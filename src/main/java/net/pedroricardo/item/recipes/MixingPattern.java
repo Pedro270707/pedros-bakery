@@ -2,8 +2,8 @@ package net.pedroricardo.item.recipes;
 
 import com.google.gson.*;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.pedroricardo.block.extras.beater.Liquid;
 import org.jetbrains.annotations.Nullable;
 

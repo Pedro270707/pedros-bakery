@@ -74,7 +74,7 @@ public class PBCreativeTab {
     private static void addFrostingBottles(ItemGroup.Entries entries) {
         for (CakeTop top : CakeTops.REGISTRY.stream().toList()) {
             ItemStack stack = new ItemStack(PBItems.FROSTING_BOTTLE);
-            PBHelpers.set(stack, PBComponentTypes.TOP, top);
+            PBHelpers.set(stack, PBComponentTypes.TOP.get(), top);
             entries.add(stack);
         }
     }
