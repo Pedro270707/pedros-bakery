@@ -1,6 +1,8 @@
 package net.pedroricardo.network;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import net.pedroricardo.PBCodecs;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.screen.CookieTableScreenHandler;
@@ -11,28 +13,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PBNetworkRegistry {
-    public static final ResourceLocation SET_COOKIE_SHAPE = new ResourceLocation(PedrosBakery.MOD_ID, "set_cookie_shape");
-    public static final ResourceLocation SET_COOKIE_PIXEL = new ResourceLocation(PedrosBakery.MOD_ID, "set_cookie_pixel");
+    private static final String PROTOCOL_VERSION = "1.0";
+    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
+            new ResourceLocation(PedrosBakery.MOD_ID, "main"),
+            () -> PROTOCOL_VERSION,
+            NetworkRegistry.acceptMissingOr(PROTOCOL_VERSION::equals),
+            NetworkRegistry.acceptMissingOr(PROTOCOL_VERSION::equals)
+    );
+    private static int ID;
+    private static int nextID() {
+        return ID++;
+    }
 
     public static void init() {
         PedrosBakery.LOGGER.debug("Registering payload types and receivers");
-
-        ServerPlayNetworking.registerGlobalReceiver(SET_COOKIE_SHAPE, (server, player, handler, buf, responseSender) -> {
-            if (player.currentScreenHandler instanceof CookieTableScreenHandler cookieTable) {
-                Set<Vector2i> set = buf.decodeAsJson(PBCodecs.VECTOR_2I.listOf().xmap(HashSet::new, ArrayList::new));
-                cookieTable.setCookieShape(set);
-            }
-        });
-
-        ServerPlayNetworking.registerGlobalReceiver(SET_COOKIE_PIXEL, (server, player, handler, buf, responseSender) -> {
-            if (player.currentScreenHandler instanceof CookieTableScreenHandler cookieTable) {
-                Vector2i pixel = buf.decodeAsJson(PBCodecs.VECTOR_2I);
-                boolean value = buf.readBoolean();
-                cookieTable.setPixel(pixel, value);
-                PacketByteBuf buf1 = PacketByteBufs.create();
-                buf1.encodeAsJson(PBCodecs.VECTOR_2I.listOf().xmap(HashSet::new, ArrayList::new), cookieTable.getCookieShape());
-                responseSender.sendPacket(SET_COOKIE_SHAPE, buf1);
-            }
-        });
+        INSTANCE.registerMessage(nextID(), SetCookieShapePacket.class, SetCookieShapePacket::toBytes, SetCookieShapePacket::new, SetCookieShapePacket::handle);
+        INSTANCE.registerMessage(nextID(), SetCookiePixelPacket.class, SetCookiePixelPacket::toBytes, SetCookiePixelPacket::new, SetCookiePixelPacket::handle);
     }
 }
