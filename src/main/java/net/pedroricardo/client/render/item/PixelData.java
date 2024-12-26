@@ -1,10 +1,10 @@
-package net.pedroricardo.render.item;
+package net.pedroricardo.client.render.item;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Objects;
 
-public record PixelData(Identifier texture, int color) {
+public record PixelData(ResourceLocation texture, int color) {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

@@ -1,4 +1,4 @@
-package net.pedroricardo;
+package net.pedroricardo.client;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -14,6 +14,7 @@ import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -21,6 +22,13 @@ import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.pedroricardo.PBConfig;
+import net.pedroricardo.PBHelpers;
+import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.PBBlockEntities;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
@@ -32,6 +40,7 @@ import net.pedroricardo.block.extras.features.BlockCakeFeature;
 import net.pedroricardo.block.extras.features.PaintingCakeFeature;
 import net.pedroricardo.block.extras.features.PlayerHeadCakeFeature;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
+import net.pedroricardo.client.render.*;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import net.pedroricardo.model.PBModelLayers;
@@ -45,7 +54,8 @@ import net.pedroricardo.screen.CookieTableScreen;
 import net.pedroricardo.screen.PBScreenHandlerTypes;
 import org.joml.Vector2i;
 
-public class PedrosBakeryClient implements ClientModInitializer {
+@Mod.EventBusSubscriber(modid = PedrosBakery.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+public class PedrosBakeryClient {
 	public static boolean isRenderingInWorld = false;
 
 	public static final ShapedCookieItemRenderer SHAPED_COOKIE_RENDERER = new ShapedCookieItemRenderer((pixel, shape) -> {
@@ -63,8 +73,8 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		return new PixelData(Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_light_inner.png"), 0xFFFFFFFF);
 	});
 
-	@Override
-	public void onInitializeClient() {
+	@SubscribeEvent
+	public static void clientSetup(final FMLClientSetupEvent event) {
 		WorldRenderEvents.END.register(context -> isRenderingInWorld = false);
 		WorldRenderEvents.START.register(context -> isRenderingInWorld = true);
 
@@ -75,7 +85,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		BlockEntityRendererFactories.register(PBBlockEntities.BAKING_TRAY, BakingTrayBlockRenderer::new);
 		BlockEntityRendererFactories.register(PBBlockEntities.CAKE_STAND, CakeStandBlockRenderer::new);
 		BlockEntityRendererFactories.register(PBBlockEntities.PLATE, PlateBlockRenderer::new);
-		BlockEntityRendererFactories.register(PBBlockEntities.CUPCAKE_TRAY, CupcakeTrayBlockRenderer::new);
+		BlockEntityRenderers.register(PBBlockEntities.CUPCAKE_TRAY.get(), CupcakeTrayBlockRenderer::new);
 		BlockEntityRendererFactories.register(PBBlockEntities.CUPCAKE, CupcakeBlockRenderer::new);
 		BlockEntityRendererFactories.register(PBBlockEntities.PIE, PieBlockRenderer::new);
 

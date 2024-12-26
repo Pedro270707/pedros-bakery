@@ -1,4 +1,4 @@
-package net.pedroricardo.registry;
+package net.pedroricardo.client.registry;
 
 import com.google.common.collect.Maps;
 import net.pedroricardo.block.extras.CakeFeature;

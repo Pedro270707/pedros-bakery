@@ -1,4 +1,4 @@
-package net.pedroricardo.render.item;
+package net.pedroricardo.client.render.item;
 
 import org.joml.Vector2i;
 

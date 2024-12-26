@@ -147,7 +147,7 @@ public class CookieTableScreenHandler extends AbstractContainerMenu {
         this.output.setItem(0, ItemStack.EMPTY);
         if (!this.cookieShape.isEmpty() && !this.input.getItem(0).isEmpty() && this.input.getItem(0).is(PBTags.Items.COOKIE_INGREDIENTS)) {
             ItemStack cookie = new ItemStack(PBItems.SHAPED_COOKIE.get());
-            PBHelpers.set(cookie, PBComponentTypes.COOKIE_SHAPE, new HashSet<>(this.cookieShape));
+            PBHelpers.set(cookie, PBComponentTypes.COOKIE_SHAPE.get(), new HashSet<>(this.cookieShape));
             this.output.setItem(0, cookie);
         }
         this.broadcastChanges();

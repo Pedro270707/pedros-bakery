@@ -1,4 +1,4 @@
-package net.pedroricardo.screen;
+package net.pedroricardo.client.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

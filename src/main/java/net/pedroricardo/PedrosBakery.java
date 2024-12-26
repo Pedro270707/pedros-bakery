@@ -60,10 +60,10 @@ public class PedrosBakery {
 		PBItems.init();
 		CakeFlavors.init();
 		CakeTops.init();
-		PBComponentTypes.init();
-		PBCreativeTab.init();
 		PBRecipeSerializers.init();
 		PBLootFunctionTypes.init();
+		PBComponentTypes.init();
+		PBCreativeTab.init();
 		PBNetworkRegistry.init();
 
 		PBHelpers.addDefaultComponent(Items.ENCHANTED_GOLDEN_APPLE, PBComponentTypes.FEATURES.get(), Collections.singletonList(CakeFeatures.GLINT.get()));
@@ -120,5 +120,7 @@ public class PedrosBakery {
 			}
 		}
 		PBHelpers.addDefaultComponent(PBItems.SHAPED_COOKIE.get(), PBComponentTypes.COOKIE_SHAPE.get(), set);
+
+		eventBus.addListener(PBCreativeTab::buildCreativeTab);
 	}
 }

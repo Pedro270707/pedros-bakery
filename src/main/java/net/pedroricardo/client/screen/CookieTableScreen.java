@@ -1,4 +1,4 @@
-package net.pedroricardo.screen;
+package net.pedroricardo.client.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,6 +17,7 @@ import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.network.PBNetworkRegistry;
+import net.pedroricardo.screen.CookieTableScreenHandler;
 import org.joml.Vector2i;
 
 import java.util.*;

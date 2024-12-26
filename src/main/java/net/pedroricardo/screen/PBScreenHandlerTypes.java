@@ -1,22 +1,24 @@
 package net.pedroricardo.screen;
 
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.resource.featuretoggle.FeatureFlag;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.flag.FeatureFlag;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 import net.pedroricardo.PedrosBakery;
 
 public class PBScreenHandlerTypes {
-    public static final ScreenHandlerType<CookieTableScreenHandler> COOKIE_TABLE = register("cookie_table", CookieTableScreenHandler::new);
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, PedrosBakery.MOD_ID);
 
-    public static <T extends ScreenHandler> ScreenHandlerType<T> register(String id, ScreenHandlerType.Factory<T> factory) {
-        return Registry.register(Registries.SCREEN_HANDLER, Identifier.of(PedrosBakery.MOD_ID, id), new ScreenHandlerType<>(factory, FeatureFlags.VANILLA_FEATURES));
+    public static final RegistryObject<MenuType<CookieTableScreenHandler>> COOKIE_TABLE = register("cookie_table", CookieTableScreenHandler::new);
+
+    public static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> register(String id, MenuType.MenuSupplier<T> factory) {
+        return MENU_TYPES.register(id, () -> new MenuType<>(factory, FeatureFlags.VANILLA_SET));
     }
 
-    public static <T extends ScreenHandler> ScreenHandlerType<T> register(String id, ScreenHandlerType.Factory<T> factory, FeatureFlag... requiredFeatures) {
-        return Registry.register(Registries.SCREEN_HANDLER, Identifier.of(PedrosBakery.MOD_ID, id), new ScreenHandlerType<>(factory, FeatureFlags.FEATURE_MANAGER.featureSetOf(requiredFeatures)));
+    public static <T extends AbstractContainerMenu> RegistryObject<MenuType<T>> register(String id, MenuType.MenuSupplier<T> factory, FeatureFlag... requiredFeatures) {
+        return MENU_TYPES.register(id, () -> new MenuType<>(factory, FeatureFlags.REGISTRY.subset(requiredFeatures)));
     }
 }

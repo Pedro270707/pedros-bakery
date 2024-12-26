@@ -1,16 +1,14 @@
-package net.pedroricardo.render.item;
+package net.pedroricardo.client.render.item;
 
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import net.pedroricardo.PBHelpers;
-import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.item.PBComponentTypes;
-import net.pedroricardo.render.PBRenderHelper;
+import net.pedroricardo.client.render.PBRenderHelper;
 import org.joml.Vector2i;
 
 import java.util.*;
@@ -23,9 +21,9 @@ public class ShapedCookieItemRenderer {
         this.pixelDataGetter = pixelDataGetter;
     }
 
-    public void render(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        if (!PBHelpers.contains(stack, PBComponentTypes.COOKIE_SHAPE)) return;
-        Set<Vector2i> shape = PBHelpers.get(stack, PBComponentTypes.COOKIE_SHAPE);
+    public void render(ItemStack stack, ItemDisplayContext mode, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
+        if (!PBHelpers.contains(stack, PBComponentTypes.COOKIE_SHAPE.get())) return;
+        Set<Vector2i> shape = PBHelpers.get(stack, PBComponentTypes.COOKIE_SHAPE.get());
 
         matrices.scale(-1.0f, 1.0f, -1.0f);
         matrices.translate(0.0f, 1.0f, -0.5333333f);
@@ -36,7 +34,7 @@ public class ShapedCookieItemRenderer {
         Set<Face> quads = this.cache.get(shape);
 
         for (Face face : quads) {
-            PBRenderHelper.createFace(face.direction(), matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucentCull(face.pixelData().texture())), face.x(), face.y(), face.z(), face.width(), face.height(), face.x(), face.y(), face.x() + 1, face.y() + 1, 16, 16, light, overlay, face.pixelData().color());
+            PBRenderHelper.createFace(face.direction(), matrices, vertexConsumers.getBuffer(RenderType.entityTranslucentCull(face.pixelData().texture())), face.x(), face.y(), face.z(), face.width(), face.height(), face.x(), face.y(), face.x() + 1, face.y() + 1, 16, 16, light, overlay, face.pixelData().color());
         }
     }
 
