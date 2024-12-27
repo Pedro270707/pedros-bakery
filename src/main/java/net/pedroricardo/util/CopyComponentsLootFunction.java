@@ -1,6 +1,5 @@
-package net.pedroricardo.datagen.custom;
+package net.pedroricardo.util;
 
-import com.google.common.collect.Lists;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import net.minecraft.block.entity.BlockEntity;
@@ -10,14 +9,11 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.function.ConditionalLootFunction;
-import net.minecraft.loot.function.CopyNbtLootFunction;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.provider.nbt.ContextLootNbtProvider;
-import net.minecraft.loot.provider.nbt.LootNbtProvider;
 import net.pedroricardo.block.entity.ItemComponentProvider;
 
-import java.util.List;
 import java.util.Set;
 
 public class CopyComponentsLootFunction extends ConditionalLootFunction {

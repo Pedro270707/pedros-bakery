@@ -1,4 +1,4 @@
-package net.pedroricardo.datagen.custom;
+package net.pedroricardo.util;
 
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;

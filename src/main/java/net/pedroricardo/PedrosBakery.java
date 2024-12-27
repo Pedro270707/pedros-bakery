@@ -1,6 +1,5 @@
 package net.pedroricardo;
 
-import kotlin.jvm.functions.Function0;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApi;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -12,7 +11,7 @@ import net.pedroricardo.block.extras.CakeFeature;
 import net.pedroricardo.block.extras.CakeFeatures;
 import net.pedroricardo.block.extras.CakeFlavors;
 import net.pedroricardo.block.extras.CakeTops;
-import net.pedroricardo.datagen.custom.PBLootFunctionTypes;
+import net.pedroricardo.util.PBLootFunctionTypes;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import net.pedroricardo.item.recipes.MixingPatternManager;
