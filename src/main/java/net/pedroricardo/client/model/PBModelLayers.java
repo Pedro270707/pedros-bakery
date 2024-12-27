@@ -19,7 +19,9 @@ public class PBModelLayers {
     public static final ModelLayerLocation FULLY_RAISED_PIE = create("pie", "fully_raised");
 
     private static ModelLayerLocation create(String id, String layer) {
-        return new ModelLayerLocation(new ResourceLocation(PedrosBakery.MOD_ID, id), layer);
+        ModelLayerLocation location = new ModelLayerLocation(new ResourceLocation(PedrosBakery.MOD_ID, id), layer);
+        LAYERS.add(location);
+        return location;
     }
 
     public static void init() {

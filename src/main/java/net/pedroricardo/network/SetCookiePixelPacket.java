@@ -16,6 +16,11 @@ public class SetCookiePixelPacket {
     private final Vector2i pixel;
     private final boolean value;
 
+    public SetCookiePixelPacket(Vector2i pixel, boolean value) {
+        this.pixel = pixel;
+        this.value = value;
+    }
+
     public SetCookiePixelPacket(FriendlyByteBuf buf) {
         this.pixel = buf.readJsonWithCodec(PBCodecs.VECTOR_2I);
         this.value = buf.readBoolean();

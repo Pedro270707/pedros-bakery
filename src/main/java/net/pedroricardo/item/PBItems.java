@@ -1,12 +1,23 @@
 package net.pedroricardo.item;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import net.pedroricardo.PedrosBakery;
+import net.pedroricardo.client.PedrosBakeryClient;
+import net.pedroricardo.client.render.PBCakeBlockRenderer;
+
+import java.util.function.Consumer;
 
 public class PBItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, PedrosBakery.MOD_ID);
@@ -33,7 +44,22 @@ public class PBItems {
     public static final RegistryObject<Item> BUTTER = ITEMS.register("butter", () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationMod(0.1f).build())));
     public static final RegistryObject<Item> BUTTER_CHURN_STAFF = ITEMS.register("butter_churn_staff", () -> new Item(new Item.Properties().stacksTo(1).durability(64)));
     public static final RegistryObject<Item> DOUGH = ITEMS.register("dough", () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> SHAPED_COOKIE = ITEMS.register("shaped_cookie", () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(2).saturationMod(0.1f).build())));
+    public static final RegistryObject<Item> SHAPED_COOKIE = ITEMS.register("shaped_cookie", () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(2).saturationMod(0.1f).build())) {
+        @Override
+        public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+            consumer.accept(new IClientItemExtensions() {
+                @Override
+                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                    return new BlockEntityWithoutLevelRenderer(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels()) {
+                        @Override
+                        public void renderByItem(ItemStack stack, ItemDisplayContext mode, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
+                            PedrosBakeryClient.SHAPED_COOKIE_RENDERER.render(stack, mode, matrices, vertexConsumers, light, overlay);
+                        }
+                    };
+                }
+            });
+        }
+    });
 
     public static void init() {
         PedrosBakery.LOGGER.debug("Registering items");

@@ -1,7 +1,6 @@
 package net.pedroricardo;
 
 import me.fzzyhmstrs.fzzy_config.api.ConfigApi;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
@@ -12,18 +11,17 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.resource.ResourcePackLoader;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.extras.CakeFeature;
 import net.pedroricardo.block.extras.CakeFeatures;
 import net.pedroricardo.block.extras.CakeFlavors;
 import net.pedroricardo.block.extras.CakeTops;
-import net.pedroricardo.datagen.custom.PBLootFunctionTypes;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import net.pedroricardo.item.recipes.MixingPatternManager;
 import net.pedroricardo.item.recipes.PBRecipeSerializers;
 import net.pedroricardo.item.recipes.PieColorOverrides;
+import net.pedroricardo.util.PBLootFunctionTypes;
 import org.joml.Vector2i;
 import net.pedroricardo.network.PBNetworkRegistry;
 import org.slf4j.Logger;

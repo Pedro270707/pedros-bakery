@@ -32,7 +32,7 @@ public class FrostedDonutRecipe extends CustomRecipe {
                 donutStack = itemStack2;
                 continue;
             }
-            if (itemStack2.getItem() instanceof FrostingBottleItem && PBHelpers.contains(itemStack2, PBComponentTypes.TOP)) {
+            if (itemStack2.getItem() instanceof FrostingBottleItem && PBHelpers.contains(itemStack2, PBComponentTypes.TOP.get())) {
                 if (!bottleStack.isEmpty()) {
                     return false;
                 }
@@ -53,12 +53,12 @@ public class FrostedDonutRecipe extends CustomRecipe {
             if (itemStack2.isEmpty()) continue;
             if (itemStack2.is(PBItems.DONUT.get())) {
                 donutStack = itemStack2;
-            } else if (itemStack2.getItem() instanceof FrostingBottleItem && PBHelpers.contains(itemStack2, PBComponentTypes.TOP)) {
+            } else if (itemStack2.getItem() instanceof FrostingBottleItem && PBHelpers.contains(itemStack2, PBComponentTypes.TOP.get())) {
                 bottleStack = itemStack2;
             }
         }
         ItemStack newStack = donutStack.copyWithCount(1);
-        PBHelpers.set(newStack, PBComponentTypes.TOP, PBHelpers.get(bottleStack, PBComponentTypes.TOP));
+        PBHelpers.set(newStack, PBComponentTypes.TOP.get(), PBHelpers.get(bottleStack, PBComponentTypes.TOP.get()));
         return newStack;
     }
 

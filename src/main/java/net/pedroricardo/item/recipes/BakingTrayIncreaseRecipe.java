@@ -46,18 +46,18 @@ public class BakingTrayIncreaseRecipe extends CustomRecipe {
         if (!hasIronIngots || trayIndex.isEmpty()) return false;
         int trayIndexInt = trayIndex.getAsInt();
         ItemStack trayStack = inventory.getItem(trayIndexInt).copy();
-        if (!PBHelpers.getOrDefault(trayStack, PBComponentTypes.FULL_BATTER, CakeBatter.getFullSizeEmpty()).isEmpty()) return false;
+        if (!PBHelpers.getOrDefault(trayStack, PBComponentTypes.FULL_BATTER.get(), CakeBatter.getFullSizeEmpty()).isEmpty()) return false;
         for (int i = 0; i < inventory.getContainerSize(); i++) {
             ItemStack stack = inventory.getItem(i);
             if (stack.is(Items.IRON_INGOT)) {
                 if (i < (trayIndexInt - trayIndexInt % inventory.getWidth()) || i > trayIndexInt - trayIndexInt % inventory.getWidth() + 2) {
-                    PBHelpers.set(trayStack, PBComponentTypes.HEIGHT, PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()) + 2);
+                    PBHelpers.set(trayStack, PBComponentTypes.HEIGHT.get(), PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT.get(), PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()) + 2);
                 } else {
-                    PBHelpers.set(trayStack, PBComponentTypes.SIZE, PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize.get()) + 2);
+                    PBHelpers.set(trayStack, PBComponentTypes.SIZE.get(), PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE.get(), PedrosBakery.CONFIG.bakingTrayDefaultSize.get()) + 2);
                 }
             }
         }
-        return PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()) <= PedrosBakery.CONFIG.bakingTrayMaxHeight.get() && PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize.get()) <= PedrosBakery.CONFIG.bakingTrayMaxSize.get();
+        return PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT.get(), PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()) <= PedrosBakery.CONFIG.bakingTrayMaxHeight.get() && PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE.get(), PedrosBakery.CONFIG.bakingTrayDefaultSize.get()) <= PedrosBakery.CONFIG.bakingTrayMaxSize.get();
     }
 
     @Override
@@ -76,9 +76,9 @@ public class BakingTrayIncreaseRecipe extends CustomRecipe {
             ItemStack stack = inventory.getItem(i);
             if (stack.is(Items.IRON_INGOT)) {
                 if (i < (trayIndex - trayIndex % inventory.getWidth()) || i > trayIndex - trayIndex % inventory.getWidth() + 2) {
-                    PBHelpers.set(trayStack, PBComponentTypes.HEIGHT, Math.min(PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()) + 2, 16));
+                    PBHelpers.set(trayStack, PBComponentTypes.HEIGHT.get(), Math.min(PBHelpers.getOrDefault(trayStack, PBComponentTypes.HEIGHT.get(), PedrosBakery.CONFIG.bakingTrayDefaultHeight.get()) + 2, 16));
                 } else {
-                    PBHelpers.set(trayStack, PBComponentTypes.SIZE, Math.min(PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize.get()) + 2, 16));
+                    PBHelpers.set(trayStack, PBComponentTypes.SIZE.get(), Math.min(PBHelpers.getOrDefault(trayStack, PBComponentTypes.SIZE.get(), PedrosBakery.CONFIG.bakingTrayDefaultSize.get()) + 2, 16));
                 }
             }
         }

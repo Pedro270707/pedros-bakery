@@ -34,7 +34,7 @@ public class ExpandableBakingTrayRecipe extends CustomRecipe {
                     if (!stack.is(Items.DIAMOND)) return false;
                     break;
                 case 4:
-                    if (!stack.is(PBBlocks.BAKING_TRAY.get().asItem()) || !PBHelpers.getOrDefault(stack, PBComponentTypes.FULL_BATTER, CakeBatter.getFullSizeEmpty()).isEmpty()) return false;
+                    if (!stack.is(PBBlocks.BAKING_TRAY.get().asItem()) || !PBHelpers.getOrDefault(stack, PBComponentTypes.FULL_BATTER.get(), CakeBatter.getFullSizeEmpty()).isEmpty()) return false;
                     break;
                 default: {
                     if (!stack.is(Items.AIR)) return false;

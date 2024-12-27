@@ -1,27 +1,31 @@
 package net.pedroricardo.item;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
+import net.pedroricardo.client.render.PBCakeBlockRenderer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class PBCakeBlockItem extends BlockItem {
     public PBCakeBlockItem(Block block, Item.Properties settings) {
@@ -71,5 +75,21 @@ public class PBCakeBlockItem extends BlockItem {
         ItemStack stack = super.getDefaultInstance();
         PBHelpers.set(stack, PBComponentTypes.BATTER_LIST.get(), Collections.singletonList(CakeBatter.getFullSizeDefault().withBakeTime(2000)));
         return stack;
+    }
+
+    @Override
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new IClientItemExtensions() {
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return new BlockEntityWithoutLevelRenderer(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels()) {
+                    @Override
+                    public void renderByItem(ItemStack stack, ItemDisplayContext mode, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
+                        PBCakeBlockRenderer.RENDER_CAKE.readFrom(stack);
+                        Minecraft.getInstance().getBlockEntityRenderDispatcher().renderItem(PBCakeBlockRenderer.RENDER_CAKE, matrices, vertexConsumers, light, overlay);
+                    }
+                };
+            }
+        });
     }
 }

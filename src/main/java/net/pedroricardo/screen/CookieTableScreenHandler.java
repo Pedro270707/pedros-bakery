@@ -24,7 +24,7 @@ public class CookieTableScreenHandler extends AbstractContainerMenu {
     protected final ContainerLevelAccess context;
     protected final Inventory playerInventory;
     protected final Container input;
-    protected final ResultContainer output = new ResultContainer();
+    public final ResultContainer output = new ResultContainer();
     protected Set<Vector2i> cookieShape = new HashSet<>();
 
     public CookieTableScreenHandler(int syncId, Inventory playerInventory, ContainerLevelAccess context) {
