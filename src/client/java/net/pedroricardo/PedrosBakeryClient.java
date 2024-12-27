@@ -49,9 +49,11 @@ import org.joml.Vector2i;
 public class PedrosBakeryClient implements ClientModInitializer {
 	public static boolean isRenderingInWorld = false;
 
-	public static final ShapedCookieItemRenderer SHAPED_COOKIE_RENDERER = new ShapedCookieItemRenderer((pixel, shape) -> {
+	public static final ShapedCookieItemRenderer SHAPED_COOKIE_RENDERER = new ShapedCookieItemRenderer((stack, pixel, shape) -> {
+		CakeTop top = PBHelpers.get(stack, PBComponentTypes.TOP);
+		int topColor = top == null ? 0xFFFFFFFF : top.color();
 		if ((!shape.contains(new Vector2i(pixel.x() - 1, pixel.y())) && shape.contains(new Vector2i(pixel.x(), pixel.y() + 1))) || !shape.contains(new Vector2i(pixel.x(), pixel.y() - 1)) || !shape.contains(new Vector2i(pixel.x(), pixel.y() - 1)) || (!shape.contains(new Vector2i(pixel.x() - 1, pixel.y() - 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() - 2)) && shape.contains(new Vector2i(pixel.x() - 2, pixel.y())))) {
-			return new PixelData(Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_light_border.png"), 0xFFFFFFFF);
+			return new PixelData(Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_light_border" + (top == null ? "" : "_frosted") + ".png"), topColor);
 		} else if (!shape.contains(new Vector2i(pixel.x() + 1, pixel.y()))
 				|| !shape.contains(new Vector2i(pixel.x(), pixel.y() + 1))
 				|| (!shape.contains(new Vector2i(pixel.x() + 1, pixel.y() + 1)) && shape.contains(new Vector2i(pixel.x(), pixel.y() + 2)) && shape.contains(new Vector2i(pixel.x() + 2, pixel.y())))
@@ -61,7 +63,7 @@ public class PedrosBakeryClient implements ClientModInitializer {
 		} else if (!shape.contains(new Vector2i(pixel.x(), pixel.y() + 2))) {
 			return new PixelData(Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_dark_inner.png"), 0xFFFFFFFF);
 		}
-		return new PixelData(Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_light_inner.png"), 0xFFFFFFFF);
+		return new PixelData(Identifier.of(PedrosBakery.MOD_ID, "textures/item/cookie_light_inner" + (top == null ? "" : "_frosted") + ".png"), topColor);
 	});
 
 	@Override
