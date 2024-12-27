@@ -21,5 +21,6 @@ public class PBItemTagProvider extends FabricTagProvider.ItemTagProvider {
         this.getOrCreateTagBuilder(PBTags.Items.COOKIES).add(Items.COOKIE, PBItems.APPLE_COOKIE, PBItems.SHAPED_COOKIE);
         this.getOrCreateTagBuilder(PBTags.Items.CAKE_STAND_ITEM).add(Items.CAKE, PBBlocks.CAKE.asItem(), PBBlocks.CUPCAKE.asItem(), PBBlocks.PIE.asItem());
         this.getOrCreateTagBuilder(PBTags.Items.COOKIE_INGREDIENTS).add(PBItems.DOUGH);
+        this.getOrCreateTagBuilder(PBTags.Items.FROSTABLES).add(PBItems.DONUT, PBItems.SHAPED_COOKIE);
     }
 }

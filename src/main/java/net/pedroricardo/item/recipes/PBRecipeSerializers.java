@@ -11,7 +11,7 @@ import net.pedroricardo.PedrosBakery;
 public class PBRecipeSerializers {
     public static final RecipeSerializer<BakingTrayIncreaseRecipe> BAKING_TRAY_INCREASE = register("baking_tray_increase_recipe", new SpecialRecipeSerializer<>(BakingTrayIncreaseRecipe::new));
     public static final RecipeSerializer<ExpandableBakingTrayRecipe> EXPANDABLE_BAKING_TRAY = register("expandable_baking_tray_recipe", new SpecialRecipeSerializer<>(ExpandableBakingTrayRecipe::new));
-    public static final RecipeSerializer<FrostedDonutRecipe> FROSTED_DONUT = register("frosted_donut_recipe", new SpecialRecipeSerializer<>(FrostedDonutRecipe::new));
+    public static final RecipeSerializer<FrostedItemRecipe> FROSTED_ITEM = register("frosted_item_recipe", new SpecialRecipeSerializer<>(FrostedItemRecipe::new));
 
     private static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String id, S serializer) {
         return Registry.register(Registries.RECIPE_SERIALIZER, Identifier.of(PedrosBakery.MOD_ID, id), serializer);

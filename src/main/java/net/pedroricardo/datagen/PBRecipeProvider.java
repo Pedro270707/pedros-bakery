@@ -23,7 +23,7 @@ import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBItems;
 import net.pedroricardo.item.recipes.BakingTrayIncreaseRecipe;
 import net.pedroricardo.item.recipes.ExpandableBakingTrayRecipe;
-import net.pedroricardo.item.recipes.FrostedDonutRecipe;
+import net.pedroricardo.item.recipes.FrostedItemRecipe;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -69,6 +69,6 @@ public class PBRecipeProvider extends FabricRecipeProvider {
 
         ComplexRecipeJsonBuilder.create(BakingTrayIncreaseRecipe::new).offerTo(exporter, "baking_tray_increase");
         ComplexRecipeJsonBuilder.create(ExpandableBakingTrayRecipe::new).offerTo(exporter, "expandable_baking_tray");
-        ComplexRecipeJsonBuilder.create(FrostedDonutRecipe::new).offerTo(exporter, "frosted_donut");
+        ComplexRecipeJsonBuilder.create(FrostedItemRecipe::new).offerTo(exporter, "frosted_donut");
     }
 }

@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 
 public class PBItems {
     public static final Item FROSTING_BOTTLE = register("frosting_bottle", new FrostingBottleItem(new Item.Settings().maxCount(1).recipeRemainder(Items.GLASS_BOTTLE)));
-    public static final Item DONUT = register("donut", new DonutItem(new Item.Settings().food(new FoodComponent.Builder().nutrition(2).saturationModifier(0.1f).build())));
+    public static final Item DONUT = register("donut", new FrostedItem(new Item.Settings().food(new FoodComponent.Builder().nutrition(2).saturationModifier(0.1f).build())));
     public static final Item WHITE_SPRINKLES = register("white_sprinkles", new Item(new Item.Settings().component(PBComponentTypes.FEATURES, List.of(CakeFeatures.WHITE_SPRINKLES))));
     public static final Item ORANGE_SPRINKLES = register("orange_sprinkles", new Item(new Item.Settings().component(PBComponentTypes.FEATURES, List.of(CakeFeatures.ORANGE_SPRINKLES))));
     public static final Item MAGENTA_SPRINKLES = register("magenta_sprinkles", new Item(new Item.Settings().component(PBComponentTypes.FEATURES, List.of(CakeFeatures.MAGENTA_SPRINKLES))));
@@ -50,7 +50,7 @@ public class PBItems {
                 }
             }
         }
-        SHAPED_COOKIE = register("shaped_cookie", new Item(new Item.Settings().food(new FoodComponent.Builder().nutrition(2).saturationModifier(0.1f).build()).component(PBComponentTypes.COOKIE_SHAPE, set)));
+        SHAPED_COOKIE = register("shaped_cookie", new FrostedItem(new Item.Settings().food(new FoodComponent.Builder().nutrition(2).saturationModifier(0.1f).build()).component(PBComponentTypes.COOKIE_SHAPE, set)));
     }
 
     public static Item register(String id, Item item) {

@@ -14,8 +14,8 @@ import net.pedroricardo.block.tags.PBTags;
 
 import java.util.List;
 
-public class DonutItem extends Item {
-    public DonutItem(Settings settings) {
+public class FrostedItem extends Item {
+    public FrostedItem(Settings settings) {
         super(settings);
     }
 
