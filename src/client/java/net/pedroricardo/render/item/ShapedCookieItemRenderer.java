@@ -5,16 +5,15 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.pedroricardo.PBHelpers;
-import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.render.PBRenderHelper;
 import org.joml.Vector2i;
 
 import java.util.*;
 
+// TODO: greedy meshing on front and back faces
 public class ShapedCookieItemRenderer {
     private final PixelDataGetter pixelDataGetter;
     private final Map<Set<Vector2i>, Set<Face>> cache = new HashMap<>();
