@@ -9,12 +9,12 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import net.pedroricardo.PBHelpers;
+import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.FrostingBottleItem;
 import net.pedroricardo.item.PBComponentTypes;
-import net.pedroricardo.item.PBItems;
 
-public class FrostedDonutRecipe extends SpecialCraftingRecipe {
-    public FrostedDonutRecipe(Identifier id, CraftingRecipeCategory category) {
+public class FrostedItemRecipe extends SpecialCraftingRecipe {
+    public FrostedItemRecipe(Identifier id, CraftingRecipeCategory category) {
         super(id, category);
     }
 
@@ -25,7 +25,7 @@ public class FrostedDonutRecipe extends SpecialCraftingRecipe {
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack itemStack2 = inventory.getStack(i);
             if (itemStack2.isEmpty()) continue;
-            if (itemStack2.isOf(PBItems.DONUT)) {
+            if (itemStack2.isIn(PBTags.Items.FROSTABLES)) {
                 if (!donutStack.isEmpty()) {
                     return false;
                 }
@@ -51,7 +51,7 @@ public class FrostedDonutRecipe extends SpecialCraftingRecipe {
         for (int i = 0; i < inventory.size(); ++i) {
             ItemStack itemStack2 = inventory.getStack(i);
             if (itemStack2.isEmpty()) continue;
-            if (itemStack2.isOf(PBItems.DONUT)) {
+            if (itemStack2.isIn(PBTags.Items.FROSTABLES)) {
                 donutStack = itemStack2;
             } else if (itemStack2.getItem() instanceof FrostingBottleItem && PBHelpers.contains(itemStack2, PBComponentTypes.TOP)) {
                 bottleStack = itemStack2;
@@ -69,6 +69,6 @@ public class FrostedDonutRecipe extends SpecialCraftingRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return PBRecipeSerializers.FROSTED_DONUT;
+        return PBRecipeSerializers.FROSTED_ITEM;
     }
 }

@@ -10,7 +10,7 @@ import net.pedroricardo.PedrosBakery;
 
 public class PBItems {
     public static final Item FROSTING_BOTTLE = register("frosting_bottle", new FrostingBottleItem(new Item.Settings().maxCount(1).recipeRemainder(Items.GLASS_BOTTLE)));
-    public static final Item DONUT = register("donut", new DonutItem(new Item.Settings().food(new FoodComponent.Builder().hunger(2).saturationModifier(0.1f).build())));
+    public static final Item DONUT = register("donut", new FrostedItem(new Item.Settings().food(new FoodComponent.Builder().hunger(2).saturationModifier(0.1f).build())));
     public static final Item WHITE_SPRINKLES = register("white_sprinkles", new Item(new Item.Settings()));
     public static final Item ORANGE_SPRINKLES = register("orange_sprinkles", new Item(new Item.Settings()));
     public static final Item MAGENTA_SPRINKLES = register("magenta_sprinkles", new Item(new Item.Settings()));
@@ -31,7 +31,7 @@ public class PBItems {
     public static final Item BUTTER = register("butter", new Item(new Item.Settings().food(new FoodComponent.Builder().hunger(1).saturationModifier(0.1f).build())));
     public static final Item BUTTER_CHURN_STAFF = register("butter_churn_staff", new Item(new Item.Settings().maxCount(1).maxDamage(64)));
     public static final Item DOUGH = register("dough", new Item(new Item.Settings()));
-    public static final Item SHAPED_COOKIE = register("shaped_cookie", new Item(new Item.Settings().food(new FoodComponent.Builder().hunger(2).saturationModifier(0.1f).build())));
+    public static final Item SHAPED_COOKIE = register("shaped_cookie", new FrostedItem(new Item.Settings().food(new FoodComponent.Builder().hunger(2).saturationModifier(0.1f).build())));
 
     public static Item register(String id, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(PedrosBakery.MOD_ID, id), item);

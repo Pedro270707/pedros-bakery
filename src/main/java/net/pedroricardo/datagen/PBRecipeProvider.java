@@ -61,6 +61,6 @@ public class PBRecipeProvider extends FabricRecipeProvider {
 
         ComplexRecipeJsonBuilder.create(PBRecipeSerializers.BAKING_TRAY_INCREASE).offerTo(exporter, "baking_tray_increase");
         ComplexRecipeJsonBuilder.create(PBRecipeSerializers.EXPANDABLE_BAKING_TRAY).offerTo(exporter, "expandable_baking_tray");
-        ComplexRecipeJsonBuilder.create(PBRecipeSerializers.FROSTED_DONUT).offerTo(exporter, "frosted_donut");
+        ComplexRecipeJsonBuilder.create(PBRecipeSerializers.FROSTED_ITEM).offerTo(exporter, "frosted_donut");
     }
 }
