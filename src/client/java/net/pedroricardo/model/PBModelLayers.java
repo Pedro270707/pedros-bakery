@@ -34,6 +34,6 @@ public class PBModelLayers {
     }
 
     public static void init() {
-        PedrosBakery.LOGGER.debug("Registering model layers");
+        PedrosBakery.LOGGER.debug("Initializing model layer registry");
     }
 }

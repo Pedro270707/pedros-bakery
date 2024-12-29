@@ -75,4 +75,8 @@ public class PBBlockEntities {
     private static <T extends BlockEntity> BlockEntityType<T> register(FabricBlockEntityTypeBuilder<T> builder, String id) {
         return Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of(PedrosBakery.MOD_ID, id), builder.build());
     }
+
+    public static void init() {
+        PedrosBakery.LOGGER.debug("Initializing block entity registry");
+    }
 }

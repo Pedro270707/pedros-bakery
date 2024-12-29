@@ -23,9 +23,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.PBBlockEntities;
-import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.extras.CakeBatter;
-import net.pedroricardo.block.extras.CakeFeature;
 import net.pedroricardo.block.extras.CakeFeatures;
 import net.pedroricardo.block.extras.CakeTop;
 import net.pedroricardo.block.extras.features.BlockCakeFeature;
@@ -139,32 +137,14 @@ public class PedrosBakeryClient implements ClientModInitializer {
 			if (id == null) return;
 			PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), batter, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(Identifier.of(id.getNamespace(), "textures/entity/cake/feature/" + id.getPath() + ".png"))), light, overlay, 0xFFFFFFFF);
 		};
-		CakeFeatureRenderer blockOnTopFeatureRenderer = new CakeFeatureRenderer() {
-			@Override
-			public void render(CakeFeature feature, PBCakeBlockEntity entity, CakeBatter<FullBatterSizeContainer> batter, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-				if (batter.getSizeContainer().getBites() >= batter.getSizeContainer().getSize() / 2.0f || !(feature instanceof BlockCakeFeature blockFeature)) return;
-				matrices.push();
-				matrices.translate(0.0f, batter.getSizeContainer().getHeight() / 16.0f, 0.0f);
-				MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockFeature.getBlockState(), matrices, vertexConsumers, light, overlay);
-				matrices.pop();
-			}
-
-			@Override
-			public boolean needsIrisFix() {
-				return false;
-			}
-		};
-		CakeFeatureRendererRegistry.register(CakeFeatures.GLINT, new CakeFeatureRenderer() {
-			@Override
-			public void render(CakeFeature feature, PBCakeBlockEntity entity, CakeBatter<FullBatterSizeContainer> batter, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-				PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), batter, matrices, vertexConsumers.getBuffer(RenderLayer.getDirectEntityGlint()), light, overlay, 0xFFFFFFFF, PBConfig.CakeRenderQuality.SIMPLE);
-			}
-
-			@Override
-			public boolean needsIrisFix() {
-				return false;
-			}
-		});
+		CakeFeatureRenderer blockOnTopFeatureRenderer = (feature, entity, batter, matrices, vertexConsumers, light, overlay) -> {
+            if (batter.getSizeContainer().getBites() >= batter.getSizeContainer().getSize() / 2.0f || !(feature instanceof BlockCakeFeature blockFeature)) return;
+            matrices.push();
+            matrices.translate(0.0f, batter.getSizeContainer().getHeight() / 16.0f, 0.0f);
+            MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockFeature.getBlockState(), matrices, vertexConsumers, light, overlay);
+            matrices.pop();
+        };
+		CakeFeatureRendererRegistry.register(CakeFeatures.GLINT, (feature, entity, batter, matrices, vertexConsumers, light, overlay) -> PBCakeBlockRenderer.renderCakeBatter(entity.getBatterList(), batter, matrices, vertexConsumers.getBuffer(RenderLayer.getDirectEntityGlint()), light, overlay, 0xFFFFFFFF, PBConfig.CakeRenderQuality.SIMPLE));
 		CakeFeatureRendererRegistry.register(CakeFeatures.SWEET_BERRIES, cakeLayerFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.RED_MUSHROOM, blockOnTopFeatureRenderer);
 		CakeFeatureRendererRegistry.register(CakeFeatures.BROWN_MUSHROOM, blockOnTopFeatureRenderer);

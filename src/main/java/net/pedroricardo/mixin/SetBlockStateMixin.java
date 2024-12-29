@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(WorldChunk.class)
 public class SetBlockStateMixin {
-    @Inject(method = "setBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/ChunkSection;setBlockState(IIILnet/minecraft/block/BlockState;)Lnet/minecraft/block/BlockState;", shift = At.Shift.BEFORE))
+    @Inject(method = "setBlockState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/ChunkSection;setBlockState(IIILnet/minecraft/block/BlockState;)Lnet/minecraft/block/BlockState;"))
     private void pedrosbakery$removePartsWhenReplaced(BlockPos pos, BlockState state, boolean moved, CallbackInfoReturnable<BlockState> cir) {
         if (((WorldChunk)(Object) this).getWorld().getBlockState(pos).getBlock() instanceof MultipartBlock<?, ?, ?> multipartBlock && ((WorldChunk)(Object) this).getWorld().getBlockState(pos) != state) {
             multipartBlock.removePartsWhenReplaced(((WorldChunk)(Object) this).getWorld().getBlockState(pos), ((WorldChunk)(Object) this).getWorld(), pos, state, moved);

@@ -2,6 +2,7 @@ package net.pedroricardo.network;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.pedroricardo.PBCodecs;
+import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.screen.CookieTableScreenHandler;
 import org.joml.Vector2i;
 
@@ -11,6 +12,8 @@ import java.util.Set;
 
 public class PBClientNetworkRegistry {
     public static void init() {
+        PedrosBakery.LOGGER.debug("Initializing client payload type and receiver registry");
+
         ClientPlayNetworking.registerGlobalReceiver(PBNetworkRegistry.SET_COOKIE_SHAPE, (client, handler, buf, responseSender) -> {
             if (client.player != null && client.player.currentScreenHandler instanceof CookieTableScreenHandler cookieTable) {
                 Set<Vector2i> set = buf.decodeAsJson(PBCodecs.VECTOR_2I.listOf().xmap(HashSet::new, ArrayList::new));

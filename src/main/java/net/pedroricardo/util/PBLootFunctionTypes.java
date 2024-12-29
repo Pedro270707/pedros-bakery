@@ -16,6 +16,6 @@ public class PBLootFunctionTypes {
     }
 
     public static void init() {
-        PedrosBakery.LOGGER.debug("Registering loot functions");
+        PedrosBakery.LOGGER.debug("Initializing loot function registry");
     }
 }

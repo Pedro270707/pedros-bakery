@@ -19,4 +19,8 @@ public class PBScreenHandlerTypes {
     public static <T extends ScreenHandler> ScreenHandlerType<T> register(String id, ScreenHandlerType.Factory<T> factory, FeatureFlag... requiredFeatures) {
         return Registry.register(Registries.SCREEN_HANDLER, Identifier.of(PedrosBakery.MOD_ID, id), new ScreenHandlerType<>(factory, FeatureFlags.FEATURE_MANAGER.featureSetOf(requiredFeatures)));
     }
+
+    public static void init() {
+        PedrosBakery.LOGGER.debug("Initializing screen handler type registry");
+    }
 }

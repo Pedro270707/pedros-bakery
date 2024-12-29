@@ -38,6 +38,6 @@ public class PBItems {
     }
 
     public static void init() {
-        PedrosBakery.LOGGER.debug("Registering items");
+        PedrosBakery.LOGGER.debug("Initializing item registry");
     }
 }
