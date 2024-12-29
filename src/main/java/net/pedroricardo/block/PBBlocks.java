@@ -63,6 +63,6 @@ public class PBBlocks {
     }
 
     public static void init() {
-        PedrosBakery.LOGGER.debug("Registering blocks");
+        PedrosBakery.LOGGER.debug("Initializing block registry");
     }
 }

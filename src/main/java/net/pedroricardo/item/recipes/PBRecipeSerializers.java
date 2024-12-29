@@ -18,6 +18,6 @@ public class PBRecipeSerializers {
     }
 
     public static void init() {
-        PedrosBakery.LOGGER.debug("Registering recipe serializers");
+        PedrosBakery.LOGGER.debug("Initializing recipe serializer registry");
     }
 }

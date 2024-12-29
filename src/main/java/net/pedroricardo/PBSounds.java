@@ -14,6 +14,6 @@ public class PBSounds {
     }
 
     public static void init() {
-        PedrosBakery.LOGGER.debug("Initializing sounds");
+        PedrosBakery.LOGGER.debug("Initializing sound registry");
     }
 }

@@ -1,17 +1,17 @@
 package net.pedroricardo;
 
-import kotlin.jvm.functions.Function0;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApi;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.item.Items;
 import net.minecraft.resource.ResourceType;
 import net.pedroricardo.block.PBBlocks;
+import net.pedroricardo.block.entity.PBBlockEntities;
 import net.pedroricardo.block.extras.CakeFeatures;
 import net.pedroricardo.block.extras.CakeFlavors;
 import net.pedroricardo.block.extras.CakeTops;
+import net.pedroricardo.screen.PBScreenHandlerTypes;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import net.pedroricardo.item.recipes.*;
@@ -33,14 +33,17 @@ public class PedrosBakery implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		PBSounds.init();
+		PBBlockEntities.init();
 		PBBlocks.init();
 		PBItems.init();
 		CakeFlavors.init();
+		CakeFeatures.init();
 		CakeTops.init();
 		PBComponentTypes.init();
 		PBCreativeTab.init();
 		PBRecipeSerializers.init();
 		PBNetworkRegistry.init();
+		PBScreenHandlerTypes.init();
 
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(MIXING_PATTERN_MANAGER);
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(PIE_COLOR_OVERRIDES);

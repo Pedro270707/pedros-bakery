@@ -94,6 +94,6 @@ public class PBCreativeTab {
     public static void init() {
         Registry.register(Registries.ITEM_GROUP, Identifier.of(PedrosBakery.MOD_ID, PedrosBakery.MOD_ID), ITEM_GROUP);
         Registry.register(Registries.ITEM_GROUP, Identifier.of(PedrosBakery.MOD_ID, "baking_trays"), BAKING_TRAY_ITEM_GROUP);
-        PedrosBakery.LOGGER.debug("Registering item group");
+        PedrosBakery.LOGGER.debug("Initializing item group registry");
     }
 }

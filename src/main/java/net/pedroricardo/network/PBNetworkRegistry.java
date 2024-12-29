@@ -7,7 +7,7 @@ import net.pedroricardo.screen.CookieTableScreenHandler;
 
 public class PBNetworkRegistry {
     public static void init() {
-        PedrosBakery.LOGGER.debug("Registering payload types and receivers");
+        PedrosBakery.LOGGER.debug("Initializing payload type and receiver registry");
 
         PayloadTypeRegistry.playS2C().register(SetCookieShapePayload.ID, SetCookieShapePayload.CODEC);
         PayloadTypeRegistry.playC2S().register(SetCookieShapePayload.ID, SetCookieShapePayload.CODEC);

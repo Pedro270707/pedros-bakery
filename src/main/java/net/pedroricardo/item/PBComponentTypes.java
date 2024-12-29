@@ -39,6 +39,6 @@ public class PBComponentTypes extends DataComponentTypes {
     }
 
     public static void init() {
-        PedrosBakery.LOGGER.debug("Registering component types");
+        PedrosBakery.LOGGER.debug("Initializing component type registry");
     }
 }
