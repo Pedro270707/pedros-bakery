@@ -25,15 +25,15 @@ import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockEntity;
 import net.pedroricardo.item.PBComponentTypes;
-import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEntity, ItemComponentProvider {
-    private List<CakeBatter<FullBatterSizeContainer>> batterList = Lists.newArrayList();
-    private List<BlockPos> parts = Lists.newArrayList();
+    private List<CakeBatter<FullBatterSizeContainer>> batterList = new ArrayList<>();
+    private List<BlockPos> parts = new ArrayList<>();
 
     public PBCakeBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.CAKE, pos, state);
@@ -59,11 +59,11 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         this.readCakeNbt(nbt);
-        this.parts = Lists.newArrayList(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(Lists.newArrayList()).iterator());
+        this.parts = new ArrayList<>(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(new ArrayList<>()));
     }
 
     protected void readCakeNbt(NbtCompound nbt) {
-        this.batterList = Lists.newArrayList(CakeBatter.listFrom(nbt).iterator());
+        this.batterList = new ArrayList<>(CakeBatter.listFrom(nbt));
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
@@ -138,7 +138,7 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
 
     public void readFrom(ItemStack stack) {
         this.getBatterList().clear();
-        this.getBatterList().addAll(PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST, List.of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
+        this.getBatterList().addAll(PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST, List.of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(ArrayList::new)));
     }
 
     @Override
