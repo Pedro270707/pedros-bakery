@@ -31,7 +31,6 @@ import net.pedroricardo.block.extras.size.FixedBatterSizeContainer;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 import net.pedroricardo.block.extras.size.HeightOnlyBatterSizeContainer;
 import net.pedroricardo.block.tags.PBTags;
-import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -134,7 +133,7 @@ public class CakeBatter<S extends BatterSizeContainer> {
         }
         return nbt.getList("batter", NbtList.COMPOUND_TYPE).stream()
                 .filter(layer -> layer.getType() == NbtElement.COMPOUND_TYPE)
-                .map(layer -> CakeBatter.fromNbt((NbtCompound) layer, FULL_CODEC, getFullSizeDefault())).collect(Collectors.toCollection(Lists::newArrayList));
+                .map(layer -> CakeBatter.fromNbt((NbtCompound) layer, FULL_CODEC, getFullSizeDefault())).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public ActionResult bite(World world, BlockPos pos, BlockState state, PlayerEntity player, BlockEntity blockEntity, float biteSize) {

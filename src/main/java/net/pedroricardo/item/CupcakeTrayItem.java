@@ -12,9 +12,9 @@ import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.CakeFlavor;
 import net.pedroricardo.block.extras.CupcakeTrayBatter;
 import net.pedroricardo.block.extras.size.FixedBatterSizeContainer;
-import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CupcakeTrayItem extends BlockItem implements BatterContainerItem {
@@ -31,7 +31,7 @@ public class CupcakeTrayItem extends BlockItem implements BatterContainerItem {
         if (flavor == null || !stack.isOf(this)) return false;
         ItemStack newStack = stack.copyWithCount(1);
         CupcakeTrayBatter batter = stack.getOrDefault(PBComponentTypes.CUPCAKE_TRAY_BATTER, CupcakeTrayBatter.getEmpty());
-        List<CakeBatter<FixedBatterSizeContainer>> batterList = Lists.newArrayList(batter.stream().iterator());
+        List<CakeBatter<FixedBatterSizeContainer>> batterList = new ArrayList<>(batter.stream());
         boolean changed = false;
         for (int i = 0; i < batter.stream().size(); i++) {
             if (batter.stream().get(i).isEmpty()) {

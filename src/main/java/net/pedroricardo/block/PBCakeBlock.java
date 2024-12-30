@@ -43,9 +43,9 @@ import net.pedroricardo.block.multipart.MultipartBlockPart;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
-import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -147,7 +147,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         }
         if (player.isSneaking()) {
             changeState(player, world, pos, state);
-            List<CakeBatter<FullBatterSizeContainer>> batterList = Lists.newArrayList();
+            List<CakeBatter<FullBatterSizeContainer>> batterList = new ArrayList<>();
             while (cake.getBatterList().size() > layerIndex) {
                 batterList.add(cake.getBatterList().remove(layerIndex));
             }
@@ -190,7 +190,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         }
 
         if (stack.isOf(PBBlocks.CAKE.asItem())) {
-            List<CakeBatter<FullBatterSizeContainer>> batterList = stack.getComponents().getOrDefault(PBComponentTypes.BATTER_LIST, List.<CakeBatter<FullBatterSizeContainer>>of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList));
+            List<CakeBatter<FullBatterSizeContainer>> batterList = stack.getComponents().getOrDefault(PBComponentTypes.BATTER_LIST, List.<CakeBatter<FullBatterSizeContainer>>of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(ArrayList::new));
             if (batterList.isEmpty()) {
                 return ItemActionResult.FAIL;
             }
@@ -309,7 +309,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
 
     public static ItemStack of(List<CakeBatter<FullBatterSizeContainer>> batterList) {
         ItemStack stack = new ItemStack(PBBlocks.CAKE);
-        stack.set(PBComponentTypes.BATTER_LIST, batterList.stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
+        stack.set(PBComponentTypes.BATTER_LIST, batterList.stream().map(CakeBatter::copy).collect(Collectors.toCollection(ArrayList::new)));
         return stack;
     }
 

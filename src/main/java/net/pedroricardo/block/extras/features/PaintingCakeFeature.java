@@ -20,8 +20,8 @@ import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.CakeFeature;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
-import org.apache.commons.compress.utils.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +32,7 @@ public class PaintingCakeFeature extends CakeFeature {
         NbtComponent nbt = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
         nbt.get(world.getRegistryManager().getOps(NbtOps.INSTANCE), PaintingEntity.VARIANT_MAP_CODEC).result().ifPresentOrElse(variant ->
                 this.writeNbt(layer, (NbtCompound) PaintingEntity.VARIANT_ENTRY_CODEC.encodeStart(NbtOps.INSTANCE, variant).result().orElse(new NbtCompound())), () -> {
-            List<RegistryEntry<PaintingVariant>> list = Lists.newArrayList();
+            List<RegistryEntry<PaintingVariant>> list = new ArrayList<>();
             world.getRegistryManager().get(RegistryKeys.PAINTING_VARIANT).iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
             if (list.isEmpty()) {
                 return;

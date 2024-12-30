@@ -26,15 +26,15 @@ import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockEntity;
 import net.pedroricardo.item.PBComponentTypes;
-import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEntity {
-    private List<CakeBatter<FullBatterSizeContainer>> batterList = Lists.newArrayList();
-    private List<BlockPos> parts = Lists.newArrayList();
+    private List<CakeBatter<FullBatterSizeContainer>> batterList = new ArrayList<>();
+    private List<BlockPos> parts = new ArrayList<>();
 
     public PBCakeBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.CAKE, pos, state);
@@ -60,23 +60,23 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
         this.readCakeNbt(nbt);
-        this.parts = Lists.newArrayList(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(Lists.newArrayList()).iterator());
+        this.parts = new ArrayList<>(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(new ArrayList<>()));
     }
 
     protected void readCakeNbt(NbtCompound nbt) {
-        this.batterList = Lists.newArrayList(CakeBatter.listFrom(nbt).iterator());
+        this.batterList = new ArrayList<>(CakeBatter.listFrom(nbt));
     }
 
     @Override
     protected void addComponents(ComponentMap.Builder componentMapBuilder) {
         super.addComponents(componentMapBuilder);
-        componentMapBuilder.add(PBComponentTypes.BATTER_LIST, this.getBatterList().stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
+        componentMapBuilder.add(PBComponentTypes.BATTER_LIST, this.getBatterList().stream().map(CakeBatter::copy).collect(Collectors.toCollection(ArrayList::new)));
     }
 
     @Override
     protected void readComponents(ComponentsAccess components) {
         super.readComponents(components);
-        this.batterList = components.getOrDefault(PBComponentTypes.BATTER_LIST, List.<CakeBatter<FullBatterSizeContainer>>of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList));
+        this.batterList = components.getOrDefault(PBComponentTypes.BATTER_LIST, List.<CakeBatter<FullBatterSizeContainer>>of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
