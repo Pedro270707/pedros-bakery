@@ -62,6 +62,9 @@ public class PieBlock extends BlockWithEntity {
         }
         world.setBlockState(pos, state, Block.NOTIFY_ALL);
         world.emitGameEvent(player, GameEvent.EAT, pos);
+        if (!world.isClient()) {
+            PBHelpers.update(pie, (ServerWorld) world);
+        }
         return ActionResult.success(world.isClient());
     }
 
