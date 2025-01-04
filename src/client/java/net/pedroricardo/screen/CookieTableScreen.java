@@ -73,6 +73,7 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
         buf.encodeAsJson(PBCodecs.VECTOR_2I, pixel);
         buf.writeBoolean(value);
         ClientPlayNetworking.send(PBNetworkRegistry.SET_COOKIE_PIXEL, buf);
+        this.getScreenHandler().setPixel(pixel, value);
     }
 
     public void emptyPixels() {
@@ -83,6 +84,7 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.encodeAsJson(PBCodecs.VECTOR_2I.listOf().<Set<Vector2i>>xmap(HashSet::new, ArrayList::new), shape);
         ClientPlayNetworking.send(PBNetworkRegistry.SET_COOKIE_SHAPE, buf);
+        this.getScreenHandler().setCookieShape(shape);
     }
 
     @Override
