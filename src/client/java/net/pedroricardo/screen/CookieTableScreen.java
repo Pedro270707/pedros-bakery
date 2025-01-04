@@ -68,6 +68,7 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
     public void setPixel(Vector2i pixel, boolean value) {
         this.getScreenHandler().setPixel(pixel, value);
         ClientPlayNetworking.send(new SetCookiePixelC2SPayload(pixel, value));
+        this.getScreenHandler().setPixel(pixel, value);
     }
 
     public void emptyPixels() {
@@ -77,6 +78,7 @@ public class CookieTableScreen extends HandledScreen<CookieTableScreenHandler> {
     public void setCookieShape(Set<Vector2i> shape) {
         this.getScreenHandler().setCookieShape(shape);
         ClientPlayNetworking.send(new SetCookieShapePayload(shape));
+        this.getScreenHandler().setCookieShape(shape);
     }
 
     @Override
