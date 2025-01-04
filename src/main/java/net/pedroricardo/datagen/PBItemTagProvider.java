@@ -4,6 +4,8 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.Identifier;
+import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBItems;
@@ -18,9 +20,9 @@ public class PBItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
-        this.getOrCreateTagBuilder(PBTags.Items.COOKIES).add(Items.COOKIE, PBItems.APPLE_COOKIE, PBItems.SHAPED_COOKIE);
+        this.getOrCreateTagBuilder(PBTags.Items.COOKIES).add(Items.COOKIE, PBItems.APPLE_COOKIE, PBItems.SHAPED_COOKIE).addOptional(new Identifier("bakery", "strawberry_glazed_cookie")).addOptional(new Identifier("bakery", "sweetberry_glazed_cookie")).addOptional(new Identifier("bakery", "chocolate_glazed_cookie"));
         this.getOrCreateTagBuilder(PBTags.Items.CAKE_STAND_ITEM).add(Items.CAKE, PBBlocks.CAKE.asItem(), PBBlocks.CUPCAKE.asItem(), PBBlocks.PIE.asItem());
-        this.getOrCreateTagBuilder(PBTags.Items.COOKIE_INGREDIENTS).add(PBItems.DOUGH);
+        this.getOrCreateTagBuilder(PBTags.Items.COOKIE_INGREDIENTS).add(PBItems.DOUGH).addOptional(new Identifier("create", "dough")).addOptional(new Identifier("farm_and_charm", "dough"));
         this.getOrCreateTagBuilder(PBTags.Items.FROSTABLES).add(PBItems.DONUT, PBItems.SHAPED_COOKIE);
     }
 }
