@@ -20,9 +20,9 @@ public class PBItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
-        this.getOrCreateTagBuilder(PBTags.Items.COOKIES).add(Items.COOKIE, PBItems.APPLE_COOKIE, PBItems.SHAPED_COOKIE).addOptional(new Identifier("bakery", "strawberry_glazed_cookie")).addOptional(new Identifier("bakery", "sweetberry_glazed_cookie")).addOptional(new Identifier("bakery", "chocolate_glazed_cookie"));
+        this.getOrCreateTagBuilder(PBTags.Items.COOKIES).add(Items.COOKIE, PBItems.APPLE_COOKIE, PBItems.SHAPED_COOKIE).addOptional(Identifier.of("bakery", "strawberry_glazed_cookie")).addOptional(Identifier.of("bakery", "sweetberry_glazed_cookie")).addOptional(Identifier.of("bakery", "chocolate_glazed_cookie"));
         this.getOrCreateTagBuilder(PBTags.Items.CAKE_STAND_ITEM).add(Items.CAKE, PBBlocks.CAKE.asItem(), PBBlocks.CUPCAKE.asItem(), PBBlocks.PIE.asItem());
-        this.getOrCreateTagBuilder(PBTags.Items.COOKIE_INGREDIENTS).add(PBItems.DOUGH).addOptional(new Identifier("create", "dough")).addOptional(new Identifier("farm_and_charm", "dough"));
+        this.getOrCreateTagBuilder(PBTags.Items.COOKIE_INGREDIENTS).add(PBItems.DOUGH).addOptional(Identifier.of("create", "dough")).addOptional(Identifier.of("farm_and_charm", "dough"));
         this.getOrCreateTagBuilder(PBTags.Items.FROSTABLES).add(PBItems.DONUT, PBItems.SHAPED_COOKIE);
     }
 }
