@@ -2,14 +2,14 @@ package net.pedroricardo.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
-import net.minecraft.block.Block;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
-import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.loot.function.CopyComponentsLootFunction;
+import net.minecraft.loot.function.SetCountLootFunction;
+import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.registry.RegistryWrapper;
 import net.pedroricardo.block.ButterChurnBlock;
@@ -66,5 +66,9 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
                         .with(ItemEntry.builder(PBBlocks.PIE)
                                 .apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).include(PBComponentTypes.PIE_DATA)))));
         this.addDrop(PBBlocks.COOKIE_TABLE);
+        this.addDrop(PBBlocks.CHEESE_BRICKS, dropsWithSilkTouch(PBBlocks.CHEESE_BRICKS, this.applyExplosionDecay(PBBlocks.CHEESE_BRICKS, ItemEntry.builder(PBItems.HARD_CHEESE).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0f))))));
+        this.addDrop(PBBlocks.CHEESE_BRICK_SLAB, dropsWithSilkTouch(PBBlocks.CHEESE_BRICK_SLAB, this.applyExplosionDecay(PBBlocks.CHEESE_BRICK_SLAB, ItemEntry.builder(PBItems.HARD_CHEESE).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0f))))));
+        this.addDrop(PBBlocks.CHEESE_BRICK_STAIRS, dropsWithSilkTouch(PBBlocks.CHEESE_BRICK_STAIRS, this.applyExplosionDecay(PBBlocks.CHEESE_BRICK_STAIRS, ItemEntry.builder(PBItems.HARD_CHEESE).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0f))))));
+        this.addDrop(PBBlocks.CHEESE_BRICK_WALL, dropsWithSilkTouch(PBBlocks.CHEESE_BRICK_WALL, this.applyExplosionDecay(PBBlocks.CHEESE_BRICK_WALL, ItemEntry.builder(PBItems.HARD_CHEESE).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0f))))));
     }
 }

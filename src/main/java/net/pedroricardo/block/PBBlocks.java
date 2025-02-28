@@ -47,6 +47,10 @@ public class PBBlocks {
     public static final Block BUTTER_CHURN = register("butter_churn", new ButterChurnBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.WOOD).strength(1.5f).mapColor(MapColor.OAK_TAN).nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)));
     public static final Block PIE = register("pie", new PieBlock(AbstractBlock.Settings.create().sounds(BlockSoundGroup.WOOL).strength(1.0f).mapColor(MapColor.OAK_TAN).nonOpaque().solidBlock(Blocks::never).blockVision(Blocks::never)), (name, block) -> PBItems.register(name, new PieItem(block, new Item.Settings())));
     public static final Block COOKIE_TABLE = register("cookie_table", new CookieTableBlock(AbstractBlock.Settings.copy(Blocks.CRAFTING_TABLE)));
+    public static final Block CHEESE_BRICKS = register("cheese_bricks", new Block(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)));
+    public static final Block CHEESE_BRICK_SLAB = register("cheese_brick_slab", new SlabBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICK_SLAB)));
+    public static final Block CHEESE_BRICK_STAIRS = register("cheese_brick_stairs", new StairsBlock(CHEESE_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(Blocks.STONE_BRICK_STAIRS)));
+    public static final Block CHEESE_BRICK_WALL = register("cheese_brick_wall", new WallBlock(AbstractBlock.Settings.copy(Blocks.STONE_BRICK_WALL)));
 
     private static Block register(final String name, Block block) {
         return register(name, block, (str, registeredBlock) -> PBItems.register(str, new BlockItem(registeredBlock, new Item.Settings())));
