@@ -78,6 +78,8 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBItems.BUTTER_CHURN_STAFF, "Butter Churn Staff");
         builder.add(PBItems.DOUGH, "Dough");
         builder.add(PBItems.SHAPED_COOKIE, "Shaped Cookie");
+        builder.add(PBItems.CHEESE, "Cheese");
+        builder.add(PBItems.HARD_CHEESE, "Hard Cheese");
         builder.add(PBBlocks.CAKE.getTranslationKey() + ".flavor_and_top", "%s, %s");
         builder.add(PBBlocks.CAKE.getTranslationKey() + ".flavor", "%s");
         builder.add(CakeFlavors.VANILLA.getTranslationKey(), "Vanilla");

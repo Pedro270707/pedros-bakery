@@ -21,6 +21,8 @@ public class PBTags {
         public static final TagKey<Item> CAKE_STAND_ITEM = of(RegistryKeys.ITEM, "cake_stand_item");
         public static final TagKey<Item> COOKIES = of(RegistryKeys.ITEM, "cookies");
         public static final TagKey<Item> COOKIE_INGREDIENTS = of(RegistryKeys.ITEM, "cookie_ingredients");
+        public static final TagKey<Item> CURDLES_CHEESE = of(RegistryKeys.ITEM, "curdles_cheese");
+        public static final TagKey<Item> UNLOCKS_CHEESE_RECIPES = of(RegistryKeys.ITEM, "unlocks_cheese_recipes");
     }
 
     public static class Flavors {
