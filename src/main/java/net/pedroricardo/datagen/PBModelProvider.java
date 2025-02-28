@@ -77,6 +77,10 @@ public class PBModelProvider extends FabricModelProvider {
                 .register(ButterChurnBlock.ChurnState.BUTTER, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(PBBlocks.BUTTER_CHURN, "_with_butter")))
         ));
         blockStateModelGenerator.registerCubeWithCustomTextures(PBBlocks.COOKIE_TABLE, Blocks.OAK_LOG, TextureMap::frontSideWithCustomBottom);
+        blockStateModelGenerator.registerSimpleCubeAll(PBBlocks.CHEESE_BRICKS);
+        registerSlabWithCubeAll(blockStateModelGenerator, PBBlocks.CHEESE_BRICK_SLAB, PBBlocks.CHEESE_BRICKS);
+        registerStairs(blockStateModelGenerator, PBBlocks.CHEESE_BRICK_STAIRS, PBBlocks.CHEESE_BRICKS);
+        registerWall(blockStateModelGenerator, PBBlocks.CHEESE_BRICK_WALL, PBBlocks.CHEESE_BRICKS);
 
         blockStateModelGenerator.excludeFromSimpleItemModelGeneration(PBBlocks.CAKE);
         blockStateModelGenerator.excludeFromSimpleItemModelGeneration(PBBlocks.CUPCAKE_TRAY);
@@ -118,6 +122,7 @@ public class PBModelProvider extends FabricModelProvider {
         registerParentedItemModel(itemModelGenerator, PBBlocks.EXPANDABLE_BAKING_TRAY.asItem(), Identifier.of(PedrosBakery.MOD_ID, "item/template_baking_tray"));
         registerParentedItemModel(itemModelGenerator, PBBlocks.BAKING_TRAY.asItem(), Identifier.of(PedrosBakery.MOD_ID, "item/template_baking_tray"));
         registerParentedItemModel(itemModelGenerator, PBBlocks.BUTTER_CHURN.asItem(), ModelIds.getBlockModelId(PBBlocks.BUTTER_CHURN));
+        Models.WALL_INVENTORY.upload(ModelIds.getItemModelId(PBBlocks.CHEESE_BRICK_WALL.asItem()), TextureMap.all(PBBlocks.CHEESE_BRICKS), itemModelGenerator.writer);
     }
 
     private static void registerDonut(ItemModelGenerator itemModelGenerator, Item donut) {
@@ -149,5 +154,31 @@ public class PBModelProvider extends FabricModelProvider {
     private static void registerParentedBlockModel(BlockStateModelGenerator generator, Block block, Identifier parentModelId) {
         generator.modelCollector.accept(ModelIds.getBlockModelId(block), new SimpleModelSupplier(parentModelId));
         generator.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, ModelIds.getBlockModelId(block)));
+    }
+
+    private static void registerSlabWithCubeAll(BlockStateModelGenerator blockStateModelGenerator, Block slab, Block textureSource) {
+        Identifier id = ModelIds.getBlockModelId(textureSource);
+        TexturedModel texturedModel = TexturedModel.CUBE_ALL.get(textureSource);
+        Identifier slabId = Models.SLAB.upload(slab, texturedModel.getTextures(), blockStateModelGenerator.modelCollector);
+        Identifier slabTopId = Models.SLAB_TOP.upload(slab, texturedModel.getTextures(), blockStateModelGenerator.modelCollector);
+        blockStateModelGenerator.blockStateCollector.accept(BlockStateModelGenerator.createSlabBlockState(slab, slabId, slabTopId, id));
+    }
+
+    private static void registerStairs(BlockStateModelGenerator blockStateModelGenerator, Block stairs, Block textureSource) {
+        TexturedModel texturedModel = TexturedModel.CUBE_ALL.get(textureSource);
+        TextureMap textureMap = texturedModel.getTextures();
+        Identifier innerModel = Models.INNER_STAIRS.upload(stairs, textureMap, blockStateModelGenerator.modelCollector);
+        Identifier regularModel = Models.STAIRS.upload(stairs, textureMap, blockStateModelGenerator.modelCollector);
+        Identifier outerModel = Models.OUTER_STAIRS.upload(stairs, textureMap, blockStateModelGenerator.modelCollector);
+        blockStateModelGenerator.blockStateCollector.accept(BlockStateModelGenerator.createStairsBlockState(stairs, innerModel, regularModel, outerModel));
+    }
+
+    private static void registerWall(BlockStateModelGenerator blockStateModelGenerator, Block wall, Block textureSource) {
+        TexturedModel texturedModel = TexturedModel.CUBE_ALL.get(textureSource);
+        TextureMap textureMap = texturedModel.getTextures();
+        Identifier postModel = Models.TEMPLATE_WALL_POST.upload(wall, textureMap, blockStateModelGenerator.modelCollector);
+        Identifier sideModel = Models.TEMPLATE_WALL_SIDE.upload(wall, textureMap, blockStateModelGenerator.modelCollector);
+        Identifier sideTallModel = Models.TEMPLATE_WALL_SIDE_TALL.upload(wall, textureMap, blockStateModelGenerator.modelCollector);
+        blockStateModelGenerator.blockStateCollector.accept(BlockStateModelGenerator.createWallBlockState(wall, postModel, sideModel, sideTallModel));
     }
 }

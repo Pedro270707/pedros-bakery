@@ -3,11 +3,9 @@ package net.pedroricardo.datagen;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.block.Blocks;
-import net.minecraft.data.server.recipe.ComplexRecipeJsonBuilder;
-import net.minecraft.data.server.recipe.RecipeJsonProvider;
-import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
-import net.minecraft.data.server.recipe.ShapelessRecipeJsonBuilder;
+import net.minecraft.data.server.recipe.*;
 import net.minecraft.item.Items;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Identifier;
@@ -60,6 +58,14 @@ public class PBRecipeProvider extends FabricRecipeProvider {
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, PBItems.DOUGH, 3).input(Items.WHEAT).input(PBItems.BUTTER).input(Items.WATER_BUCKET).criterion("has_wheat", conditionsFromItem(Items.WHEAT)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBBlocks.PIE).input('i', Items.IRON_NUGGET).pattern("i i").pattern("iii").criterion("has_wheat", conditionsFromItem(Items.WHEAT)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBBlocks.COOKIE_TABLE).input('l', ItemTags.LOGS).input('_', ItemTags.WOODEN_SLABS).pattern("__").pattern("ll").criterion("has_wheat", conditionsFromItem(Items.WHEAT)).offerTo(exporter);
+
+        offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, PBBlocks.CHEESE_BRICKS, PBItems.HARD_CHEESE);
+        createSlabRecipe(RecipeCategory.BUILDING_BLOCKS, PBBlocks.CHEESE_BRICK_SLAB, Ingredient.ofItems(PBBlocks.CHEESE_BRICKS)).criterion("has_cheese_bricks", VanillaRecipeProvider.conditionsFromItem(PBBlocks.CHEESE_BRICKS)).offerTo(exporter);
+        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, PBBlocks.CHEESE_BRICK_SLAB, PBBlocks.CHEESE_BRICKS, 2);
+        createStairsRecipe(PBBlocks.CHEESE_BRICK_STAIRS, Ingredient.ofItems(PBBlocks.CHEESE_BRICKS)).criterion("has_cheese_bricks", VanillaRecipeProvider.conditionsFromItem(PBBlocks.CHEESE_BRICKS)).offerTo(exporter);
+        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, PBBlocks.CHEESE_BRICK_STAIRS, PBBlocks.CHEESE_BRICKS, 1);
+        offerWallRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, PBBlocks.CHEESE_BRICK_WALL, PBBlocks.CHEESE_BRICKS);
+        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, PBBlocks.CHEESE_BRICK_WALL, PBBlocks.CHEESE_BRICKS, 1);
 
         ComplexRecipeJsonBuilder.create(PBRecipeSerializers.BAKING_TRAY_INCREASE).offerTo(exporter, "baking_tray_increase");
         ComplexRecipeJsonBuilder.create(PBRecipeSerializers.EXPANDABLE_BAKING_TRAY).offerTo(exporter, "expandable_baking_tray");
