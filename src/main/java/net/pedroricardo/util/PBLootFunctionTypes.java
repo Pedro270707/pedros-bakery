@@ -1,4 +1,4 @@
-package net.pedroricardo.datagen.custom;
+package net.pedroricardo.util;
 
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
@@ -16,6 +16,6 @@ public class PBLootFunctionTypes {
     }
 
     public static void init() {
-        PedrosBakery.LOGGER.debug("Registering loot functions");
+        PedrosBakery.LOGGER.debug("Initializing loot function registry");
     }
 }

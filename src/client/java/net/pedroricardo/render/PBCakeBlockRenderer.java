@@ -62,7 +62,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
                 if (feature == null) continue;
                 CakeFeatureRenderer renderer = CakeFeatureRendererRegistry.get(feature);
                 if (renderer != null) {
-                    if (irisFix && renderer.needsIrisFix()) {
+                    if (irisFix) {
                         matrices.push();
                         matrices.translate(0.5f + layer.getSizeContainer().getBites() / 32.0f, layer.getSizeContainer().getHeight() / 32.0f, 0.5f);
                         float scaleMultiplier = 1.0f;
@@ -78,7 +78,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
                         matrices.translate(-0.5f - layer.getSizeContainer().getBites() / 32.0f, -layer.getSizeContainer().getHeight() / 32.0f, -0.5f);
                     }
                     renderer.render(feature, entity, layer, matrices, vertexConsumers, light, overlay);
-                    if (irisFix && renderer.needsIrisFix()) {
+                    if (irisFix) {
                         matrices.pop();
                     }
                 }

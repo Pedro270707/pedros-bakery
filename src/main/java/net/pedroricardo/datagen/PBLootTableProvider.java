@@ -12,7 +12,7 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.predicate.StatePredicate;
 import net.pedroricardo.block.ButterChurnBlock;
 import net.pedroricardo.block.PBBlocks;
-import net.pedroricardo.datagen.custom.CopyComponentsLootFunction;
+import net.pedroricardo.util.CopyComponentsLootFunction;
 import net.pedroricardo.item.PBItems;
 
 public class PBLootTableProvider extends FabricBlockLootTableProvider {

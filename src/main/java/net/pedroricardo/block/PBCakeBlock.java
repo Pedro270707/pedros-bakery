@@ -43,9 +43,9 @@ import net.pedroricardo.block.multipart.MultipartBlockPart;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
-import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -142,7 +142,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         }
         if (player.isSneaking()) {
             changeState(player, world, pos, state);
-            List<CakeBatter<FullBatterSizeContainer>> batterList = Lists.newArrayList();
+            List<CakeBatter<FullBatterSizeContainer>> batterList = new ArrayList<>();
             while (cake.getBatterList().size() > layerIndex) {
                 batterList.add(cake.getBatterList().remove(layerIndex));
             }
@@ -158,11 +158,10 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         if (!player.canConsume(false)) {
             return ActionResult.PASS;
         }
-        float biteSize = player.getUuidAsString().equals("7bb71eb9-b55e-4071-9175-8ec2f42ddd79") ? Math.min(0.125f, PedrosBakery.CONFIG.biteSize.get()) : PedrosBakery.CONFIG.biteSize.get();
-        if (!player.isCreative() && cake.getBatterList().size() > layerIndex + 1 && cake.getBatterList().get(layerIndex + 1).getSizeContainer().getSize() / 2.0f - cake.getBatterList().get(layerIndex + 1).getSizeContainer().getBites() > cake.getBatterList().get(layerIndex).getSizeContainer().getSize() / 2.0f - cake.getBatterList().get(layerIndex).getSizeContainer().getBites() - biteSize) {
+        if (!player.isCreative() && cake.getBatterList().size() > layerIndex + 1 && cake.getBatterList().get(layerIndex + 1).getSizeContainer().getSize() / 2.0f - cake.getBatterList().get(layerIndex + 1).getSizeContainer().getBites() > cake.getBatterList().get(layerIndex).getSizeContainer().getSize() / 2.0f - cake.getBatterList().get(layerIndex).getSizeContainer().getBites() - PedrosBakery.CONFIG.biteSize.get()) {
             return ActionResult.PASS;
         }
-        ActionResult result = cake.getBatterList().get(layerIndex).bite(world, pos, state, player, cake, biteSize);
+        ActionResult result = cake.getBatterList().get(layerIndex).bite(world, pos, state, player, cake, PedrosBakery.CONFIG.biteSize.get());
         if (result.isAccepted()) {
             changeState(player, world, pos, state);
         }
@@ -184,7 +183,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
         }
 
         if (stack.isOf(PBBlocks.CAKE.asItem())) {
-            List<CakeBatter<FullBatterSizeContainer>> batterList = PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST, List.of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList));
+            List<CakeBatter<FullBatterSizeContainer>> batterList = PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST, List.of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(ArrayList::new));
             if (batterList.isEmpty()) {
                 return ActionResult.FAIL;
             }
@@ -311,7 +310,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
 
     public static ItemStack of(List<CakeBatter<FullBatterSizeContainer>> batterList) {
         ItemStack stack = new ItemStack(PBBlocks.CAKE);
-        PBHelpers.set(stack, PBComponentTypes.BATTER_LIST, batterList.stream().map(CakeBatter::copy).collect(Collectors.toCollection(Lists::newArrayList)));
+        PBHelpers.set(stack, PBComponentTypes.BATTER_LIST, batterList.stream().map(CakeBatter::copy).collect(Collectors.toCollection(ArrayList::new)));
         return stack;
     }
 

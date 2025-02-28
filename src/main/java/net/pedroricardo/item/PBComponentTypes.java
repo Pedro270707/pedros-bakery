@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.UnaryOperator;
 
 public class PBComponentTypes {
     public static final ItemComponentType<CakeTop> TOP = of("top", CakeTops.REGISTRY.getCodec());
@@ -34,6 +33,6 @@ public class PBComponentTypes {
     }
 
     public static void init() {
-        PedrosBakery.LOGGER.debug("Registering component types");
+        PedrosBakery.LOGGER.debug("Initializing component type registry");
     }
 }

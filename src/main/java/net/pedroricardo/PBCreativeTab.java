@@ -37,6 +37,7 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBBlocks.COOKIE_JAR));
                 entries.add(new ItemStack(PBBlocks.BUTTER_CHURN));
                 entries.add(new ItemStack(PBBlocks.PIE));
+                entries.add(new ItemStack(PBBlocks.COOKIE_TABLE));
                 entries.add(new ItemStack(PBItems.WHITE_SPRINKLES));
                 entries.add(new ItemStack(PBItems.ORANGE_SPRINKLES));
                 entries.add(new ItemStack(PBItems.MAGENTA_SPRINKLES));
@@ -101,6 +102,6 @@ public class PBCreativeTab {
     public static void init() {
         Registry.register(Registries.ITEM_GROUP, Identifier.of(PedrosBakery.MOD_ID, PedrosBakery.MOD_ID), ITEM_GROUP);
         Registry.register(Registries.ITEM_GROUP, Identifier.of(PedrosBakery.MOD_ID, "baking_trays"), BAKING_TRAY_ITEM_GROUP);
-        PedrosBakery.LOGGER.debug("Registering item group");
+        PedrosBakery.LOGGER.debug("Initializing item group registry");
     }
 }

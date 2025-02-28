@@ -18,7 +18,7 @@ public class PBNetworkRegistry {
     public static final Identifier SET_COOKIE_PIXEL = new Identifier(PedrosBakery.MOD_ID, "set_cookie_pixel");
 
     public static void init() {
-        PedrosBakery.LOGGER.debug("Registering payload types and receivers");
+        PedrosBakery.LOGGER.debug("Initializing payload type and receiver registry");
 
         ServerPlayNetworking.registerGlobalReceiver(SET_COOKIE_SHAPE, (server, player, handler, buf, responseSender) -> {
             if (player.currentScreenHandler instanceof CookieTableScreenHandler cookieTable) {

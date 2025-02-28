@@ -1,0 +1,18 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    {
+      "item": "pedrosbakery:butter"
+    },
+    {
+      "amount": 250,
+      "fluidTag": "pedrosbakery:milk"
+    }
+  ],
+  "results": [
+    {
+      "count": 2,
+      "item": "pedrosbakery:butter"
+    }
+  ]
+}

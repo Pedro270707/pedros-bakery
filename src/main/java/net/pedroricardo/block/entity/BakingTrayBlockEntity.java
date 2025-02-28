@@ -29,17 +29,17 @@ import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockEntity;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
-import org.apache.commons.compress.utils.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlockEntity, ItemComponentProvider {
     private int size = PedrosBakery.CONFIG.bakingTrayDefaultSize.get();
     private int height = PedrosBakery.CONFIG.bakingTrayDefaultHeight.get();
     private CakeBatter<HeightOnlyBatterSizeContainer> cakeBatter = CakeBatter.getHeightOnlyEmpty();
-    private List<BlockPos> parts = Lists.newArrayList();
+    private List<BlockPos> parts = new ArrayList<>();
 
     public BakingTrayBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.BAKING_TRAY, pos, state);
@@ -71,7 +71,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         if (nbt.contains("batter", NbtElement.COMPOUND_TYPE)) {
             this.cakeBatter = CakeBatter.fromNbt(nbt.getCompound("batter"), CakeBatter.WITH_HEIGHT_CODEC, CakeBatter.getHeightOnlyEmpty());
         }
-        this.parts = Lists.newArrayList(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(Lists.newArrayList()).iterator());
+        this.parts = new ArrayList<>(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(new ArrayList<>()));
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, BakingTrayBlockEntity blockEntity) {

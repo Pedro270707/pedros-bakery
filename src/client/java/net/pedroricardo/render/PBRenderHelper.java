@@ -1,6 +1,5 @@
 package net.pedroricardo.render;
 
-import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
@@ -23,23 +22,20 @@ public class PBRenderHelper {
         Quaternionf rotation = new Quaternionf().rotateXYZ(rotationEuler.x() + 3.1415927f, rotationEuler.y() + 3.1415927f, rotationEuler.z() + 3.1415927f).normalize();
         entry.getPositionMatrix().rotate(rotation);
 
-        ModelPart.Vertex vertex3 = new ModelPart.Vertex(x + width, z, y, 8.0f, 8.0f);
-        ModelPart.Vertex vertex4 = new ModelPart.Vertex(x, z, y, 8.0f, 0.0f);
-        ModelPart.Vertex vertex7 = new ModelPart.Vertex(x + width, z, y + height, 8.0f, 8.0f);
-        ModelPart.Vertex vertex8 = new ModelPart.Vertex(x, z, y + height, 8.0f, 0.0f);
-        ModelPart.Quad quad = new ModelPart.Quad(new ModelPart.Vertex[]{vertex3, vertex4, vertex8, vertex7}, u, v, u2, v2, textureWidth, textureHeight, false, direction);
         Vector3f vector3f = new Vector3f();
-        Vector3f vector3f2 = entry.getNormalMatrix().transform(new Vector3f(quad.direction));
-        float normalX = vector3f2.x();
-        float normalY = vector3f2.y();
-        float normalZ = vector3f2.z();
-        for (ModelPart.Vertex vertex : quad.vertices) {
-            float i = vertex.pos.x() / 16.0f;
-            float j = vertex.pos.y() / 16.0f;
-            float k = vertex.pos.z() / 16.0f;
-            Vector3f vector3f3 = entry.getPositionMatrix().transformPosition(i, j, k, vector3f);
-            vertexConsumer.vertex(vector3f3.x(), vector3f3.y(), vector3f3.z(), ((color >> 16) & 0xFF) / 255.0f, ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, ((color >> 24) & 0xFF) / 255.0f, vertex.u, vertex.v, overlay, light, normalX, normalY, normalZ);
-        }
+        Vector3f normal = entry.getNormalMatrix().transform(direction.getUnitVector(), vector3f);
+        float normalX = normal.x();
+        float normalY = normal.y();
+        float normalZ = normal.z();
+
+        Vector3f pos = entry.getPositionMatrix().transformPosition((x + width) / 16.0f, z / 16.0f, y / 16.0f, vector3f);
+        vertexConsumer.vertex(pos.x(), pos.y(), pos.z(), ((color >> 16) & 0xFF) / 255.0f, ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, ((color >> 24) & 0xFF) / 255.0f, u2 / textureWidth, v / textureHeight, overlay, light, normalX, normalY, normalZ);
+        pos = entry.getPositionMatrix().transformPosition(x / 16.0f, z / 16.0f, y / 16.0f, vector3f);
+        vertexConsumer.vertex(pos.x(), pos.y(), pos.z(), ((color >> 16) & 0xFF) / 255.0f, ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, ((color >> 24) & 0xFF) / 255.0f, u / textureWidth, v / textureHeight, overlay, light, normalX, normalY, normalZ);
+        pos = entry.getPositionMatrix().transformPosition(x / 16.0f, z / 16.0f, (y + height) / 16.0f, vector3f);
+        vertexConsumer.vertex(pos.x(), pos.y(), pos.z(), ((color >> 16) & 0xFF) / 255.0f, ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, ((color >> 24) & 0xFF) / 255.0f, u / textureWidth, v2 / textureHeight, overlay, light, normalX, normalY, normalZ);
+        pos = entry.getPositionMatrix().transformPosition((x + width) / 16.0f, z / 16.0f, (y + height) / 16.0f, vector3f);
+        vertexConsumer.vertex(pos.x(), pos.y(), pos.z(), ((color >> 16) & 0xFF) / 255.0f, ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, ((color >> 24) & 0xFF) / 255.0f, u2 / textureWidth, v2 / textureHeight, overlay, light, normalX, normalY, normalZ);
 
         entry.getPositionMatrix().rotate(rotation.conjugate());
         matrices.pop();
