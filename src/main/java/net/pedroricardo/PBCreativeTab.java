@@ -65,6 +65,8 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBBlocks.CHEESE_BRICK_SLAB));
                 entries.add(new ItemStack(PBBlocks.CHEESE_BRICK_STAIRS));
                 entries.add(new ItemStack(PBBlocks.CHEESE_BRICK_WALL));
+                entries.add(new ItemStack(PBItems.TORTILLA));
+                entries.add(new ItemStack(PBItems.QUESADILLA));
             }).build();
 
     public static final ItemGroup BAKING_TRAY_ITEM_GROUP = FabricItemGroup.builder().icon(() -> {

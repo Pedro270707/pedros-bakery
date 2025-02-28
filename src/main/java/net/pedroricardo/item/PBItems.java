@@ -34,6 +34,8 @@ public class PBItems {
     public static final Item SHAPED_COOKIE = register("shaped_cookie", new Item(new Item.Settings().food(new FoodComponent.Builder().hunger(2).saturationModifier(0.1f).build())));
     public static final Item CHEESE = register("cheese", new Item(new Item.Settings().food(new FoodComponent.Builder().hunger(2).saturationModifier(0.2f).build())));
     public static final Item HARD_CHEESE = register("hard_cheese", new Item(new Item.Settings().fireproof()));
+    public static final Item TORTILLA = register("tortilla", new Item(new Item.Settings().food(new FoodComponent.Builder().hunger(2).saturationModifier(0.1f).build())));
+    public static final Item QUESADILLA = register("quesadilla", new Item(new Item.Settings().food(new FoodComponent.Builder().hunger(5).saturationModifier(1.0f).snack().build())));
 
     public static Item register(String id, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(PedrosBakery.MOD_ID, id), item);
