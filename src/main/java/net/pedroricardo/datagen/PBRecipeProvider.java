@@ -2,6 +2,7 @@ package net.pedroricardo.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.server.recipe.ComplexRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.RecipeExporter;
@@ -51,6 +52,8 @@ public class PBRecipeProvider extends FabricRecipeProvider {
         ShapedRecipeJsonBuilder.create(RecipeCategory.FOOD, PBItems.APPLE_COOKIE).input('w', Items.WHEAT).input('a', Items.APPLE).pattern("waw").criterion(hasItem(Items.APPLE), conditionsFromItem(Items.APPLE)).offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, PBItems.CHEESE).input(PBTags.Items.CURDLES_CHEESE).input(Items.MILK_BUCKET).criterion("has_item_that_unlocks_cheese_recipes", conditionsFromTag(PBTags.Items.UNLOCKS_CHEESE_RECIPES)).offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, PBItems.HARD_CHEESE).input(PBTags.Items.CURDLES_CHEESE).input(PBItems.CHEESE).criterion("has_item_that_unlocks_cheese_recipes", conditionsFromTag(PBTags.Items.UNLOCKS_CHEESE_RECIPES)).offerTo(exporter);
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBItems.TORTILLA).input('d', PBItems.DOUGH).pattern("ddd").criterion("has_dough", conditionsFromItem(PBItems.DOUGH)).offerTo(exporter);
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, PBItems.QUESADILLA, 3).input(PBItems.TORTILLA).input(Items.KELP).input(PBItems.CHEESE).input(PBItems.CHEESE).input(Items.COOKED_BEEF).criterion("has_tortilla", conditionsFromItem(PBItems.TORTILLA)).offerTo(exporter);
 
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBBlocks.BEATER).input('i', Items.IRON_INGOT).input('r', Items.REDSTONE).pattern(" ii").pattern(" ri").pattern("iii").criterion(hasItem(Items.IRON_INGOT), conditionsFromItem(Items.IRON_INGOT)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, PBBlocks.BAKING_TRAY).input('i', Items.IRON_INGOT).input('c', Items.COPPER_INGOT).pattern("i i").pattern("iii").pattern("ccc").criterion(hasItem(Items.IRON_INGOT), conditionsFromItem(Items.IRON_INGOT)).criterion(hasItem(Items.COPPER_INGOT), conditionsFromItem(Items.COPPER_INGOT)).offerTo(exporter);

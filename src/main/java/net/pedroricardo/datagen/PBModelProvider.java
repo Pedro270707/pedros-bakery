@@ -119,6 +119,8 @@ public class PBModelProvider extends FabricModelProvider {
         itemModelGenerator.register(PBItems.DOUGH, Models.GENERATED);
         itemModelGenerator.register(PBItems.CHEESE, Models.GENERATED);
         itemModelGenerator.register(PBItems.HARD_CHEESE, Models.GENERATED);
+        itemModelGenerator.register(PBItems.TORTILLA, Models.GENERATED);
+        itemModelGenerator.register(PBItems.QUESADILLA, Models.GENERATED);
         registerParentedItemModel(itemModelGenerator, PBBlocks.EXPANDABLE_BAKING_TRAY.asItem(), Identifier.of(PedrosBakery.MOD_ID, "item/template_baking_tray"));
         registerParentedItemModel(itemModelGenerator, PBBlocks.BAKING_TRAY.asItem(), Identifier.of(PedrosBakery.MOD_ID, "item/template_baking_tray"));
         registerParentedItemModel(itemModelGenerator, PBBlocks.BUTTER_CHURN.asItem(), ModelIds.getBlockModelId(PBBlocks.BUTTER_CHURN));
