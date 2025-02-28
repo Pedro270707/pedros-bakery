@@ -24,5 +24,7 @@ public class PBItemTagProvider extends FabricTagProvider.ItemTagProvider {
         this.getOrCreateTagBuilder(PBTags.Items.CAKE_STAND_ITEM).add(Items.CAKE, PBBlocks.CAKE.asItem(), PBBlocks.CUPCAKE.asItem(), PBBlocks.PIE.asItem());
         this.getOrCreateTagBuilder(PBTags.Items.COOKIE_INGREDIENTS).add(PBItems.DOUGH).addOptional(Identifier.of("create", "dough")).addOptional(Identifier.of("farm_and_charm", "dough"));
         this.getOrCreateTagBuilder(PBTags.Items.FROSTABLES).add(PBItems.DONUT, PBItems.SHAPED_COOKIE);
+        this.getOrCreateTagBuilder(PBTags.Items.CURDLES_CHEESE).add(Items.LEATHER, Items.RABBIT_HIDE);
+        this.getOrCreateTagBuilder(PBTags.Items.UNLOCKS_CHEESE_RECIPES).addTag(PBTags.Items.CURDLES_CHEESE).add(Items.MILK_BUCKET, PBItems.CHEESE, PBItems.HARD_CHEESE);
     }
 }

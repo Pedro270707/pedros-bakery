@@ -52,6 +52,8 @@ public class PBItems {
         }
         SHAPED_COOKIE = register("shaped_cookie", new FrostedItem(new Item.Settings().food(new FoodComponent.Builder().nutrition(2).saturationModifier(0.1f).build()).component(PBComponentTypes.COOKIE_SHAPE, set)));
     }
+    public static final Item CHEESE = register("cheese", new Item(new Item.Settings().food(new FoodComponent.Builder().nutrition(2).saturationModifier(0.2f).build())));
+    public static final Item HARD_CHEESE = register("hard_cheese", new Item(new Item.Settings().fireproof()));
 
     public static Item register(String id, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(PedrosBakery.MOD_ID, id), item);

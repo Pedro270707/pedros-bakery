@@ -60,6 +60,8 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBItems.BUTTER_CHURN_STAFF));
                 entries.add(new ItemStack(PBItems.DOUGH));
                 entries.add(new ItemStack(PBItems.SHAPED_COOKIE));
+                entries.add(new ItemStack(PBItems.CHEESE));
+                entries.add(new ItemStack(PBItems.HARD_CHEESE));
             }).build();
 
     public static final ItemGroup BAKING_TRAY_ITEM_GROUP = FabricItemGroup.builder().icon(() -> {
