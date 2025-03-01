@@ -68,7 +68,7 @@ public abstract class ItemStandBlock<T extends ItemStandBlockEntity> extends Blo
                 world.setBlockState(pos, state);
                 world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, state));
                 return ActionResult.SUCCESS;
-            } else if (!stand.getStack().isEmpty() && state.getOrEmpty(HAS_ITEM).orElse(false)) {
+            } else if (!stand.getStack().isEmpty() || state.getOrEmpty(HAS_ITEM).orElse(false)) {
                 if (!world.isClient()) {
                     player.giveItemStack(stand.getStack());
                     stand.clear();

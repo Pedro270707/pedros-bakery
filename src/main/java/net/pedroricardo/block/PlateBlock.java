@@ -16,7 +16,7 @@ import net.pedroricardo.block.entity.CakeStandBlockEntity;
 import net.pedroricardo.block.entity.PlateBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
-public class PlateBlock extends ItemStandBlock<CakeStandBlockEntity> {
+public class PlateBlock extends ItemStandBlock<PlateBlockEntity> {
     protected PlateBlock(Settings settings) {
         super(settings);
     }
