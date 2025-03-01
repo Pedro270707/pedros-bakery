@@ -4,8 +4,10 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -40,7 +42,12 @@ public abstract class ItemStandBlock<T extends ItemStandBlockEntity> extends Blo
     @Nullable
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return super.getPlacementState(ctx).with(Properties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+        NbtCompound compound;
+        boolean hasItem = false;
+        if (!ctx.getWorld().isClient && ctx.getPlayer() != null && ctx.getPlayer().isCreativeLevelTwoOp() && (compound = BlockItem.getBlockEntityNbt(ctx.getStack())) != null && compound.contains("item")) {
+            hasItem = true;
+        }
+        return super.getPlacementState(ctx).with(Properties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(HAS_ITEM, hasItem);
     }
 
     @Override
