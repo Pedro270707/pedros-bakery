@@ -54,10 +54,14 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBBlocks.PIE.getTranslationKey() + ".flavor", "%s");
         builder.add(PBBlocks.PIE.getTranslationKey() + ".pie_flavor", "'Oh, boy, what flavor?'");
         builder.add(PBBlocks.COOKIE_TABLE, "Cookie Table");
-        builder.add(PBBlocks.CHEESE_BRICKS, "Cheese Bricks");
-        builder.add(PBBlocks.CHEESE_BRICK_SLAB, "Cheese Brick Slab");
-        builder.add(PBBlocks.CHEESE_BRICK_STAIRS, "Cheese Brick Stairs");
-        builder.add(PBBlocks.CHEESE_BRICK_WALL, "Cheese Brick Wall");
+        builder.add(PBBlocks.POLISHED_CHEESE, "Polished Cheese");
+        builder.add(PBBlocks.POLISHED_CHEESE_SLAB, "Polished Cheese Slab");
+        builder.add(PBBlocks.POLISHED_CHEESE_STAIRS, "Polished Cheese Stairs");
+        builder.add(PBBlocks.POLISHED_CHEESE_WALL, "Polished Cheese Wall");
+        builder.add(PBBlocks.POLISHED_CHEESE_BRICKS, "Polished Cheese Bricks");
+        builder.add(PBBlocks.POLISHED_CHEESE_BRICK_SLAB, "Polished Cheese Brick Slab");
+        builder.add(PBBlocks.POLISHED_CHEESE_BRICK_STAIRS, "Polished Cheese Brick Stairs");
+        builder.add(PBBlocks.POLISHED_CHEESE_BRICK_WALL, "Polished Cheese Brick Wall");
         builder.add(PBItems.FROSTING_BOTTLE, "Frosting Bottle");
         builder.add(PBItems.DONUT, "Donut");
         builder.add(PBItems.DONUT.getTranslationKey() + ".top", "%s");

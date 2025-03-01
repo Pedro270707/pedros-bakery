@@ -77,10 +77,14 @@ public class PBModelProvider extends FabricModelProvider {
                 .register(ButterChurnBlock.ChurnState.BUTTER, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(PBBlocks.BUTTER_CHURN, "_with_butter")))
         ));
         blockStateModelGenerator.registerCubeWithCustomTextures(PBBlocks.COOKIE_TABLE, Blocks.OAK_LOG, TextureMap::frontSideWithCustomBottom);
-        blockStateModelGenerator.registerSimpleCubeAll(PBBlocks.CHEESE_BRICKS);
-        registerSlabWithCubeAll(blockStateModelGenerator, PBBlocks.CHEESE_BRICK_SLAB, PBBlocks.CHEESE_BRICKS);
-        registerStairs(blockStateModelGenerator, PBBlocks.CHEESE_BRICK_STAIRS, PBBlocks.CHEESE_BRICKS);
-        registerWall(blockStateModelGenerator, PBBlocks.CHEESE_BRICK_WALL, PBBlocks.CHEESE_BRICKS);
+        blockStateModelGenerator.registerSimpleCubeAll(PBBlocks.POLISHED_CHEESE);
+        registerSlabWithCubeAll(blockStateModelGenerator, PBBlocks.POLISHED_CHEESE_SLAB, PBBlocks.POLISHED_CHEESE);
+        registerStairs(blockStateModelGenerator, PBBlocks.POLISHED_CHEESE_STAIRS, PBBlocks.POLISHED_CHEESE);
+        registerWall(blockStateModelGenerator, PBBlocks.POLISHED_CHEESE_WALL, PBBlocks.POLISHED_CHEESE);
+        blockStateModelGenerator.registerSimpleCubeAll(PBBlocks.POLISHED_CHEESE_BRICKS);
+        registerSlabWithCubeAll(blockStateModelGenerator, PBBlocks.POLISHED_CHEESE_BRICK_SLAB, PBBlocks.POLISHED_CHEESE_BRICKS);
+        registerStairs(blockStateModelGenerator, PBBlocks.POLISHED_CHEESE_BRICK_STAIRS, PBBlocks.POLISHED_CHEESE_BRICKS);
+        registerWall(blockStateModelGenerator, PBBlocks.POLISHED_CHEESE_BRICK_WALL, PBBlocks.POLISHED_CHEESE_BRICKS);
 
         blockStateModelGenerator.excludeFromSimpleItemModelGeneration(PBBlocks.CAKE);
         blockStateModelGenerator.excludeFromSimpleItemModelGeneration(PBBlocks.CUPCAKE_TRAY);
@@ -124,7 +128,8 @@ public class PBModelProvider extends FabricModelProvider {
         registerParentedItemModel(itemModelGenerator, PBBlocks.EXPANDABLE_BAKING_TRAY.asItem(), Identifier.of(PedrosBakery.MOD_ID, "item/template_baking_tray"));
         registerParentedItemModel(itemModelGenerator, PBBlocks.BAKING_TRAY.asItem(), Identifier.of(PedrosBakery.MOD_ID, "item/template_baking_tray"));
         registerParentedItemModel(itemModelGenerator, PBBlocks.BUTTER_CHURN.asItem(), ModelIds.getBlockModelId(PBBlocks.BUTTER_CHURN));
-        Models.WALL_INVENTORY.upload(ModelIds.getItemModelId(PBBlocks.CHEESE_BRICK_WALL.asItem()), TextureMap.all(PBBlocks.CHEESE_BRICKS), itemModelGenerator.writer);
+        Models.WALL_INVENTORY.upload(ModelIds.getItemModelId(PBBlocks.POLISHED_CHEESE_WALL.asItem()), TextureMap.all(PBBlocks.POLISHED_CHEESE), itemModelGenerator.writer);
+        Models.WALL_INVENTORY.upload(ModelIds.getItemModelId(PBBlocks.POLISHED_CHEESE_BRICK_WALL.asItem()), TextureMap.all(PBBlocks.POLISHED_CHEESE_BRICKS), itemModelGenerator.writer);
     }
 
     private static void registerDonut(ItemModelGenerator itemModelGenerator, Item donut) {
