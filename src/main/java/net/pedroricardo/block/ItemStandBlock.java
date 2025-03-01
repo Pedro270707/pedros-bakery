@@ -8,6 +8,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -24,14 +25,16 @@ import net.pedroricardo.block.entity.ItemStandBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ItemStandBlock<T extends ItemStandBlockEntity> extends BlockWithEntity {
+    public static final BooleanProperty HAS_ITEM = BooleanProperty.of("has_item");
+
     protected ItemStandBlock(Settings settings) {
         super(settings);
-        this.setDefaultState(this.getStateManager().getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.NORTH));
+        this.setDefaultState(this.getStateManager().getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.NORTH).with(HAS_ITEM, false));
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(Properties.HORIZONTAL_FACING);
+        builder.add(Properties.HORIZONTAL_FACING).add(HAS_ITEM);
     }
 
     @Nullable
@@ -59,14 +62,22 @@ public abstract class ItemStandBlock<T extends ItemStandBlockEntity> extends Blo
             @SuppressWarnings("unchecked")
             T stand = (T) world.getBlockEntity(pos);
             if (stand == null) return ActionResult.PASS;
-            if (stand.getStack().isEmpty() && canContain(stack, state, world, pos, player, hand, hit)) {
+            if (stand.getStack().isEmpty() && !stack.isEmpty() && canContain(stack, state, world, pos, player, hand, hit)) {
                 stand.setStack(PBHelpers.splitUnlessCreative(stack, 1, player));
+                state = state.with(HAS_ITEM, true);
+                world.setBlockState(pos, state);
                 world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, state));
                 return ActionResult.SUCCESS;
-            } else if (!stand.getStack().isEmpty()) {
-                player.giveItemStack(stand.getStack());
-                stand.setStack(ItemStack.EMPTY);
-                return ActionResult.SUCCESS;
+            } else if (!stand.getStack().isEmpty() && state.getOrEmpty(HAS_ITEM).orElse(false)) {
+                if (!world.isClient()) {
+                    player.giveItemStack(stand.getStack());
+                    stand.clear();
+                    state = state.with(HAS_ITEM, false);
+                    world.setBlockState(pos, state);
+                    world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, state));
+                    return ActionResult.success(false);
+                }
+                return ActionResult.success(true);
             }
             return ActionResult.PASS;
         } catch (ClassCastException ignored) {

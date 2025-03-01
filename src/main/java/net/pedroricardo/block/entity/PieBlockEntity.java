@@ -21,7 +21,7 @@ import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PieDataComponent;
 import org.jetbrains.annotations.Nullable;
 
-public class PieBlockEntity extends BlockEntity implements ItemComponentProvider {
+public class PieBlockEntity extends BlockEntity implements ItemComponentProvider, StackReadingBlockEntity {
     private int layers = 0;
     private int slices = 0;
     private int topBakeTime = 0;
@@ -141,6 +141,7 @@ public class PieBlockEntity extends BlockEntity implements ItemComponentProvider
         return BlockEntityUpdateS2CPacket.create(this);
     }
 
+    @Override
     public void readFrom(ItemStack stack) {
         PieDataComponent pieData = PBHelpers.getOrDefault(stack, PBComponentTypes.PIE_DATA, PieDataComponent.EMPTY);
         this.setLayers(pieData.layers());

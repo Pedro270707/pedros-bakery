@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEntity, ItemComponentProvider {
+public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEntity, ItemComponentProvider, StackReadingBlockEntity {
     private List<CakeBatter<FullBatterSizeContainer>> batterList = new ArrayList<>();
     private List<BlockPos> parts = new ArrayList<>();
 
@@ -136,6 +136,7 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
         return BlockEntityUpdateS2CPacket.create(this);
     }
 
+    @Override
     public void readFrom(ItemStack stack) {
         this.getBatterList().clear();
         this.getBatterList().addAll(PBHelpers.getOrDefault(stack, PBComponentTypes.BATTER_LIST, List.of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(ArrayList::new)));

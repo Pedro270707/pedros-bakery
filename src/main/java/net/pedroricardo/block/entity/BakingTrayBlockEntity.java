@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlockEntity, ItemComponentProvider {
+public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlockEntity, ItemComponentProvider, StackReadingBlockEntity {
     private int size = PedrosBakery.CONFIG.bakingTrayDefaultSize.get();
     private int height = PedrosBakery.CONFIG.bakingTrayDefaultHeight.get();
     private CakeBatter<HeightOnlyBatterSizeContainer> cakeBatter = CakeBatter.getHeightOnlyEmpty();
@@ -153,6 +153,7 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         }
     }
 
+    @Override
     public void readFrom(ItemStack stack) {
         this.setCakeBatter(PBHelpers.getOrDefault(stack, PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty()).copy());
         this.setSize(PBHelpers.getOrDefault(stack, PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize.get()));

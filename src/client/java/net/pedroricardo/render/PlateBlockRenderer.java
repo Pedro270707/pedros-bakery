@@ -19,13 +19,12 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import net.pedroricardo.PedrosBakery;
+import net.pedroricardo.block.ItemStandBlock;
 import net.pedroricardo.block.entity.ItemStandBlockEntity;
+import net.pedroricardo.block.entity.StackReadingBlockEntity;
 import net.pedroricardo.model.PBModelLayers;
 
-public class PlateBlockRenderer implements BlockEntityRenderer<ItemStandBlockEntity> {
-    private final ItemRenderer itemRenderer;
-    private final BlockRenderManager blockRenderer;
-    private final BlockEntityRenderDispatcher blockEntityRenderer;
+public class PlateBlockRenderer extends ItemStandBlockRenderer {
     private final ModelPart plate;
 
     public static TexturedModelData getTexturedModelData() {
@@ -37,48 +36,19 @@ public class PlateBlockRenderer implements BlockEntityRenderer<ItemStandBlockEnt
     }
 
     public PlateBlockRenderer(BlockEntityRendererFactory.Context ctx) {
+        super(ctx);
         ModelPart modelPart = ctx.getLayerModelPart(PBModelLayers.PLATE);
         this.plate = modelPart.getChild("plate");
-        this.itemRenderer = ctx.getItemRenderer();
-        this.blockRenderer = ctx.getRenderManager();
-        this.blockEntityRenderer = ctx.getRenderDispatcher();
     }
 
     @Override
     public void render(ItemStandBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        BlockState state = entity.getCachedState();
-        matrices.translate(0.5f, 0.5f, 0.5f);
-        if (state.contains(Properties.HORIZONTAL_FACING)) {
-            matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(state.get(Properties.HORIZONTAL_FACING).asRotation()));
-        }
+        super.render(entity, tickDelta, matrices, vertexConsumers, light, overlay);
         matrices.translate(-0.5f, -0.5f, -0.5f);
         matrices.push();
         matrices.scale(-1.0f, -1.0f, 1.0f);
         matrices.translate(-0.5f, -1.5f, 0.5f);
         this.plate.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(Identifier.of(PedrosBakery.MOD_ID, "textures/entity/plate.png"))), light, overlay);
         matrices.pop();
-
-        if (entity.getStack().getItem() instanceof BlockItem blockItem) {
-            matrices.translate(0.5f, 0.0625f, 0.5f);
-            matrices.scale(0.75f, 0.75f, 0.75f);
-            matrices.translate(-0.5f, 0.0f, -0.5f);
-            BlockState itemState = blockItem.getBlock().getDefaultState();
-            if (itemState.hasBlockEntity()) {
-                BlockEntity blockEntity = ((BlockEntityProvider) blockItem.getBlock()).createBlockEntity(entity.getPos(), itemState);
-                if (blockEntity != null) {
-                    blockEntity.readNbt(entity.getStack().getOrCreateSubNbt("BlockEntityTag"));
-                    this.blockEntityRenderer.renderEntity(blockEntity, matrices, vertexConsumers, light, overlay);
-                }
-            }
-            if (itemState.getRenderType() == BlockRenderType.MODEL) {
-                this.blockRenderer.renderBlockAsEntity(itemState, matrices, vertexConsumers, light, overlay);
-            }
-        } else {
-            matrices.translate(0.5f, 0.0859375f, 0.5f);
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0f));
-            matrices.scale(0.5f, 0.5f, 0.5f);
-            this.itemRenderer.renderItem(entity.getStack(), ModelTransformationMode.FIXED, light, overlay, matrices, vertexConsumers, entity.getWorld(), (int) entity.getPos().asLong());
-        }
     }
 }

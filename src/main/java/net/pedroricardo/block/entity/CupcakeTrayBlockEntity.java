@@ -20,7 +20,7 @@ import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.Nullable;
 
-public class CupcakeTrayBlockEntity extends BlockEntity implements ItemComponentProvider {
+public class CupcakeTrayBlockEntity extends BlockEntity implements ItemComponentProvider, StackReadingBlockEntity {
     private CupcakeTrayBatter batter;
 
     public CupcakeTrayBlockEntity(BlockPos pos, BlockState state) {
@@ -81,6 +81,7 @@ public class CupcakeTrayBlockEntity extends BlockEntity implements ItemComponent
         PBHelpers.set(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER, this.getBatter());
     }
 
+    @Override
     public void readFrom(ItemStack stack) {
         this.setBatter(PBHelpers.getOrDefault(stack, PBComponentTypes.CUPCAKE_TRAY_BATTER, CupcakeTrayBatter.getEmpty()));
     }

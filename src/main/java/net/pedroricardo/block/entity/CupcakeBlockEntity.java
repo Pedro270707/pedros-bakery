@@ -14,7 +14,7 @@ import net.pedroricardo.block.extras.size.FixedBatterSizeContainer;
 import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.Nullable;
 
-public class CupcakeBlockEntity extends BlockEntity implements ItemComponentProvider {
+public class CupcakeBlockEntity extends BlockEntity implements ItemComponentProvider, StackReadingBlockEntity {
     private CakeBatter<FixedBatterSizeContainer> batter;
 
     public CupcakeBlockEntity(BlockPos pos, BlockState state) {
@@ -54,6 +54,7 @@ public class CupcakeBlockEntity extends BlockEntity implements ItemComponentProv
         return BlockEntityUpdateS2CPacket.create(this);
     }
 
+    @Override
     public void readFrom(ItemStack stack) {
         this.setBatter(PBHelpers.getOrDefault(stack, PBComponentTypes.FIXED_SIZE_BATTER, CakeBatter.getFixedSizeEmpty()));
     }
