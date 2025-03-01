@@ -44,7 +44,7 @@ public abstract class ItemStandBlock<T extends ItemStandBlockEntity> extends Blo
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         NbtCompound compound;
         boolean hasItem = false;
-        if (!ctx.getWorld().isClient && ctx.getPlayer() != null && ctx.getPlayer().isCreativeLevelTwoOp() && (compound = BlockItem.getBlockEntityNbt(ctx.getStack())) != null && compound.contains("item")) {
+        if (!ctx.getWorld().isClient() && ctx.getPlayer() != null && ctx.getPlayer().isCreativeLevelTwoOp() && (compound = BlockItem.getBlockEntityNbt(ctx.getStack())) != null && compound.contains("item")) {
             hasItem = true;
         }
         return super.getPlacementState(ctx).with(Properties.HORIZONTAL_FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(HAS_ITEM, hasItem);
