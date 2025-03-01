@@ -25,6 +25,7 @@ public class PBCreativeTab {
     ).displayName(Text.translatable("itemGroup.pedrosbakery.miscellaneous"))
             .entries((ctx, entries) -> {
                 entries.add(new ItemStack(PBBlocks.PIE));
+                entries.add(new ItemStack(PBBlocks.INDUCTION_OVEN));
                 entries.add(new ItemStack(PBItems.DONUT));
                 addFrostingBottles(entries);
                 entries.add(new ItemStack(PBItems.CHEESE));
@@ -67,6 +68,7 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBBlocks.EXPANDABLE_BAKING_TRAY));
                 entries.add(new ItemStack(PBBlocks.CUPCAKE));
                 entries.add(new ItemStack(PBBlocks.CUPCAKE_TRAY));
+                entries.add(new ItemStack(PBBlocks.INDUCTION_OVEN));
                 addSprinkles(entries);
                 addFrostingBottles(entries);
                 addButter(entries);
