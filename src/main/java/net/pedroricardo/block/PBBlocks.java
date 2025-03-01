@@ -8,8 +8,11 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.pedroricardo.PedrosBakery;
+import net.pedroricardo.block.extras.CakeBatter;
+import net.pedroricardo.block.extras.CupcakeTrayBatter;
 import net.pedroricardo.item.*;
 
+import java.util.Collections;
 import java.util.function.BiConsumer;
 
 public class PBBlocks {
