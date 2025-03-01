@@ -1,6 +1,7 @@
 package net.pedroricardo.block;
 
 import net.minecraft.block.*;
+import net.minecraft.block.enums.Instrument;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -52,6 +53,7 @@ public class PBBlocks {
     public static final Block POLISHED_CHEESE_BRICK_SLAB = register("polished_cheese_brick_slab", new SlabBlock(AbstractBlock.Settings.copy(POLISHED_CHEESE_SLAB)));
     public static final Block POLISHED_CHEESE_BRICK_STAIRS = register("polished_cheese_brick_stairs", new StairsBlock(POLISHED_CHEESE_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_CHEESE_STAIRS)));
     public static final Block POLISHED_CHEESE_BRICK_WALL = register("polished_cheese_brick_wall", new WallBlock(AbstractBlock.Settings.copy(POLISHED_CHEESE_WALL)));
+    public static final Block INDUCTION_OVEN = register("induction_oven", new Block(AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).instrument(Instrument.BASEDRUM).requiresTool().strength(3.5f)));
 
     private static Block register(final String name, Block block) {
         return register(name, block, (str, registeredBlock) -> PBItems.register(str, new BlockItem(registeredBlock, new Item.Settings())));

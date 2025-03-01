@@ -27,7 +27,7 @@ public class PBModelProvider extends FabricModelProvider {
 
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
-        Identifier templateCake = Models.PARTICLE.upload(Identifier.of(PedrosBakery.MOD_ID, "block/template_cake"), TextureMap.particle(TextureMap.getSubId(Blocks.CAKE, "_side")), blockStateModelGenerator.modelCollector);
+        Identifier templateCake = Models.PARTICLE.upload(Identifier.of(PedrosBakery.MOD_ID, "oven/template_cake"), TextureMap.particle(TextureMap.getSubId(Blocks.CAKE, "_side")), blockStateModelGenerator.modelCollector);
         registerParentedBlockModel(blockStateModelGenerator, PBBlocks.CAKE, templateCake);
         registerParentedBlockModel(blockStateModelGenerator, PBBlocks.CANDLE_CAKE, templateCake);
         registerParentedBlockModel(blockStateModelGenerator, PBBlocks.WHITE_CANDLE_CAKE, templateCake);
@@ -85,6 +85,8 @@ public class PBModelProvider extends FabricModelProvider {
         registerSlabWithCubeAll(blockStateModelGenerator, PBBlocks.POLISHED_CHEESE_BRICK_SLAB, PBBlocks.POLISHED_CHEESE_BRICKS);
         registerStairs(blockStateModelGenerator, PBBlocks.POLISHED_CHEESE_BRICK_STAIRS, PBBlocks.POLISHED_CHEESE_BRICKS);
         registerWall(blockStateModelGenerator, PBBlocks.POLISHED_CHEESE_BRICK_WALL, PBBlocks.POLISHED_CHEESE_BRICKS);
+
+        registerInductionOven(blockStateModelGenerator, PBBlocks.INDUCTION_OVEN);
 
         blockStateModelGenerator.excludeFromSimpleItemModelGeneration(PBBlocks.CAKE);
         blockStateModelGenerator.excludeFromSimpleItemModelGeneration(PBBlocks.CUPCAKE_TRAY);
@@ -187,5 +189,10 @@ public class PBModelProvider extends FabricModelProvider {
         Identifier sideModel = Models.TEMPLATE_WALL_SIDE.upload(wall, textureMap, blockStateModelGenerator.modelCollector);
         Identifier sideTallModel = Models.TEMPLATE_WALL_SIDE_TALL.upload(wall, textureMap, blockStateModelGenerator.modelCollector);
         blockStateModelGenerator.blockStateCollector.accept(BlockStateModelGenerator.createWallBlockState(wall, postModel, sideModel, sideTallModel));
+    }
+
+    private static void registerInductionOven(BlockStateModelGenerator blockStateModelGenerator, Block oven) {
+        TextureMap textureMap = new TextureMap().put(TextureKey.BOTTOM, TextureMap.getSubId(Blocks.FURNACE, "_top")).put(TextureKey.TOP, TextureMap.getSubId(oven, "_top")).put(TextureKey.SIDE, TextureMap.getSubId(Blocks.FURNACE, "_side"));
+        blockStateModelGenerator.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(oven, Models.CUBE_BOTTOM_TOP.upload(oven, textureMap, blockStateModelGenerator.modelCollector)));
     }
 }

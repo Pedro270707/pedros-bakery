@@ -62,6 +62,7 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBBlocks.POLISHED_CHEESE_BRICK_SLAB, "Polished Cheese Brick Slab");
         builder.add(PBBlocks.POLISHED_CHEESE_BRICK_STAIRS, "Polished Cheese Brick Stairs");
         builder.add(PBBlocks.POLISHED_CHEESE_BRICK_WALL, "Polished Cheese Brick Wall");
+        builder.add(PBBlocks.INDUCTION_OVEN, "Induction Oven");
         builder.add(PBItems.FROSTING_BOTTLE, "Frosting Bottle");
         builder.add(PBItems.DONUT, "Donut");
         builder.add(PBItems.DONUT.getTranslationKey() + ".top", "%s");

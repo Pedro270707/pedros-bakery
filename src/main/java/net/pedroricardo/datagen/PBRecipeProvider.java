@@ -81,6 +81,8 @@ public class PBRecipeProvider extends FabricRecipeProvider {
         offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, PBBlocks.POLISHED_CHEESE_BRICK_WALL, PBBlocks.POLISHED_CHEESE, 1);
         offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, PBBlocks.POLISHED_CHEESE_BRICK_WALL, PBBlocks.POLISHED_CHEESE_BRICKS, 1);
 
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, PBBlocks.INDUCTION_OVEN, 1).input(Items.FURNACE).input(Items.REDSTONE).criterion(hasItem(Items.FURNACE), VanillaRecipeProvider.conditionsFromItem(Items.FURNACE)).offerTo(exporter);
+
         ComplexRecipeJsonBuilder.create(PBRecipeSerializers.BAKING_TRAY_INCREASE).offerTo(exporter, "baking_tray_increase");
         ComplexRecipeJsonBuilder.create(PBRecipeSerializers.EXPANDABLE_BAKING_TRAY).offerTo(exporter, "expandable_baking_tray");
         ComplexRecipeJsonBuilder.create(PBRecipeSerializers.FROSTED_ITEM).offerTo(exporter, "frosted_donut");
