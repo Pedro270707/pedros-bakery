@@ -28,14 +28,18 @@ public class PBRenderHelper {
         float normalY = normal.y();
         float normalZ = normal.z();
 
+        float red = ((color >> 16) & 0xFF) / 255.0f;
+        float green = ((color >> 8) & 0xFF) / 255.0f;
+        float blue = (color & 0xFF) / 255.0f;
+        float alpha = ((color >> 24) & 0xFF) / 255.0f;
         Vector3f pos = entry.getPositionMatrix().transformPosition((x + width) / 16.0f, z / 16.0f, y / 16.0f, vector3f);
-        vertexConsumer.vertex(pos.x(), pos.y(), pos.z(), ((color >> 16) & 0xFF) / 255.0f, ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, ((color >> 24) & 0xFF) / 255.0f, u2 / textureWidth, v / textureHeight, overlay, light, normalX, normalY, normalZ);
+        vertexConsumer.vertex(pos.x(), pos.y(), pos.z(), red, green, blue, alpha, u2 / textureWidth, v / textureHeight, overlay, light, normalX, normalY, normalZ);
         pos = entry.getPositionMatrix().transformPosition(x / 16.0f, z / 16.0f, y / 16.0f, vector3f);
-        vertexConsumer.vertex(pos.x(), pos.y(), pos.z(), ((color >> 16) & 0xFF) / 255.0f, ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, ((color >> 24) & 0xFF) / 255.0f, u / textureWidth, v / textureHeight, overlay, light, normalX, normalY, normalZ);
+        vertexConsumer.vertex(pos.x(), pos.y(), pos.z(), red, green, blue, alpha, u / textureWidth, v / textureHeight, overlay, light, normalX, normalY, normalZ);
         pos = entry.getPositionMatrix().transformPosition(x / 16.0f, z / 16.0f, (y + height) / 16.0f, vector3f);
-        vertexConsumer.vertex(pos.x(), pos.y(), pos.z(), ((color >> 16) & 0xFF) / 255.0f, ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, ((color >> 24) & 0xFF) / 255.0f, u / textureWidth, v2 / textureHeight, overlay, light, normalX, normalY, normalZ);
+        vertexConsumer.vertex(pos.x(), pos.y(), pos.z(), red, green, blue, alpha, u / textureWidth, v2 / textureHeight, overlay, light, normalX, normalY, normalZ);
         pos = entry.getPositionMatrix().transformPosition((x + width) / 16.0f, z / 16.0f, (y + height) / 16.0f, vector3f);
-        vertexConsumer.vertex(pos.x(), pos.y(), pos.z(), ((color >> 16) & 0xFF) / 255.0f, ((color >> 8) & 0xFF) / 255.0f, (color & 0xFF) / 255.0f, ((color >> 24) & 0xFF) / 255.0f, u2 / textureWidth, v2 / textureHeight, overlay, light, normalX, normalY, normalZ);
+        vertexConsumer.vertex(pos.x(), pos.y(), pos.z(), red, green, blue, alpha, u2 / textureWidth, v2 / textureHeight, overlay, light, normalX, normalY, normalZ);
 
         entry.getPositionMatrix().rotate(rotation.conjugate());
         matrices.pop();
