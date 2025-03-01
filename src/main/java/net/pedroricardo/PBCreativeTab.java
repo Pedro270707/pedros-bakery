@@ -62,10 +62,14 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBItems.SHAPED_COOKIE));
                 entries.add(new ItemStack(PBItems.CHEESE));
                 entries.add(new ItemStack(PBItems.HARD_CHEESE));
-                entries.add(new ItemStack(PBBlocks.CHEESE_BRICKS));
-                entries.add(new ItemStack(PBBlocks.CHEESE_BRICK_SLAB));
-                entries.add(new ItemStack(PBBlocks.CHEESE_BRICK_STAIRS));
-                entries.add(new ItemStack(PBBlocks.CHEESE_BRICK_WALL));
+                entries.add(new ItemStack(PBBlocks.POLISHED_CHEESE));
+                entries.add(new ItemStack(PBBlocks.POLISHED_CHEESE_SLAB));
+                entries.add(new ItemStack(PBBlocks.POLISHED_CHEESE_STAIRS));
+                entries.add(new ItemStack(PBBlocks.POLISHED_CHEESE_WALL));
+                entries.add(new ItemStack(PBBlocks.POLISHED_CHEESE_BRICKS));
+                entries.add(new ItemStack(PBBlocks.POLISHED_CHEESE_BRICK_SLAB));
+                entries.add(new ItemStack(PBBlocks.POLISHED_CHEESE_BRICK_STAIRS));
+                entries.add(new ItemStack(PBBlocks.POLISHED_CHEESE_BRICK_WALL));
                 entries.add(new ItemStack(PBItems.TORTILLA));
                 entries.add(new ItemStack(PBItems.QUESADILLA));
             }).build();

@@ -17,7 +17,7 @@ public class PBBlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
-        this.getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).setReplace(false).add(PBBlocks.BEATER, PBBlocks.BAKING_TRAY, PBBlocks.BAKING_TRAY_PART, PBBlocks.EXPANDABLE_BAKING_TRAY, PBBlocks.CUPCAKE_TRAY, PBBlocks.CHEESE_BRICKS, PBBlocks.CHEESE_BRICK_SLAB, PBBlocks.CHEESE_BRICK_STAIRS, PBBlocks.CHEESE_BRICK_WALL);
+        this.getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).setReplace(false).add(PBBlocks.BEATER, PBBlocks.BAKING_TRAY, PBBlocks.BAKING_TRAY_PART, PBBlocks.EXPANDABLE_BAKING_TRAY, PBBlocks.CUPCAKE_TRAY, PBBlocks.POLISHED_CHEESE, PBBlocks.POLISHED_CHEESE_SLAB, PBBlocks.POLISHED_CHEESE_STAIRS, PBBlocks.POLISHED_CHEESE_WALL, PBBlocks.POLISHED_CHEESE_BRICKS, PBBlocks.POLISHED_CHEESE_BRICK_SLAB, PBBlocks.POLISHED_CHEESE_BRICK_STAIRS, PBBlocks.POLISHED_CHEESE_BRICK_WALL);
         this.getOrCreateTagBuilder(BlockTags.AXE_MINEABLE).setReplace(false).add(PBBlocks.COOKIE_TABLE);
         this.getOrCreateTagBuilder(BlockTags.CANDLE_CAKES).setReplace(false).addTag(PBTags.Blocks.CANDLE_CAKES);
 
@@ -42,8 +42,8 @@ public class PBBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         );
         this.getOrCreateTagBuilder(PBTags.Blocks.CAKES).add(PBBlocks.CAKE).addTag(PBTags.Blocks.CANDLE_CAKES);
 
-        this.getOrCreateTagBuilder(BlockTags.SLABS).setReplace(false).add(PBBlocks.CHEESE_BRICK_SLAB);
-        this.getOrCreateTagBuilder(BlockTags.STAIRS).setReplace(false).add(PBBlocks.CHEESE_BRICK_STAIRS);
-        this.getOrCreateTagBuilder(BlockTags.WALLS).setReplace(false).add(PBBlocks.CHEESE_BRICK_WALL);
+        this.getOrCreateTagBuilder(BlockTags.SLABS).setReplace(false).add(PBBlocks.POLISHED_CHEESE_SLAB, PBBlocks.POLISHED_CHEESE_BRICK_SLAB);
+        this.getOrCreateTagBuilder(BlockTags.STAIRS).setReplace(false).add(PBBlocks.POLISHED_CHEESE_STAIRS, PBBlocks.POLISHED_CHEESE_BRICK_STAIRS);
+        this.getOrCreateTagBuilder(BlockTags.WALLS).setReplace(false).add(PBBlocks.POLISHED_CHEESE_WALL, PBBlocks.POLISHED_CHEESE_BRICK_WALL);
     }
 }
