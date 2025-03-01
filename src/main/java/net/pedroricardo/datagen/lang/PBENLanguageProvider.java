@@ -166,8 +166,10 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add("container.cookie_table.clear_canvas", "Clear canvas");
         builder.add("subtitles." + PBBlocks.BAKING_TRAY.getTranslationKey() + ".done", "Cake baked");
         builder.add("subtitles." + PBBlocks.PIE.getTranslationKey() + ".done", "Pie baked");
-        builder.add("itemGroup." + PedrosBakery.MOD_ID, "Pedro's Bakery");
         builder.add("itemGroup." + PedrosBakery.MOD_ID + ".baking_trays", "Pedro's Bakery: Baking Trays");
+        builder.add("itemGroup." + PedrosBakery.MOD_ID + ".cakes_and_cupcakes", "PB: Cakes and Cupcakes");
+        builder.add("itemGroup." + PedrosBakery.MOD_ID + ".cookies", "Pedro's Bakery: Cookies");
+        builder.add("itemGroup." + PedrosBakery.MOD_ID + ".miscellaneous", "Pedro's Bakery: Miscellaneous");
         builder.add("pedrosbakery.config.bakingTrayMinSize", "Baking Tray Minimum Size");
         builder.add("pedrosbakery.config.bakingTrayMaxSize", "Baking Tray Maximum Size");
         builder.add("pedrosbakery.config.bakingTrayDefaultSize", "Baking Tray Default Size");
