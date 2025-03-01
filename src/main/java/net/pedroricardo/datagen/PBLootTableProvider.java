@@ -42,11 +42,11 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
         this.addDrop(PBBlocks.BLACK_CANDLE_CAKE, Items.BLACK_CANDLE);
         this.addDrop(PBBlocks.CAKE_PART, LootTable.builder());
         this.addDrop(PBBlocks.BEATER);
-        this.addDrop(PBBlocks.BAKING_TRAY);
+        this.addDrop(PBBlocks.BAKING_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.BAKING_TRAY).apply(CopyComponentsLootFunction.builder())).build()));
         this.addDrop(PBBlocks.BAKING_TRAY_PART, LootTable.builder());
         this.addDrop(PBBlocks.CAKE_STAND);
         this.addDrop(PBBlocks.PLATE);
-        this.addDrop(PBBlocks.EXPANDABLE_BAKING_TRAY);
+        this.addDrop(PBBlocks.EXPANDABLE_BAKING_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.EXPANDABLE_BAKING_TRAY).apply(CopyComponentsLootFunction.builder())).build()));
         this.addDrop(PBBlocks.CUPCAKE_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.CUPCAKE_TRAY).apply(CopyComponentsLootFunction.builder())).build()));
         this.addDrop(PBBlocks.CUPCAKE);
         this.addDrop(PBBlocks.COOKIE_JAR);
