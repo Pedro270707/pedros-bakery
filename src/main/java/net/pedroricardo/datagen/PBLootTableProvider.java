@@ -74,5 +74,6 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
         this.addDrop(PBBlocks.POLISHED_CHEESE_BRICK_SLAB, dropsWithSilkTouch(PBBlocks.POLISHED_CHEESE_BRICK_SLAB, this.applyExplosionDecay(PBBlocks.POLISHED_CHEESE_BRICK_SLAB, ItemEntry.builder(PBItems.HARD_CHEESE).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0f))))));
         this.addDrop(PBBlocks.POLISHED_CHEESE_BRICK_STAIRS, dropsWithSilkTouch(PBBlocks.POLISHED_CHEESE_BRICK_STAIRS, this.applyExplosionDecay(PBBlocks.POLISHED_CHEESE_BRICK_STAIRS, ItemEntry.builder(PBItems.HARD_CHEESE).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0f))))));
         this.addDrop(PBBlocks.POLISHED_CHEESE_BRICK_WALL, dropsWithSilkTouch(PBBlocks.POLISHED_CHEESE_BRICK_WALL, this.applyExplosionDecay(PBBlocks.POLISHED_CHEESE_BRICK_WALL, ItemEntry.builder(PBItems.HARD_CHEESE).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0f))))));
+        this.addDrop(PBBlocks.INDUCTION_OVEN);
     }
 }
