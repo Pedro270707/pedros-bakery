@@ -3,16 +3,13 @@ package net.pedroricardo.block.multipart;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.*;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class MultipartBlockEntity extends BlockEntity {
+public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> extends BlockEntity {
     private HashSet<BlockPos> partOffsets = new HashSet<>();
     private BlockPos mainOffset;
 
@@ -35,14 +32,14 @@ public abstract class MultipartBlockEntity extends BlockEntity {
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
-        nbt.put("multipart_main_offset", BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, this.mainOffset == null ? this.pos : this.mainOffset).result().orElse(new NbtList()));
+        nbt.put("multipart_main_offset", BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, this.mainOffset == null ? this.pos : this.mainOffset).result().orElse(new NbtIntArray(new int[]{0, 0, 0})));
         if (this.mainOffset.equals(BlockPos.ORIGIN)) {
             nbt.put("multipart_part_offsets", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, new ArrayList<>(this.partOffsets)).result().orElse(new NbtList()));
         }
     }
 
     public void addPartPosition(BlockPos pos) {
-        MultipartBlockEntity main = this.getMainPart();
+        T main = this.getMainPart();
         if (main == this) {
             this.partOffsets.add(pos.subtract(this.getPos()));
         } else {
@@ -105,10 +102,17 @@ public abstract class MultipartBlockEntity extends BlockEntity {
         mainPart.addPartPosition(mainPart.getPos());
     }
 
-    public MultipartBlockEntity getMainPart() {
-        if (!this.hasWorld() || this.getMainPartPosition() == null || this.getMainPartPosition().equals(this.getPos())) return this;
-        if (this.getWorld().getBlockEntity(this.getMainPartPosition()) instanceof MultipartBlockEntity part) return part;
-        return this;
+    public T getMainPart() {
+        try {
+            if (!this.hasWorld() || this.getMainPartPosition() == null || this.getMainPartPosition().equals(this.getPos())) return (T) this;
+            return (T) this.getWorld().getBlockEntity(this.getMainPartPosition());
+        } catch (ClassCastException ignored) {
+            try {
+                return (T) this;
+            } catch (ClassCastException ignored2) {
+                return null;
+            }
+        }
     }
 
     public boolean isMainPart() {
