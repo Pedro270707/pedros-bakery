@@ -2,19 +2,14 @@ package net.pedroricardo.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.ComponentMap;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.*;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -23,7 +18,6 @@ import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
-import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockEntity;
 import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.Nullable;
@@ -32,8 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PBCakeBlockEntity extends MultipartBlockEntity {
+public class PBCakeBlockEntity extends MultipartBlockEntity<PBCakeBlockEntity> {
     private List<CakeBatter<FullBatterSizeContainer>> batterList = new ArrayList<>();
+    private BlockPos centerOffset;
 
     public PBCakeBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.CAKE, pos, state);
@@ -53,6 +48,7 @@ public class PBCakeBlockEntity extends MultipartBlockEntity {
             list.add(layer.toNbt(new NbtCompound(), CakeBatter.FULL_CODEC));
         }
         nbt.put("batter", list);
+        nbt.put("center_offset", BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, this.centerOffset).result().orElse(new NbtIntArray(new int[]{0, 0, 0})));
     }
 
     @Override
@@ -60,6 +56,11 @@ public class PBCakeBlockEntity extends MultipartBlockEntity {
         super.readNbt(nbt, registryLookup);
         if (!this.isMainPart()) return;
         this.readCakeNbt(nbt);
+        if (nbt.contains("center_offset", NbtElement.INT_ARRAY_TYPE)) {
+            this.centerOffset = BlockPos.CODEC.parse(NbtOps.INSTANCE, nbt.get("center_offset")).result().orElse(BlockPos.ORIGIN);
+        } else {
+            this.centerOffset = BlockPos.ORIGIN;
+        }
     }
 
     protected void readCakeNbt(NbtCompound nbt) {
@@ -94,7 +95,7 @@ public class PBCakeBlockEntity extends MultipartBlockEntity {
     }
 
     public List<CakeBatter<FullBatterSizeContainer>> getBatterList() {
-        return this.batterList;
+        return this.getMainPart().batterList;
     }
 
     public float getHeight() {

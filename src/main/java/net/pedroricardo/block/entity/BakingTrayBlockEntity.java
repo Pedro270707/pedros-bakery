@@ -7,19 +7,13 @@ import net.minecraft.component.ComponentMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
@@ -29,16 +23,13 @@ import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.BakingTrayBlock;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.size.HeightOnlyBatterSizeContainer;
-import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockEntity;
 import net.pedroricardo.block.tags.PBTags;
 import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-
-public class BakingTrayBlockEntity extends MultipartBlockEntity {
+public class BakingTrayBlockEntity extends MultipartBlockEntity<BakingTrayBlockEntity> {
     private int size = PedrosBakery.CONFIG.bakingTrayDefaultSize.get();
     private int height = PedrosBakery.CONFIG.bakingTrayDefaultHeight.get();
     private CakeBatter<HeightOnlyBatterSizeContainer> cakeBatter = CakeBatter.getHeightOnlyEmpty();
@@ -117,11 +108,11 @@ public class BakingTrayBlockEntity extends MultipartBlockEntity {
     }
 
     public CakeBatter<HeightOnlyBatterSizeContainer> getCakeBatter() {
-        return ((BakingTrayBlockEntity) this.getMainPart()).cakeBatter;
+        return this.getMainPart().cakeBatter;
     }
 
     public void setCakeBatter(@NotNull CakeBatter<HeightOnlyBatterSizeContainer> cakeBatter) {
-        BakingTrayBlockEntity main = ((BakingTrayBlockEntity) this.getMainPart());
+        BakingTrayBlockEntity main = this.getMainPart();
         main.cakeBatter = cakeBatter;
         if (main.cakeBatter.getSizeContainer().getHeight() > this.getHeight()) {
             main.cakeBatter.getSizeContainer().setHeight(this.getHeight());
@@ -138,21 +129,21 @@ public class BakingTrayBlockEntity extends MultipartBlockEntity {
     }
 
     public int getSize() {
-        return ((BakingTrayBlockEntity) this.getMainPart()).size;
+        return this.getMainPart().size;
     }
 
     public void setSize(int size) {
-        BakingTrayBlockEntity main = ((BakingTrayBlockEntity) this.getMainPart());
+        BakingTrayBlockEntity main = this.getMainPart();
         main.size = size;
         main.markDirty();
     }
 
     public int getHeight() {
-        return ((BakingTrayBlockEntity) this.getMainPart()).height;
+        return this.getMainPart().height;
     }
 
     public void setHeight(int height) {
-        BakingTrayBlockEntity main = ((BakingTrayBlockEntity) this.getMainPart());
+        BakingTrayBlockEntity main = this.getMainPart();
         main.height = height;
         main.markDirty();
     }
