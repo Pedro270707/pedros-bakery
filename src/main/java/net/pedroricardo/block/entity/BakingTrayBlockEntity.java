@@ -60,8 +60,6 @@ public class BakingTrayBlockEntity extends MultipartBlockEntity<BakingTrayBlockE
         if (nbt.contains("batter", NbtElement.COMPOUND_TYPE)) {
             this.cakeBatter = CakeBatter.fromNbt(nbt.getCompound("batter"), CakeBatter.WITH_HEIGHT_CODEC, CakeBatter.getHeightOnlyEmpty());
         }
-        this.remove(false);
-        ((BakingTrayBlock) this.getCachedState().getBlock()).placeParts(this.getWorld(), this.getPos(), this.getCachedState());
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, BakingTrayBlockEntity blockEntity) {

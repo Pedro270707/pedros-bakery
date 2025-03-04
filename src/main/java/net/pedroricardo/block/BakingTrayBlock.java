@@ -7,9 +7,6 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.function.BooleanBiFunction;
@@ -20,6 +17,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
@@ -29,6 +27,7 @@ import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 import net.pedroricardo.block.multipart.MultipartBlock;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -118,6 +117,35 @@ public class BakingTrayBlock extends MultipartBlock<BakingTrayBlockEntity> {
         }
     }
 
+    @Override
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+        boolean canPlaceMain = super.canPlaceAt(state, world, pos);
+        if (!canPlaceMain) return false;
+        List<BlockPos> list = this.getPartPositionsForPlacement(world, pos, state);
+        return true;
+    }
+
+    public List<BlockPos> getPartPositionsForPlacement(WorldView world, BlockPos pos, BlockState state) {
+        if (!(state.getBlock() instanceof MultipartBlock<?> block)) return List.of();
+        VoxelShape shape = block.getFullShape(state, world, pos, ShapeContext.absent());
+        if (shape.isEmpty()) return List.of();
+        List<BlockPos> list = new ArrayList<>();
+        Box box = shape.getBoundingBox().offset(pos);
+        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
+        for (int x = (int)box.minX; x < box.maxX; x++) {
+            for (int y = (int)box.minY; y < box.maxY; y++) {
+                for (int z = (int)box.minZ; z < box.maxZ; z++) {
+                    BlockPos partPos = new BlockPos(x, y, z);
+                    if (/*!world.isInBuildLimit(partPos) || */VoxelShapes.combineAndSimplify(shape.offset(pos.getX() - partPos.getX(), pos.getY() - partPos.getY(), pos.getZ() - partPos.getZ()), VoxelShapes.fullCube(), BooleanBiFunction.AND).isEmpty()) continue;
+                    if (!partPos.equals(pos)) {
+                        list.add(partPos);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
     public void placeParts(World world, BlockPos pos, BlockState state) {
         if (!(state.getBlock() instanceof MultipartBlock<?> block)) return;
         VoxelShape shape = block.getFullShape(state, world, pos, ShapeContext.absent());
@@ -128,7 +156,9 @@ public class BakingTrayBlock extends MultipartBlock<BakingTrayBlockEntity> {
             for (int y = (int)box.minY; y < box.maxY; y++) {
                 for (int z = (int)box.minZ; z < box.maxZ; z++) {
                     BlockPos partPos = new BlockPos(x, y, z);
-                    if (!world.isInBuildLimit(partPos) || VoxelShapes.combineAndSimplify(shape.offset(pos.getX() - partPos.getX(), pos.getY() - partPos.getY(), pos.getZ() - partPos.getZ()), VoxelShapes.fullCube(), BooleanBiFunction.AND).isEmpty()) continue;
+                    if (!world.isInBuildLimit(partPos) || VoxelShapes.combineAndSimplify(shape.offset(pos.getX() - partPos.getX(), pos.getY() - partPos.getY(), pos.getZ() - partPos.getZ()), VoxelShapes.fullCube(), BooleanBiFunction.AND).isEmpty()) {
+                        continue;
+                    }
                     BlockState partState = world.getBlockState(partPos);
                     if (partState.isReplaceable() && !partState.isSolidBlock(world, partPos) && !partPos.equals(pos)) {
                         block.createPart(world, pos, partPos);
