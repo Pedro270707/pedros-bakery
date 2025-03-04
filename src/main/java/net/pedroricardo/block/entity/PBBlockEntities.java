@@ -31,10 +31,6 @@ public class PBBlockEntities {
             PBBlocks.RED_CANDLE_CAKE,
             PBBlocks.BLACK_CANDLE_CAKE), "cake");
 
-    public static final BlockEntityType<? extends PBCakeBlockEntityPart> CAKE_PART = register(FabricBlockEntityTypeBuilder.create(
-            PBCakeBlockEntityPart::new,
-            PBBlocks.CAKE_PART), "cake_part");
-
     public static final BlockEntityType<? extends BeaterBlockEntity> BEATER = register(FabricBlockEntityTypeBuilder.create(
             BeaterBlockEntity::new,
             PBBlocks.BEATER), "beater");
@@ -43,10 +39,6 @@ public class PBBlockEntities {
             BakingTrayBlockEntity::new,
             PBBlocks.BAKING_TRAY,
             PBBlocks.EXPANDABLE_BAKING_TRAY), "baking_tray");
-
-    public static final BlockEntityType<? extends BakingTrayBlockEntityPart> BAKING_TRAY_PART = register(FabricBlockEntityTypeBuilder.create(
-            BakingTrayBlockEntityPart::new,
-            PBBlocks.BAKING_TRAY_PART), "baking_tray_part");
 
     public static final BlockEntityType<? extends CakeStandBlockEntity> CAKE_STAND = register(FabricBlockEntityTypeBuilder.create(
             CakeStandBlockEntity::new,

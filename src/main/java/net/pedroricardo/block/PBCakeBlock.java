@@ -21,26 +21,24 @@ import net.minecraft.util.*;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PedrosBakery;
 import net.pedroricardo.block.entity.PBBlockEntities;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
-import net.pedroricardo.block.entity.PBCakeBlockEntityPart;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.CakeFeature;
 import net.pedroricardo.block.extras.CakeTop;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 import net.pedroricardo.block.multipart.MultipartBlock;
-import net.pedroricardo.block.multipart.MultipartBlockPart;
-import net.pedroricardo.block.tags.PBTags;
+import net.pedroricardo.block.multipart.MultipartBlockEntity;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import org.jetbrains.annotations.Nullable;
@@ -51,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCakeBlockEntity, PBCakeBlockEntityPart, PBCakeBlockPart> {
+public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
     public PBCakeBlock(Settings settings) {
         super(settings);
         this.setDefaultState(this.getStateManager().getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.NORTH));
@@ -71,31 +69,18 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
     }
 
     @Override
-    public List<BlockPos> getParts(WorldView world, BlockPos pos) {
-        if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
-            return cake.getParts();
-        }
-        return List.of();
-    }
-
-    @Override
-    public PBCakeBlockPart getPart() {
-        return (PBCakeBlockPart) PBBlocks.CAKE_PART;
-    }
-
-    @Override
     public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return VoxelShapes.empty();
     }
 
-    @Nullable
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable PBCakeBlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new PBCakeBlockEntity(pos, state);
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
         builder.add(Properties.HORIZONTAL_FACING);
     }
 
@@ -166,7 +151,7 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
             changeState(player, world, pos, state);
         }
         if (cake.getBatterList().size() == 1 && cake.getBatterList().get(layerIndex).isEmpty()) {
-            cake.removeAllParts(world);
+            cake.remove(true);
             world.removeBlock(pos, false);
             world.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);
         }
@@ -347,23 +332,6 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
     }
 
     @Override
-    public void removePartsWhenReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        for (BlockPos partPos : this.getParts(world, pos)) {
-            if (!(world.getBlockState(partPos).getBlock() instanceof MultipartBlockPart<?, ?>) || !world.getBlockState(partPos).contains(MultipartBlockPart.DELEGATE)) {
-                return;
-            }
-            world.setBlockState(partPos, world.getBlockState(partPos).with(MultipartBlockPart.DELEGATE, false));
-            if (moved) {
-                world.removeBlock(partPos, true);
-            } else if (newState.isIn(PBTags.Blocks.CAKES)) {
-                world.removeBlock(partPos, false);
-            } else {
-                world.breakBlock(partPos, false);
-            }
-        }
-    }
-
-    @Override
     public BlockState rotate(BlockState state, BlockRotation rotation) {
         return state.with(Properties.HORIZONTAL_FACING, rotation.rotate(state.get(Properties.HORIZONTAL_FACING)));
     }
@@ -379,10 +347,40 @@ public class PBCakeBlock extends BlockWithEntity implements MultipartBlock<PBCak
     }
 
     @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.isOf(newState.getBlock())) {
+            return;
+        }
+        this.remove(world, pos, true);
+        super.onStateReplaced(state, world, pos, newState, moved);
+    }
+
+    @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.onPlaced(world, pos, state, placer, stack);
         if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
             cake.readFrom(stack);
+        }
+        this.placeParts(world, pos, state);
+    }
+
+    protected void placeParts(World world, BlockPos pos, BlockState state) {
+        if (!(state.getBlock() instanceof MultipartBlock<?> block)) return;
+        VoxelShape shape = block.getFullShape(state, world, pos, ShapeContext.absent());
+        if (shape.isEmpty()) return;
+        Box box = shape.getBoundingBox().offset(pos);
+        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
+        for (int x = (int)box.minX; x < box.maxX; x++) {
+            for (int y = (int)box.minY; y < box.maxY; y++) {
+                for (int z = (int)box.minZ; z < box.maxZ; z++) {
+                    BlockPos partPos = new BlockPos(x, y, z);
+                    if (!world.isInBuildLimit(partPos) || VoxelShapes.combineAndSimplify(shape, VoxelShapes.fullCube().offset(partPos.getX() - pos.getX(), partPos.getY() - pos.getY(), partPos.getZ() - pos.getZ()), BooleanBiFunction.AND).isEmpty()) continue;
+                    BlockState partState = world.getBlockState(partPos);
+                    if (partState.isReplaceable() && !partState.isSolidBlock(world, partPos) && !partPos.equals(pos)) {
+                        this.createPart(world, pos, partPos);
+                    }
+                }
+            }
         }
     }
 }

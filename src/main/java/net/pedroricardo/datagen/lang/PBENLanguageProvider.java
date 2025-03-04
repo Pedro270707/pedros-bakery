@@ -36,10 +36,8 @@ public class PBENLanguageProvider extends FabricLanguageProvider {
         builder.add(PBBlocks.GREEN_CANDLE_CAKE, "Green Candle Cake");
         builder.add(PBBlocks.RED_CANDLE_CAKE, "Red Candle Cake");
         builder.add(PBBlocks.BLACK_CANDLE_CAKE, "Black Candle Cake");
-        builder.add(PBBlocks.CAKE_PART, "Cake Part");
         builder.add(PBBlocks.BEATER, "Beater");
         builder.add(PBBlocks.BAKING_TRAY, "Baking Tray");
-        builder.add(PBBlocks.BAKING_TRAY_PART, "Baking Tray Part");
         builder.add(PBBlocks.BAKING_TRAY.getTranslationKey() + ".size", "%sx%sx%s");
         builder.add(PBBlocks.BAKING_TRAY.getTranslationKey() + ".full", "%s%% full");
         builder.add(PBBlocks.CAKE_STAND, "Cake Stand");

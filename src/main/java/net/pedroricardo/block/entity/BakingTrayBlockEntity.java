@@ -23,6 +23,7 @@ import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.PBSounds;
 import net.pedroricardo.PedrosBakery;
+import net.pedroricardo.block.BakingTrayBlock;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.size.HeightOnlyBatterSizeContainer;
 import net.pedroricardo.block.multipart.MultipartBlock;
@@ -33,13 +34,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlockEntity, ItemComponentProvider, StackReadingBlockEntity {
+public class BakingTrayBlockEntity extends MultipartBlockEntity implements ItemComponentProvider, StackReadingBlockEntity {
     private int size = PedrosBakery.CONFIG.bakingTrayDefaultSize.get();
     private int height = PedrosBakery.CONFIG.bakingTrayDefaultHeight.get();
     private CakeBatter<HeightOnlyBatterSizeContainer> cakeBatter = CakeBatter.getHeightOnlyEmpty();
-    private List<BlockPos> parts = new ArrayList<>();
 
     public BakingTrayBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.BAKING_TRAY, pos, state);
@@ -53,15 +52,16 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
     @Override
     public void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
+        if (!this.isMainPart()) return;
         nbt.putInt("size", this.size);
         nbt.putInt("height", this.height);
         nbt.put("batter", this.getCakeBatter().toNbt(new NbtCompound(), CakeBatter.WITH_HEIGHT_CODEC));
-        nbt.put("parts", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.parts).result().orElse(new NbtList()));
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
+        if (!this.isMainPart()) return;
         if (nbt.contains("size", NbtElement.INT_TYPE)) {
             this.size = nbt.getInt("size");
         }
@@ -71,10 +71,12 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
         if (nbt.contains("batter", NbtElement.COMPOUND_TYPE)) {
             this.cakeBatter = CakeBatter.fromNbt(nbt.getCompound("batter"), CakeBatter.WITH_HEIGHT_CODEC, CakeBatter.getHeightOnlyEmpty());
         }
-        this.parts = new ArrayList<>(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(new ArrayList<>()));
+        this.remove(false);
+        ((BakingTrayBlock) this.getCachedState().getBlock()).placeParts(this.getWorld(), this.getPos(), this.getCachedState());
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, BakingTrayBlockEntity blockEntity) {
+        if (!blockEntity.isMainPart()) return;
         if (world.getBlockState(pos.down()).isIn(PBTags.Blocks.BAKES_CAKE) && !blockEntity.getCakeBatter().isEmpty()) {
             blockEntity.getCakeBatter().bakeTick(world, pos, state);
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
@@ -85,72 +87,45 @@ public class BakingTrayBlockEntity extends BlockEntity implements MultipartBlock
                 world.playSound(pos.getX(), pos.getY(), pos.getZ(), PBSounds.BAKING_TRAY_DONE, SoundCategory.BLOCKS, 1.25f, 1.0f, true);
             }
         }
-        if (!world.isClient()) {
-            blockEntity.updateParts(world, pos, state);
-        }
     }
 
     public CakeBatter<HeightOnlyBatterSizeContainer> getCakeBatter() {
-        return this.cakeBatter;
+        return ((BakingTrayBlockEntity) this.getMainPart()).cakeBatter;
     }
 
     public void setCakeBatter(@NotNull CakeBatter<HeightOnlyBatterSizeContainer> cakeBatter) {
-        this.cakeBatter = cakeBatter;
-        if (this.cakeBatter.getSizeContainer().getHeight() > this.getHeight()) {
-            this.cakeBatter.getSizeContainer().setHeight(this.getHeight());
+        BakingTrayBlockEntity main = ((BakingTrayBlockEntity) this.getMainPart());
+        main.cakeBatter = cakeBatter;
+        if (main.cakeBatter.getSizeContainer().getHeight() > this.getHeight()) {
+            main.cakeBatter.getSizeContainer().setHeight(this.getHeight());
         }
-        this.markDirty();
+        main.markDirty();
     }
 
     public int getSize() {
-        return this.size;
+        return ((BakingTrayBlockEntity) this.getMainPart()).size;
     }
 
     public void setSize(int size) {
-        this.size = size;
-        this.markDirty();
+        BakingTrayBlockEntity main = ((BakingTrayBlockEntity) this.getMainPart());
+        main.size = size;
+        main.markDirty();
     }
 
     public int getHeight() {
-        return this.height;
+        return ((BakingTrayBlockEntity) this.getMainPart()).height;
     }
 
     public void setHeight(int height) {
-        this.height = height;
-        this.markDirty();
+        BakingTrayBlockEntity main = ((BakingTrayBlockEntity) this.getMainPart());
+        main.height = height;
+        main.markDirty();
     }
 
     @Nullable
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this);
-    }
-
-    @Override
-    public List<BlockPos> getParts() {
-        return this.parts;
-    }
-
-    @Override
-    public void updateParts(World world, BlockPos pos, BlockState state) {
-        if (!(state.getBlock() instanceof MultipartBlock<?, ?, ?> block)) return;
-        VoxelShape shape = block.getFullShape(state, world, pos, ShapeContext.absent());
-        if (shape.isEmpty()) return;
-        Box box = shape.getBoundingBox().offset(pos);
-        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
-        this.removeAllParts(world);
-        for (int x = (int)box.minX; x < box.maxX; x++) {
-            for (int y = (int)box.minY; y < box.maxY; y++) {
-                for (int z = (int)box.minZ; z < box.maxZ; z++) {
-                    BlockPos partPos = new BlockPos(x, y, z);
-                    if (!world.isInBuildLimit(partPos) || VoxelShapes.combineAndSimplify(shape, VoxelShapes.fullCube().offset(partPos.getX() - pos.getX(), partPos.getY() - pos.getY(), partPos.getZ() - pos.getZ()), BooleanBiFunction.AND).isEmpty()) continue;
-                    BlockState partState = world.getBlockState(partPos);
-                    if (partState.isReplaceable() && !partState.isSolidBlock(world, partPos) && !partPos.equals(pos)) {
-                        this.createPart(world, block, partPos, pos);
-                    }
-                }
-            }
-        }
     }
 
     @Override

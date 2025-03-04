@@ -23,21 +23,15 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.WorldView;
 import net.pedroricardo.block.entity.PBBlockEntities;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
-import net.pedroricardo.block.entity.PBCakeBlockEntityPart;
 import net.pedroricardo.block.extras.CakeBatter;
-import net.pedroricardo.block.multipart.MultipartBlock;
-import net.pedroricardo.block.multipart.MultipartBlockPart;
-import net.pedroricardo.block.tags.PBTags;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
-public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements BlockEntityProvider, MultipartBlock<PBCakeBlockEntity, PBCakeBlockEntityPart, PBCakeBlockPart> {
+public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements BlockEntityProvider {
     private final CandleBlock candle;
     private static final Map<CandleBlock, PBCandleCakeBlock> CANDLES_TO_CANDLE_CAKES = Maps.newHashMap();
 
@@ -63,14 +57,14 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
         return VoxelShapes.empty();
     }
 
-    @Nullable
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable PBCakeBlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new PBCakeBlockEntity(pos, state);
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
         builder.add(LIT).add(Properties.HORIZONTAL_FACING);
     }
 
@@ -124,40 +118,19 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
     }
 
     @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.isOf(newState.getBlock())) {
+            return;
+        }
+        this.remove(world, pos, true);
+        super.onStateReplaced(state, world, pos, newState, moved);
+    }
+
+    @Override
     public VoxelShape getFullShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         if (!(world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake)) {
             return VoxelShapes.fullCube();
         }
         return VoxelShapes.union(cake.toShape(), Block.createCuboidShape(7.0f, cake.getHeight(), 7.0f, 9.0f, cake.getHeight() + 6.0f, 9.0f));
-    }
-
-    @Override
-    public List<BlockPos> getParts(WorldView world, BlockPos pos) {
-        if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
-            return cake.getParts();
-        }
-        return List.of();
-    }
-
-    @Override
-    public void removePartsWhenReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        for (BlockPos partPos : this.getParts(world, pos)) {
-            if (!(world.getBlockState(partPos).getBlock() instanceof MultipartBlockPart<?, ?>) || !world.getBlockState(partPos).contains(MultipartBlockPart.DELEGATE)) {
-                return;
-            }
-            world.setBlockState(partPos, world.getBlockState(partPos).with(MultipartBlockPart.DELEGATE, false));
-            if (moved) {
-                world.removeBlock(partPos, true);
-            } else if (newState.isIn(PBTags.Blocks.CAKES)) {
-                world.removeBlock(partPos, false);
-            } else {
-                world.breakBlock(partPos, false);
-            }
-        }
-    }
-
-    @Override
-    public PBCakeBlockPart getPart() {
-        return (PBCakeBlockPart) PBBlocks.CAKE_PART;
     }
 }

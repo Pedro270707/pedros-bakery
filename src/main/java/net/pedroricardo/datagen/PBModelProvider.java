@@ -46,10 +46,8 @@ public class PBModelProvider extends FabricModelProvider {
         registerParentedBlockModel(blockStateModelGenerator, PBBlocks.GREEN_CANDLE_CAKE, templateCake);
         registerParentedBlockModel(blockStateModelGenerator, PBBlocks.RED_CANDLE_CAKE, templateCake);
         registerParentedBlockModel(blockStateModelGenerator, PBBlocks.BLACK_CANDLE_CAKE, templateCake);
-        registerParentedBlockModel(blockStateModelGenerator, PBBlocks.CAKE_PART, templateCake);
         blockStateModelGenerator.registerBuiltinWithParticle(PBBlocks.BEATER, TextureMap.getId(Blocks.IRON_BLOCK));
         blockStateModelGenerator.registerBuiltinWithParticle(PBBlocks.BAKING_TRAY, TextureMap.getId(Blocks.IRON_BLOCK));
-        blockStateModelGenerator.registerBuiltinWithParticle(PBBlocks.BAKING_TRAY_PART, TextureMap.getId(Blocks.IRON_BLOCK));
         blockStateModelGenerator.registerBuiltinWithParticle(PBBlocks.CAKE_STAND, TextureMap.getId(Blocks.GLASS));
         blockStateModelGenerator.registerBuiltinWithParticle(PBBlocks.PLATE, TextureMap.getId(Blocks.GLASS));
         blockStateModelGenerator.registerBuiltinWithParticle(PBBlocks.EXPANDABLE_BAKING_TRAY, TextureMap.getId(Blocks.IRON_BLOCK));
