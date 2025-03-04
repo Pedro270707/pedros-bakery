@@ -27,6 +27,7 @@ public class BakingTrayBlockRenderer implements BlockEntityRenderer<BakingTrayBl
 
     @Override
     public void render(BakingTrayBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        if (!entity.isMainPart()) return;
         int size = entity.getSize();
         int height = entity.getHeight();
         int color = 0xFFFFFFFF;

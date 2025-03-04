@@ -14,6 +14,7 @@ import net.minecraft.predicate.StatePredicate;
 import net.minecraft.registry.RegistryWrapper;
 import net.pedroricardo.block.ButterChurnBlock;
 import net.pedroricardo.block.PBBlocks;
+import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 
@@ -44,14 +45,16 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
         this.addDrop(PBBlocks.GREEN_CANDLE_CAKE, Items.GREEN_CANDLE);
         this.addDrop(PBBlocks.RED_CANDLE_CAKE, Items.RED_CANDLE);
         this.addDrop(PBBlocks.BLACK_CANDLE_CAKE, Items.BLACK_CANDLE);
-        this.addDrop(PBBlocks.CAKE_PART, LootTable.builder());
         this.addDrop(PBBlocks.BEATER);
-        this.addDrop(PBBlocks.BAKING_TRAY);
-        this.addDrop(PBBlocks.BAKING_TRAY_PART, LootTable.builder());
+        this.addDrop(PBBlocks.BAKING_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.BAKING_TRAY).apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY))
+                .conditionally(BlockStatePropertyLootCondition.builder(PBBlocks.BAKING_TRAY).properties(StatePredicate.Builder.create().exactMatch(MultipartBlock.IS_MAIN_PART, true)))
+        ).build()));
         this.addDrop(PBBlocks.CAKE_STAND);
         this.addDrop(PBBlocks.PLATE);
-        this.addDrop(PBBlocks.EXPANDABLE_BAKING_TRAY);
-        this.addDrop(PBBlocks.CUPCAKE_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.CUPCAKE_TRAY).apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY).include(PBComponentTypes.CUPCAKE_TRAY_BATTER))).build()));
+        this.addDrop(PBBlocks.EXPANDABLE_BAKING_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.EXPANDABLE_BAKING_TRAY).apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY))
+                .conditionally(BlockStatePropertyLootCondition.builder(PBBlocks.BAKING_TRAY).properties(StatePredicate.Builder.create().exactMatch(MultipartBlock.IS_MAIN_PART, true)))
+        ).build()));
+        this.addDrop(PBBlocks.CUPCAKE_TRAY, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(PBBlocks.CUPCAKE_TRAY).apply(CopyComponentsLootFunction.builder(CopyComponentsLootFunction.Source.BLOCK_ENTITY))).build()));
         this.addDrop(PBBlocks.CUPCAKE);
         this.addDrop(PBBlocks.COOKIE_JAR);
         this.addDrop(PBBlocks.BUTTER_CHURN, LootTable.builder()

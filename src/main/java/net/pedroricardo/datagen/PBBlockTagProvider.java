@@ -17,7 +17,7 @@ public class PBBlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
-        this.getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).setReplace(false).add(PBBlocks.BEATER, PBBlocks.BAKING_TRAY, PBBlocks.BAKING_TRAY_PART, PBBlocks.EXPANDABLE_BAKING_TRAY, PBBlocks.CUPCAKE_TRAY, PBBlocks.POLISHED_CHEESE, PBBlocks.POLISHED_CHEESE_SLAB, PBBlocks.POLISHED_CHEESE_STAIRS, PBBlocks.POLISHED_CHEESE_WALL, PBBlocks.POLISHED_CHEESE_BRICKS, PBBlocks.POLISHED_CHEESE_BRICK_SLAB, PBBlocks.POLISHED_CHEESE_BRICK_STAIRS, PBBlocks.POLISHED_CHEESE_BRICK_WALL);
+        this.getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).setReplace(false).add(PBBlocks.BEATER, PBBlocks.BAKING_TRAY, PBBlocks.EXPANDABLE_BAKING_TRAY, PBBlocks.CUPCAKE_TRAY, PBBlocks.POLISHED_CHEESE, PBBlocks.POLISHED_CHEESE_SLAB, PBBlocks.POLISHED_CHEESE_STAIRS, PBBlocks.POLISHED_CHEESE_WALL, PBBlocks.POLISHED_CHEESE_BRICKS, PBBlocks.POLISHED_CHEESE_BRICK_SLAB, PBBlocks.POLISHED_CHEESE_BRICK_STAIRS, PBBlocks.POLISHED_CHEESE_BRICK_WALL);
         this.getOrCreateTagBuilder(BlockTags.AXE_MINEABLE).setReplace(false).add(PBBlocks.COOKIE_TABLE);
         this.getOrCreateTagBuilder(BlockTags.CANDLE_CAKES).setReplace(false).addTag(PBTags.Blocks.CANDLE_CAKES);
 

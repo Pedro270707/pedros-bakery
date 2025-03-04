@@ -1,44 +1,79 @@
 package net.pedroricardo.block.multipart;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-public interface MultipartBlock<C extends BlockEntity & MultipartBlockEntity, E extends MultipartBlockEntityPart<C>, P extends MultipartBlockPart<C, E>> {
-    /**
-     * The shape of the entire structure with its parts.
-     * It is recommended to use {@link VoxelShapes#combineAndSimplify(VoxelShape, VoxelShape, BooleanBiFunction)} with {@link VoxelShapes#fullCube()} and {@link BooleanBiFunction#AND} in your normal shape methods to limit this to a single block.
-     * In the part block's class, make sure to offset this with {@code part.getParentPos().subtract(pos)}.
-     * If a seamless shape is desired, do not combine and simplify.
-     */
-    VoxelShape getFullShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context);
-    List<BlockPos> getParts(WorldView world, BlockPos pos);
+public abstract class MultipartBlock<T extends MultipartBlockEntity> extends BlockWithEntity {
+    public static final BooleanProperty IS_MAIN_PART = BooleanProperty.of("is_main_part");
 
-    /**
-     * Called when block is replaced in order to remove all the current parts.
-     */
-    default void removePartsWhenReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        for (BlockPos partPos : this.getParts(world, pos)) {
-            if (!(world.getBlockState(partPos).getBlock() instanceof MultipartBlockPart<?, ?>) || !world.getBlockState(partPos).contains(MultipartBlockPart.DELEGATE)) {
-                return;
-            }
-            world.setBlockState(partPos, world.getBlockState(partPos).with(MultipartBlockPart.DELEGATE, false));
-            if (moved) {
-                world.removeBlock(partPos, true);
-            } else {
-                world.breakBlock(partPos, false);
-            }
+    protected MultipartBlock(Settings settings) {
+        super(settings);
+        this.setDefaultState(this.getStateManager().getDefaultState().with(IS_MAIN_PART, true));
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(IS_MAIN_PART);
+    }
+
+    @Nullable
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return super.getPlacementState(ctx).with(IS_MAIN_PART, true);
+    }
+
+    @Override
+    public @Nullable T createBlockEntity(BlockPos pos, BlockState state) {
+        return null;
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return VoxelShapes.combineAndSimplify(this.getFullShape(state, world, pos, context), VoxelShapes.fullCube(), BooleanBiFunction.AND);
+    }
+
+    public abstract VoxelShape getFullShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context);
+
+    public Set<BlockPos> getParts(BlockView world, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof MultipartBlockEntity multipartBlockEntity) {
+            return multipartBlockEntity.getPartPositions();
+        }
+        return new HashSet<>();
+    }
+
+    public void remove(World world, BlockPos pos, boolean removeMain) {
+        if (world.getBlockEntity(pos) instanceof MultipartBlockEntity multipartBlockEntity) {
+            multipartBlockEntity.remove(removeMain);
         }
     }
 
-    P getPart();
+    public void createPart(World world, BlockPos pos, BlockPos partPos) {
+        if (!(world.getBlockEntity(pos) instanceof MultipartBlockEntity part)) {
+            return;
+        }
+        BlockState state = world.getBlockState(pos);
+        world.setBlockState(partPos, state);
+        part.addPartPosition(partPos);
+    }
+
+    public BlockPos getMainPartPosition(BlockView world, BlockPos pos) {
+        if (!(world.getBlockEntity(pos) instanceof MultipartBlockEntity part)) return null;
+        return part.getMainPartPosition();
+    }
 }

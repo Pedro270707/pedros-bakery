@@ -19,11 +19,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
+import net.pedroricardo.block.entity.PBCakeBlockEntity;
+import net.pedroricardo.block.multipart.MultipartBlock;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
 
-public abstract class PBAbstractCandleCakeBlock extends BlockWithEntity {
+public abstract class PBAbstractCandleCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
     public static final BooleanProperty LIT = Properties.LIT;
 
     protected abstract MapCodec<? extends PBAbstractCandleCakeBlock> getCodec();

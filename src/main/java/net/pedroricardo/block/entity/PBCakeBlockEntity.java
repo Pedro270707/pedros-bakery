@@ -32,9 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEntity {
+public class PBCakeBlockEntity extends MultipartBlockEntity {
     private List<CakeBatter<FullBatterSizeContainer>> batterList = new ArrayList<>();
-    private List<BlockPos> parts = new ArrayList<>();
 
     public PBCakeBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.CAKE, pos, state);
@@ -48,19 +47,19 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
+        if (!this.isMainPart()) return;
         NbtList list = new NbtList();
         for (CakeBatter<FullBatterSizeContainer> layer : this.batterList) {
             list.add(layer.toNbt(new NbtCompound(), CakeBatter.FULL_CODEC));
         }
         nbt.put("batter", list);
-        nbt.put("parts", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.parts).result().orElse(new NbtList()));
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+    public void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
+        if (!this.isMainPart()) return;
         this.readCakeNbt(nbt);
-        this.parts = new ArrayList<>(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("parts")).result().orElse(new ArrayList<>()));
     }
 
     protected void readCakeNbt(NbtCompound nbt) {
@@ -82,8 +81,9 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
     public static void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
         blockEntity.getBatterList().removeIf(CakeBatter::isEmpty);
         if (world.isClient()) return;
+        if (!blockEntity.isMainPart()) return;
         if (blockEntity.getBatterList().isEmpty()) {
-            blockEntity.removeAllParts(world);
+            blockEntity.remove(true);
             world.removeBlock(pos, false);
             world.emitGameEvent(null, GameEvent.BLOCK_DESTROY, pos);
             PBHelpers.update((ServerWorld) world, pos, blockEntity);
@@ -91,37 +91,10 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
             blockEntity.getBatterList().forEach(batter -> CakeBatter.tick(batter, blockEntity.getBatterList(), world, pos, state, blockEntity));
             blockEntity.markDirty();
         }
-        blockEntity.updateParts(world, pos, state);
     }
 
     public List<CakeBatter<FullBatterSizeContainer>> getBatterList() {
         return this.batterList;
-    }
-
-    public List<BlockPos> getParts() {
-        return this.parts;
-    }
-
-    @Override
-    public void updateParts(World world, BlockPos pos, BlockState state) {
-        if (!(state.getBlock() instanceof MultipartBlock<?, ?, ?> block)) return;
-        VoxelShape shape = block.getFullShape(state, world, pos, ShapeContext.absent());
-        if (shape.isEmpty()) return;
-        Box box = shape.getBoundingBox().offset(pos);
-        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
-        this.removeAllParts(world);
-        for (int x = (int)box.minX; x < box.maxX; x++) {
-            for (int y = (int)box.minY; y < box.maxY; y++) {
-                for (int z = (int)box.minZ; z < box.maxZ; z++) {
-                    BlockPos partPos = new BlockPos(x, y, z);
-                    if (!world.isInBuildLimit(partPos) || VoxelShapes.combineAndSimplify(shape, VoxelShapes.fullCube().offset(partPos.getX() - pos.getX(), partPos.getY() - pos.getY(), partPos.getZ() - pos.getZ()), BooleanBiFunction.AND).isEmpty()) continue;
-                    BlockState partState = world.getBlockState(partPos);
-                    if (partState.isReplaceable() && !partState.isSolidBlock(world, partPos) && !partPos.equals(pos)) {
-                        this.createPart(world, block, partPos, pos);
-                    }
-                }
-            }
-        }
     }
 
     public float getHeight() {
@@ -141,12 +114,6 @@ public class PBCakeBlockEntity extends BlockEntity implements MultipartBlockEnti
             currentHeight += (float) batterShape.getMax(Direction.Axis.Y);
         }
         return shape;
-    }
-
-    @Override
-    public void removeFromCopiedStackNbt(NbtCompound nbt) {
-        super.removeFromCopiedStackNbt(nbt);
-        nbt.remove("parts");
     }
 
     @Nullable
