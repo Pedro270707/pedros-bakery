@@ -99,7 +99,7 @@ public class PBCakeBlockEntity extends MultipartBlockEntity<PBCakeBlockEntity> {
     }
 
     public float getHeight() {
-        return (float) this.batterList.stream().mapToDouble((batter) -> batter.getSizeContainer().getHeight()).sum();
+        return (float) this.getBatterList().stream().mapToDouble((batter) -> batter.getSizeContainer().getHeight()).sum();
     }
 
     public VoxelShape toShape() {

@@ -8,6 +8,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> extends BlockEntity {
@@ -26,7 +27,7 @@ public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> ex
         Optional<BlockPos> optionalPos = BlockPos.CODEC.parse(NbtOps.INSTANCE, nbt.get("multipart_main_offset")).result();
         this.mainOffset = optionalPos.orElseGet(this::getPos);
         if (this.mainOffset.equals(BlockPos.ORIGIN)) {
-            this.partOffsets = new HashSet<>(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.getList("multipart_part_offsets", NbtElement.INT_ARRAY_TYPE)).result().orElse(new ArrayList<>()));
+            this.partOffsets = new HashSet<>(BlockPos.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("multipart_part_offsets")).result().orElse(new ArrayList<>()));
         }
     }
 
@@ -35,10 +36,11 @@ public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> ex
         super.writeNbt(nbt, registryLookup);
         nbt.put("multipart_main_offset", BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, this.mainOffset == null ? this.pos : this.mainOffset).result().orElse(new NbtIntArray(new int[]{0, 0, 0})));
         if (this.mainOffset.equals(BlockPos.ORIGIN)) {
-            nbt.put("multipart_part_offsets", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, new ArrayList<>(this.partOffsets)).result().orElse(new NbtList()));
+            nbt.put("multipart_part_offsets", BlockPos.CODEC.listOf().encodeStart(NbtOps.INSTANCE, new ArrayList<>(this.partOffsets)).result().orElseThrow());
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void addPartPosition(BlockPos pos) {
         T main = this.getMainPart();
         if (main == this) {
@@ -48,11 +50,15 @@ public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> ex
         }
         if (!this.hasWorld()) return;
         BlockEntity blockEntity = this.getWorld().getBlockEntity(pos);
-        if (blockEntity instanceof MultipartBlockEntity part) part.setMainPartPosition(this.getMainPartPosition());
+        try {
+            if (blockEntity == null) return;
+            ((T) blockEntity).setMainPartPosition(this.getMainPartPosition());
+        } catch (ClassCastException ignored) {
+        }
     }
 
     public void updatePartOffsets(Collection<BlockPos> parts) {
-        MultipartBlockEntity main = this.getMainPart();
+        T main = this.getMainPart();
         if (main == this) {
             this.partOffsets = new HashSet<>(parts);
         } else {
@@ -61,20 +67,21 @@ public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> ex
     }
 
     public Set<BlockPos> getPartPositions() {
-        MultipartBlockEntity main = this.getMainPart();
+        T main = this.getMainPart();
         if (main == this) {
             return this.partOffsets.stream().map(pos -> pos.add(this.getPos())).collect(Collectors.toSet());
         }
         return main.getPartPositions();
     }
 
-    public List<MultipartBlockEntity> getParts() {
+    @SuppressWarnings("unchecked")
+    public List<T> getParts() {
         if (!this.hasWorld()) return new ArrayList<>();
 
         return this.getPartPositions().stream().filter(pos -> {
             BlockEntity blockEntity = this.getWorld().getBlockEntity(pos);
             return blockEntity != null && blockEntity.getClass() == this.getClass();
-        }).map(pos -> ((MultipartBlockEntity) this.getWorld().getBlockEntity(pos))).toList();
+        }).map(pos -> ((T) this.getWorld().getBlockEntity(pos))).toList();
     }
 
     public BlockPos getMainPartPosition() {
@@ -88,10 +95,10 @@ public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> ex
     }
 
     public void updateMainPartPosition(BlockPos pos) {
-        MultipartBlockEntity mainPart = this.getMainPart();
+        T mainPart = this.getMainPart();
         NbtCompound compound = mainPart.createNbt(this.getWorld().getRegistryManager());
         this.setMainPartPosition(pos);
-        for (MultipartBlockEntity blockEntity : this.getParts()) {
+        for (T blockEntity : this.getParts()) {
             if (blockEntity == this) continue;
             blockEntity.setMainPartPosition(pos);
         }
@@ -103,6 +110,7 @@ public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> ex
         mainPart.addPartPosition(mainPart.getPos());
     }
 
+    @SuppressWarnings("unchecked")
     public T getMainPart() {
         try {
             if (!this.hasWorld() || this.getMainPartPosition() == null || this.getMainPartPosition().equals(this.getPos())) return (T) this;
