@@ -55,7 +55,11 @@ public abstract class MultipartBlock<T extends MultipartBlockEntity<T>> extends 
         if (mainPartPos == null) {
             mainPartPos = pos;
         }
-        return VoxelShapes.combineAndSimplify(this.getFullShape(state, world, mainPartPos, world.getBlockEntity(mainPartPos), context).offset(mainPartPos.getX() - pos.getX(), mainPartPos.getY() - pos.getY(), mainPartPos.getZ() - pos.getZ()), VoxelShapes.fullCube(), BooleanBiFunction.AND);
+        try {
+            return VoxelShapes.combineAndSimplify(this.getFullShape(state, world, mainPartPos, world.getBlockEntity(mainPartPos), context).offset(mainPartPos.getX() - pos.getX(), mainPartPos.getY() - pos.getY(), mainPartPos.getZ() - pos.getZ()), VoxelShapes.fullCube(), BooleanBiFunction.AND);
+        } catch (Exception e) {
+            return VoxelShapes.fullCube();
+        }
     }
 
     @Override
