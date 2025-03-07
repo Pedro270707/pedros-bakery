@@ -2,6 +2,8 @@ package net.pedroricardo.item;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -9,11 +11,10 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.shape.VoxelShape;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
+import net.pedroricardo.block.multipart.MultipartBlock;
 
 import java.util.List;
 
@@ -39,22 +40,16 @@ public class PBCakeBlockItem extends BlockItem {
 
     @Override
     protected boolean canPlace(ItemPlacementContext context, BlockState state) {
+        if (!(state.getBlock() instanceof MultipartBlock<?> multipart)) return super.canPlace(context, state);
         PBCakeBlockEntity blockEntity = new PBCakeBlockEntity(context.getBlockPos(), state);
         blockEntity.readComponents(context.getStack());
-        VoxelShape shape = blockEntity.toShape();
-        if (!context.getWorld().doesNotIntersectEntities(null, shape.offset(context.getBlockPos().getX(), context.getBlockPos().getY(), context.getBlockPos().getZ()))) return false;
-        if (shape.isEmpty()) return false;
-        Box box = shape.getBoundingBox().offset(context.getBlockPos());
-        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
-        for (int x = (int)box.minX; x < box.maxX; x++) {
-            for (int y = (int)box.minY; y < box.maxY; y++) {
-                for (int z = (int)box.minZ; z < box.maxZ; z++) {
-                    BlockPos pos = new BlockPos(x, y, z);
-                    BlockState state1 = context.getWorld().getBlockState(pos);
-                    if (!state1.isReplaceable() || state1.isSolidBlock(context.getWorld(), pos)) return false;
-                }
-            }
-        }
-        return true;
+        PlayerEntity player = context.getPlayer();
+        ShapeContext shapeContext = player == null ? ShapeContext.absent() : ShapeContext.of(player);
+        if (!context.getWorld().doesNotIntersectEntities(null, multipart.getFullShape(state, context.getWorld(), context.getBlockPos(), blockEntity, shapeContext).offset(context.getBlockPos().getX(), context.getBlockPos().getY(), context.getBlockPos().getZ()))) return false;
+        List<BlockPos> list = multipart.getPartPositionsForPlacement(context.getWorld(), context.getBlockPos(), state, blockEntity);
+        return list.stream().noneMatch(partPos -> {
+            BlockState partState = context.getWorld().getBlockState(partPos);
+            return !partState.isReplaceable() || partState.isSolidBlock(context.getWorld(), partPos);
+        });
     }
 }

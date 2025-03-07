@@ -1,21 +1,23 @@
 package net.pedroricardo.item;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsage;
+import net.minecraft.item.*;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.Hand;
 import net.pedroricardo.PedrosBakery;
-import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
+import net.pedroricardo.block.PBBlocks;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.CakeFlavor;
 import net.pedroricardo.block.extras.size.HeightOnlyBatterSizeContainer;
+import net.pedroricardo.block.multipart.MultipartBlock;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -62,5 +64,35 @@ public class BakingTrayItem extends BlockItem implements BatterContainerItem {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        return super.useOnBlock(context);
+
+    }
+
+    @Override
+    protected boolean canPlace(ItemPlacementContext context, BlockState state) {
+        if (!(state.getBlock() instanceof MultipartBlock<?> multipart)) return super.canPlace(context, state);
+        BakingTrayBlockEntity blockEntity = new BakingTrayBlockEntity(context.getBlockPos(), state);
+        blockEntity.readComponents(context.getStack());
+        PlayerEntity player = context.getPlayer();
+        ShapeContext shapeContext = player == null ? ShapeContext.absent() : ShapeContext.of(player);
+        if (!context.getWorld().doesNotIntersectEntities(null, multipart.getFullShape(state, context.getWorld(), context.getBlockPos(), blockEntity, shapeContext).offset(context.getBlockPos().getX(), context.getBlockPos().getY(), context.getBlockPos().getZ()))) return false;
+        List<BlockPos> list = multipart.getPartPositionsForPlacement(context.getWorld(), context.getBlockPos(), state, blockEntity);
+        return list.stream().noneMatch(partPos -> {
+            BlockState partState = context.getWorld().getBlockState(partPos);
+            return !partState.isReplaceable() || partState.isSolidBlock(context.getWorld(), partPos);
+        });
+    }
+
+    @Override
+    public ItemStack getDefaultStack() {
+        ItemStack stack = super.getDefaultStack();
+        stack.set(PBComponentTypes.HEIGHT_ONLY_BATTER, CakeBatter.getHeightOnlyEmpty());
+        stack.set(PBComponentTypes.SIZE, PedrosBakery.CONFIG.bakingTrayDefaultSize.get());
+        stack.set(PBComponentTypes.HEIGHT, PedrosBakery.CONFIG.bakingTrayDefaultHeight.get());
+        return stack;
     }
 }
