@@ -56,13 +56,8 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return VoxelShapes.combineAndSimplify(this.getFullShape(state, world, pos, context), VoxelShapes.fullCube(), BooleanBiFunction.AND);
-    }
-
-    @Override
-    public VoxelShape getFullShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        if (!(world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake)) {
+    public VoxelShape getFullShape(BlockState state, BlockView world, BlockPos pos, @Nullable BlockEntity blockEntity, ShapeContext context) {
+        if (!(blockEntity instanceof PBCakeBlockEntity cake)) {
             return Blocks.CAKE.getDefaultState().getOutlineShape(world, pos, context);
         }
         return cake.toShape();
@@ -186,6 +181,8 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
             }
         }
 
+        BlockPos mainPos = cake.getMainPartPosition();
+
         Item item = stack.getItem();
         Block block = Block.getBlockFromItem(item);
         if (stack.isIn(ItemTags.CANDLES) && cake.getBatterList().get(cake.getBatterList().size() - 1).getSizeContainer().getBites() == 0 && block instanceof CandleBlock candleBlock) {
@@ -197,7 +194,10 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
                 stack.decrement(1);
             }
             world.playSound(null, pos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0f, 1.0f);
-            changeState(player, world, pos, PBCandleCakeBlock.getCandleCakeFromCandle(candleBlock).with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING)));
+            BlockState candleState = PBCandleCakeBlock.getCandleCakeFromCandle(candleBlock).with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING));
+            changeState(player, world, mainPos, candleState);
+            this.placeParts(world, mainPos, candleState);
+
             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 
             return ActionResult.SUCCESS;
@@ -362,25 +362,5 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
             cake.readFrom(stack);
         }
         this.placeParts(world, pos, state);
-    }
-
-    protected void placeParts(World world, BlockPos pos, BlockState state) {
-        if (!(state.getBlock() instanceof MultipartBlock<?> block)) return;
-        VoxelShape shape = block.getFullShape(state, world, pos, ShapeContext.absent());
-        if (shape.isEmpty()) return;
-        Box box = shape.getBoundingBox().offset(pos);
-        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
-        for (int x = (int)box.minX; x < box.maxX; x++) {
-            for (int y = (int)box.minY; y < box.maxY; y++) {
-                for (int z = (int)box.minZ; z < box.maxZ; z++) {
-                    BlockPos partPos = new BlockPos(x, y, z);
-                    if (!world.isInBuildLimit(partPos) || VoxelShapes.combineAndSimplify(shape, VoxelShapes.fullCube().offset(partPos.getX() - pos.getX(), partPos.getY() - pos.getY(), partPos.getZ() - pos.getZ()), BooleanBiFunction.AND).isEmpty()) continue;
-                    BlockState partState = world.getBlockState(partPos);
-                    if (partState.isReplaceable() && !partState.isSolidBlock(world, partPos) && !partPos.equals(pos)) {
-                        this.createPart(world, pos, partPos);
-                    }
-                }
-            }
-        }
     }
 }

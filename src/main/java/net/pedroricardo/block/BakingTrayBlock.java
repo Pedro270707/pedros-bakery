@@ -37,15 +37,6 @@ public class BakingTrayBlock extends MultipartBlock<BakingTrayBlockEntity> {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        BlockPos mainPartPos = this.getMainPartPosition(world, pos);
-        if (mainPartPos == null) {
-            mainPartPos = pos;
-        }
-        return VoxelShapes.combineAndSimplify(this.getFullShape(state, world, mainPartPos, context).offset(mainPartPos.getX() - pos.getX(), mainPartPos.getY() - pos.getY(), mainPartPos.getZ() - pos.getZ()), VoxelShapes.fullCube(), BooleanBiFunction.AND);
-    }
-
-    @Override
     public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return VoxelShapes.empty();
     }
@@ -92,8 +83,8 @@ public class BakingTrayBlock extends MultipartBlock<BakingTrayBlockEntity> {
     }
 
     @Override
-    public VoxelShape getFullShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        if (!(world.getBlockEntity(pos) instanceof BakingTrayBlockEntity tray)) {
+    public VoxelShape getFullShape(BlockState state, BlockView world, BlockPos pos, @Nullable BlockEntity blockEntity, ShapeContext context) {
+        if (!(blockEntity instanceof BakingTrayBlockEntity tray)) {
             return Blocks.CAKE.getDefaultState().getOutlineShape(world, pos, context);
         }
         return Block.createCuboidShape(8.0 - tray.getSize() / 2.0, 0.0, 8.0 - tray.getSize() / 2.0, 8.0 + tray.getSize() / 2.0, tray.getHeight(), 8.0 + tray.getSize() / 2.0);
@@ -106,65 +97,5 @@ public class BakingTrayBlock extends MultipartBlock<BakingTrayBlockEntity> {
             tray.readFrom(stack);
         }
         this.placeParts(world, pos, state);
-    }
-
-    @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        super.onBreak(world, pos, state, player);
-        BlockPos mainPartPos = this.getMainPartPosition(world, pos);
-        if (!mainPartPos.equals(pos)) {
-            world.breakBlock(mainPartPos, player.canHarvest(state) && !player.isCreative(), player);
-        }
-    }
-
-    @Override
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        boolean canPlaceMain = super.canPlaceAt(state, world, pos);
-        if (!canPlaceMain) return false;
-        List<BlockPos> list = this.getPartPositionsForPlacement(world, pos, state);
-        return true;
-    }
-
-    public List<BlockPos> getPartPositionsForPlacement(WorldView world, BlockPos pos, BlockState state) {
-        if (!(state.getBlock() instanceof MultipartBlock<?> block)) return List.of();
-        VoxelShape shape = block.getFullShape(state, world, pos, ShapeContext.absent());
-        if (shape.isEmpty()) return List.of();
-        List<BlockPos> list = new ArrayList<>();
-        Box box = shape.getBoundingBox().offset(pos);
-        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
-        for (int x = (int)box.minX; x < box.maxX; x++) {
-            for (int y = (int)box.minY; y < box.maxY; y++) {
-                for (int z = (int)box.minZ; z < box.maxZ; z++) {
-                    BlockPos partPos = new BlockPos(x, y, z);
-                    if (/*!world.isInBuildLimit(partPos) || */VoxelShapes.combineAndSimplify(shape.offset(pos.getX() - partPos.getX(), pos.getY() - partPos.getY(), pos.getZ() - partPos.getZ()), VoxelShapes.fullCube(), BooleanBiFunction.AND).isEmpty()) continue;
-                    if (!partPos.equals(pos)) {
-                        list.add(partPos);
-                    }
-                }
-            }
-        }
-        return list;
-    }
-
-    public void placeParts(World world, BlockPos pos, BlockState state) {
-        if (!(state.getBlock() instanceof MultipartBlock<?> block)) return;
-        VoxelShape shape = block.getFullShape(state, world, pos, ShapeContext.absent());
-        if (shape.isEmpty()) return;
-        Box box = shape.getBoundingBox().offset(pos);
-        box = new Box(Math.floor(box.minX), Math.floor(box.minY), Math.floor(box.minZ), Math.ceil(box.maxX), Math.ceil(box.maxY), Math.ceil(box.maxZ));
-        for (int x = (int)box.minX; x < box.maxX; x++) {
-            for (int y = (int)box.minY; y < box.maxY; y++) {
-                for (int z = (int)box.minZ; z < box.maxZ; z++) {
-                    BlockPos partPos = new BlockPos(x, y, z);
-                    if (!world.isInBuildLimit(partPos) || VoxelShapes.combineAndSimplify(shape.offset(pos.getX() - partPos.getX(), pos.getY() - partPos.getY(), pos.getZ() - partPos.getZ()), VoxelShapes.fullCube(), BooleanBiFunction.AND).isEmpty()) {
-                        continue;
-                    }
-                    BlockState partState = world.getBlockState(partPos);
-                    if (partState.isReplaceable() && !partState.isSolidBlock(world, partPos) && !partPos.equals(pos)) {
-                        block.createPart(world, pos, partPos);
-                    }
-                }
-            }
-        }
     }
 }

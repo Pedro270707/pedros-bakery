@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 public class PBCakeBlockEntity extends MultipartBlockEntity<PBCakeBlockEntity> implements ItemComponentProvider, StackReadingBlockEntity {
     private List<CakeBatter<FullBatterSizeContainer>> batterList = new ArrayList<>();
-    private BlockPos centerOffset;
+    private BlockPos centerOffset = BlockPos.ORIGIN;
 
     public PBCakeBlockEntity(BlockPos pos, BlockState state) {
         super(PBBlockEntities.CAKE, pos, state);
@@ -67,9 +67,9 @@ public class PBCakeBlockEntity extends MultipartBlockEntity<PBCakeBlockEntity> i
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
-        blockEntity.getBatterList().removeIf(CakeBatter::isEmpty);
         if (world.isClient()) return;
         if (!blockEntity.isMainPart()) return;
+        blockEntity.getBatterList().removeIf(CakeBatter::isEmpty);
         if (blockEntity.getBatterList().isEmpty()) {
             blockEntity.remove(true);
             world.removeBlock(pos, false);
@@ -119,5 +119,17 @@ public class PBCakeBlockEntity extends MultipartBlockEntity<PBCakeBlockEntity> i
     @Override
     public void addComponents(ItemStack stack) {
         PBHelpers.set(stack, PBComponentTypes.BATTER_LIST, this.getBatterList());
+    }
+
+    public BlockPos getCenterOffset() {
+        return this.getMainPart().centerOffset;
+    }
+
+    @Override
+    public void updateMainPartPosition(BlockPos pos) {
+        BlockPos previousCenterOffset = this.getCenterOffset();
+        BlockPos previousMainPartPosition = this.getMainPartPosition();
+        super.updateMainPartPosition(pos);
+        this.getMainPart().centerOffset = previousCenterOffset.subtract(this.getMainPartPosition().subtract(previousMainPartPosition));
     }
 }
