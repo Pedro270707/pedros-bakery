@@ -19,10 +19,8 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
-import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -40,7 +38,6 @@ import net.pedroricardo.block.extras.CakeFeature;
 import net.pedroricardo.block.extras.CakeTop;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
 import net.pedroricardo.block.multipart.MultipartBlock;
-import net.pedroricardo.block.multipart.MultipartBlockEntity;
 import net.pedroricardo.item.PBComponentTypes;
 import net.pedroricardo.item.PBItems;
 import org.jetbrains.annotations.Nullable;
@@ -118,7 +115,7 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
         int layerIndex = -1;
         for (int i = 0; i < cake.getBatterList().size(); i++) {
             currentHeight += cake.getBatterList().get(i).getSizeContainer().getHeight();
-            if (hit.getSide() == Direction.DOWN ? currentHeight / 16.0f > hit.getPos().subtract(hit.getBlockPos().getX(), hit.getBlockPos().getY(), hit.getBlockPos().getZ()).y : currentHeight / 16.0f >= hit.getPos().subtract(hit.getBlockPos().getX(), hit.getBlockPos().getY(), hit.getBlockPos().getZ()).y) {
+            if (hit.getSide() == Direction.DOWN ? currentHeight / 16.0f > hit.getPos().subtract(cake.getMainPartPosition().getX(), cake.getMainPartPosition().getY(), cake.getMainPartPosition().getZ()).y : currentHeight / 16.0f >= hit.getPos().subtract(cake.getMainPartPosition().getX(), cake.getMainPartPosition().getY(), cake.getMainPartPosition().getZ()).y) {
                 layerIndex = i;
                 break;
             }
@@ -127,7 +124,7 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
             layerIndex = cake.getBatterList().size() - 1;
         }
         if (player.isSneaking()) {
-            changeState(player, world, pos, state);
+            changeState(player, world, cake.getMainPartPosition(), state);
             List<CakeBatter<FullBatterSizeContainer>> batterList = new ArrayList<>();
             while (cake.getBatterList().size() > layerIndex) {
                 batterList.add(cake.getBatterList().remove(layerIndex));
@@ -139,6 +136,7 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
             if (!world.isClient()) {
                 PBHelpers.update(cake, (ServerWorld) world);
             }
+            cake.updateParts();
             return ActionResult.SUCCESS;
         }
         if (!player.canConsume(false)) {
@@ -147,14 +145,17 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
         if (!player.isCreative() && cake.getBatterList().size() > layerIndex + 1 && cake.getBatterList().get(layerIndex + 1).getSizeContainer().getSize() / 2.0f - cake.getBatterList().get(layerIndex + 1).getSizeContainer().getBites() > cake.getBatterList().get(layerIndex).getSizeContainer().getSize() / 2.0f - cake.getBatterList().get(layerIndex).getSizeContainer().getBites() - PedrosBakery.CONFIG.biteSize.get()) {
             return ActionResult.PASS;
         }
-        ActionResult result = cake.getBatterList().get(layerIndex).bite(world, pos, state, player, cake, PedrosBakery.CONFIG.biteSize.get());
+        CakeBatter<FullBatterSizeContainer> batter = cake.getBatterList().get(layerIndex);
+        ActionResult result = batter.bite(world, cake.getMainPartPosition(), state, player, cake.getMainPart(), PedrosBakery.CONFIG.biteSize.get());
         if (result.isAccepted()) {
-            changeState(player, world, pos, state);
+            changeState(player, world, cake.getMainPartPosition(), state);
+            if (batter.isEmpty()) {
+                cake.getBatterList().remove(layerIndex);
+            }
+            cake.updateParts();
         }
         if (cake.getBatterList().size() == 1 && cake.getBatterList().get(layerIndex).isEmpty()) {
             cake.remove(true);
-            world.removeBlock(pos, false);
-            world.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);
         }
         return result;
     }
@@ -199,7 +200,7 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
             world.playSound(null, pos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0f, 1.0f);
             BlockState candleState = PBCandleCakeBlock.getCandleCakeFromCandle(candleBlock).with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING));
             changeState(player, world, mainPos, candleState);
-            this.placeParts(world, mainPos, candleState);
+            cake.updateParts();
 
             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 
@@ -305,7 +306,10 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
 
         if (batterList.getFirst().getSizeContainer().getSize() / 2.0f - batterList.getFirst().getSizeContainer().getBites() <= cake.getBatterList().getLast().getSizeContainer().getSize() / 2.0f - cake.getBatterList().getLast().getSizeContainer().getBites()) {
             float batterListHeight = (float) batterList.stream().mapToDouble((batter) -> batter.getSizeContainer().getHeight()).sum();
-            return cake.getHeight() + batterListHeight <= PedrosBakery.CONFIG.maxCakeHeight.get() && (!cake.hasWorld() || cake.getWorld().doesNotIntersectEntities(null, PBCakeBlockEntity.toShape(batterList, cake.getCachedState(), cake.getWorld(), cake.getPos()).offset(cake.getPos().getX(), cake.getPos().getY() + cake.getHeight() / 16.0f, cake.getPos().getZ()))) && cake.getBatterList().addAll(batterList);
+            if (cake.getHeight() + batterListHeight <= PedrosBakery.CONFIG.maxCakeHeight.get() && (!cake.hasWorld() || cake.getWorld().doesNotIntersectEntities(null, PBCakeBlockEntity.toShape(batterList, cake.getCachedState(), cake.getWorld(), cake.getPos()).offset(cake.getPos().getX(), cake.getPos().getY() + cake.getHeight() / 16.0f, cake.getPos().getZ()))) && cake.getBatterList().addAll(batterList)) {
+                cake.updateParts();
+                return true;
+            }
         }
 
         return false;
@@ -350,8 +354,14 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
         if (state.isOf(newState.getBlock())) {
             return;
         }
-        this.remove(world, pos, true);
         super.onStateReplaced(state, world, pos, newState, moved);
+    }
+
+    @Override
+    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        super.onBreak(world, pos, state, player);
+        this.remove(world, pos, true);
+        return state;
     }
 
     @Override

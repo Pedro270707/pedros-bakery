@@ -6,6 +6,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.event.GameEvent;
 
 import java.util.*;
 import java.util.List;
@@ -133,6 +134,7 @@ public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> ex
         for (BlockPos partPos : this.getPartPositions()) {
             if (!removeMain && partPos.equals(this.getMainPartPosition())) continue;
             this.getWorld().removeBlock(partPos, false);
+            this.getWorld().emitGameEvent(null, GameEvent.BLOCK_DESTROY, partPos);
         }
     }
 

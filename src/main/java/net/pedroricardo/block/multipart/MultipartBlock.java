@@ -159,6 +159,7 @@ public abstract class MultipartBlock<T extends MultipartBlockEntity<T>> extends 
         if (!(state.getBlock() instanceof MultipartBlock<?> block)) return;
 
         List<BlockPos> partPositions = this.getPartPositionsForPlacement(world, pos, state, world.getBlockEntity(pos));
+        this.remove(world, pos, false);
         for (BlockPos partPos : partPositions) {
             if (!world.isInBuildLimit(partPos)) continue;
             BlockState partState = world.getBlockState(partPos);
