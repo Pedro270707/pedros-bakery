@@ -47,7 +47,7 @@ public abstract class PBAbstractCandleCakeBlock extends MultipartBlock<PBCakeBlo
 
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-        if (!state.get(LIT)) {
+        if (!state.get(LIT) || !state.get(IS_MAIN_PART)) {
             return;
         }
         this.getParticleOffsets(state, world, pos).forEach(offset -> spawnCandleParticles(world, offset.add(pos.getX(), pos.getY(), pos.getZ()), random));
@@ -65,7 +65,13 @@ public abstract class PBAbstractCandleCakeBlock extends MultipartBlock<PBCakeBlo
     }
 
     public static void extinguish(@Nullable PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos) {
-        setLit(world, state, pos, false);
+        if (world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake) {
+            for (BlockPos partPos : cake.getPartPositions()) {
+                BlockState partState = world.getBlockState(partPos);
+                if (!partState.contains(LIT)) continue;
+                setLit(world, partState, partPos, false);
+            }
+        }
         if (state.getBlock() instanceof PBAbstractCandleCakeBlock) {
             ((PBAbstractCandleCakeBlock)state.getBlock()).getParticleOffsets(state, world, pos).forEach(offset -> world.addParticle(ParticleTypes.SMOKE, (double)pos.getX() + offset.getX(), (double)pos.getY() + offset.getY(), (double)pos.getZ() + offset.getZ(), 0.0, 0.1f, 0.0));
         }

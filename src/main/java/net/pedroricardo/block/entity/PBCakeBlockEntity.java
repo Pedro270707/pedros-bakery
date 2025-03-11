@@ -17,6 +17,7 @@ import net.minecraft.world.event.GameEvent;
 import net.pedroricardo.PBHelpers;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
+import net.pedroricardo.block.multipart.MultipartBlock;
 import net.pedroricardo.block.multipart.MultipartBlockEntity;
 import net.pedroricardo.item.PBComponentTypes;
 import org.jetbrains.annotations.Nullable;
@@ -67,13 +68,12 @@ public class PBCakeBlockEntity extends MultipartBlockEntity<PBCakeBlockEntity> i
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, PBCakeBlockEntity blockEntity) {
-        if (world.isClient()) return;
         if (!blockEntity.isMainPart()) return;
-        blockEntity.getBatterList().removeIf(CakeBatter::isEmpty);
+        if (blockEntity.getBatterList().removeIf(CakeBatter::isEmpty) && !world.isClient())
+            PBHelpers.update((ServerWorld) world, pos, blockEntity);
+        if (world.isClient()) return;
         if (blockEntity.getBatterList().isEmpty()) {
             blockEntity.remove(true);
-            world.removeBlock(pos, false);
-            world.emitGameEvent(null, GameEvent.BLOCK_DESTROY, pos);
             PBHelpers.update((ServerWorld) world, pos, blockEntity);
         } else {
             blockEntity.getBatterList().forEach(batter -> CakeBatter.tick(batter, blockEntity.getBatterList(), world, pos, state, blockEntity));
@@ -97,6 +97,7 @@ public class PBCakeBlockEntity extends MultipartBlockEntity<PBCakeBlockEntity> i
         VoxelShape shape = VoxelShapes.empty();
         float currentHeight = 0;
         for (CakeBatter<FullBatterSizeContainer> batter : batterList) {
+            if (batter.isEmpty()) continue;
             VoxelShape batterShape = batter.getShape(state, world, pos, ShapeContext.absent());
             shape = VoxelShapes.union(shape, batterShape.offset(0.0, currentHeight, 0.0));
             currentHeight += (float) batterShape.getMax(Direction.Axis.Y);
@@ -131,5 +132,11 @@ public class PBCakeBlockEntity extends MultipartBlockEntity<PBCakeBlockEntity> i
         BlockPos previousMainPartPosition = this.getMainPartPosition();
         super.updateMainPartPosition(pos);
         this.getMainPart().centerOffset = previousCenterOffset.subtract(this.getMainPartPosition().subtract(previousMainPartPosition));
+    }
+
+    public void updateParts() {
+        if (!this.hasWorld()) return;
+        ((MultipartBlock<?>) this.getMainPart().getCachedState().getBlock()).remove(this.getWorld(), this.getMainPart().getPos(), false);
+        ((MultipartBlock<?>) this.getMainPart().getCachedState().getBlock()).placeParts(this.getWorld(), this.getMainPart().getPos(), this.getMainPart().getCachedState());
     }
 }

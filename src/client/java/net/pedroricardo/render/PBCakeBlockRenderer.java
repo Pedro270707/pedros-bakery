@@ -51,6 +51,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         boolean irisFix = PedrosBakeryClient.isRenderingInWorld && FabricLoader.getInstance().isModLoaded("iris");
         float height = 0.0f;
         for (CakeBatter<FullBatterSizeContainer> layer : entity.getBatterList()) {
+            if (layer.isEmpty()) continue;
             matrices.push();
 
             renderCakeBatter(entity.getBatterList(), layer, matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutout(layer.getFlavor().getCakeTextureLocation())), light, getBakeTimeOverlay(layer.getBakeTime(), overlay), getBakeTimeColor(layer.getBakeTime(), 0xFFFFFFFF));

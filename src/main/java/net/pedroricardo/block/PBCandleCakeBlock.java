@@ -73,8 +73,16 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
     }
 
     private ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (stack.isOf(Items.FLINT_AND_STEEL) || stack.isOf(Items.FIRE_CHARGE) || !(world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake)) {
+        if (!(world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake)) {
             return ActionResult.FAIL;
+        }
+        if (stack.isOf(Items.FLINT_AND_STEEL) || stack.isOf(Items.FIRE_CHARGE)) {
+            for (BlockPos partPos : cake.getPartPositions()) {
+                BlockState partState = world.getBlockState(partPos);
+                if (!partState.contains(LIT)) continue;
+                world.setBlockState(partPos, partState.with(LIT, true));
+            }
+            return ActionResult.success(world.isClient());
         }
         if (hit.getPos().y - (double)hit.getBlockPos().getY() > cake.getHeight() / 16.0f && stack.isEmpty() && state.get(LIT)) {
             extinguish(player, state, world, pos);
@@ -120,8 +128,13 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
         if (state.isOf(newState.getBlock())) {
             return;
         }
-        this.remove(world, pos, true);
         super.onStateReplaced(state, world, pos, newState, moved);
+    }
+
+    @Override
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        super.onBreak(world, pos, state, player);
+        this.remove(world, pos, true);
     }
 
     @Override
