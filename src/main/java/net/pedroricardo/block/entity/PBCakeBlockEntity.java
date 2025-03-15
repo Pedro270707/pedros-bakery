@@ -126,6 +126,10 @@ public class PBCakeBlockEntity extends MultipartBlockEntity<PBCakeBlockEntity> i
         return this.getMainPart().centerOffset;
     }
 
+    public BlockPos getCenterPosition() {
+        return this.getMainPartPosition().add(this.getCenterOffset());
+    }
+
     @Override
     public void updateMainPartPosition(BlockPos pos) {
         BlockPos previousCenterOffset = this.getCenterOffset();
