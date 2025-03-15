@@ -154,7 +154,7 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
             }
             cake.updateParts();
         }
-        if (cake.getBatterList().size() == 1 && cake.getBatterList().get(layerIndex).isEmpty()) {
+        if (cake.getBatterList().isEmpty()) {
             cake.remove(true);
         }
         return result;
