@@ -182,6 +182,8 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
                     stack.decrement(1);
                 }
                 return ActionResult.SUCCESS;
+            } else {
+                return ActionResult.FAIL;
             }
         }
 
@@ -308,10 +310,11 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
             return true;
         }
 
-        if (batterList.get(0).getSizeContainer().getSize() / 2.0f - batterList.get(0).getSizeContainer().getBites() <= cake.getBatterList().get(cake.getBatterList().size() - 1).getSizeContainer().getSize() / 2.0f - cake.getBatterList().get(cake.getBatterList().size() - 1).getSizeContainer().getBites()) {
+        PBCakeBlockEntity main = cake.getMainPart();
+        if (batterList.get(0).getSizeContainer().getSize() / 2.0f - batterList.get(0).getSizeContainer().getBites() <= main.getBatterList().get(main.getBatterList().size() - 1).getSizeContainer().getSize() / 2.0f - main.getBatterList().get(main.getBatterList().size() - 1).getSizeContainer().getBites()) {
             float batterListHeight = (float) batterList.stream().mapToDouble((batter) -> batter.getSizeContainer().getHeight()).sum();
-            if (cake.getHeight() + batterListHeight <= PedrosBakery.CONFIG.maxCakeHeight.get() && (!cake.hasWorld() || cake.getWorld().doesNotIntersectEntities(null, PBCakeBlockEntity.toShape(batterList, cake.getCachedState(), cake.getWorld(), cake.getPos()).offset(cake.getPos().getX(), cake.getPos().getY() + cake.getHeight() / 16.0f, cake.getPos().getZ()))) && cake.getBatterList().addAll(batterList)) {
-                cake.updateParts();
+            if (main.getHeight() + batterListHeight <= PedrosBakery.CONFIG.maxCakeHeight.get() && (!main.hasWorld() || main.getWorld().doesNotIntersectEntities(null, PBCakeBlockEntity.toShape(batterList, main.getCachedState(), main.getWorld(), main.getPos()).offset(main.getPos().getX(), main.getPos().getY() + main.getHeight() / 16.0f, main.getPos().getZ()))) && main.getBatterList().addAll(batterList)) {
+                main.updateParts();
                 return true;
             }
         }
