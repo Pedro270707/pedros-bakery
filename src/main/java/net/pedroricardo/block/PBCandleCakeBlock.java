@@ -54,7 +54,8 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
 
     @Override
     protected Iterable<Vec3d> getParticleOffsets(BlockState state, WorldAccess world, BlockPos pos) {
-        return ImmutableList.of(new Vec3d(0.5, world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake ? (cake.getHeight() + 8) / 16.0 : 1.0, 0.5));
+        if (!(world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake)) return ImmutableList.of(new Vec3d(0.5, 1.0, 0.5));
+        return ImmutableList.of(cake.getCenterOffset().toCenterPos().add(0.0, (cake.getHeight() + 8) / 16.0 - 0.5, 0.0));
     }
 
     @Override
@@ -92,7 +93,7 @@ public class PBCandleCakeBlock extends PBAbstractCandleCakeBlock implements Bloc
             }
             return ItemActionResult.success(world.isClient());
         }
-        if (hit.getPos().y - (double)hit.getBlockPos().getY() > cake.getHeight() / 16.0f && stack.isEmpty() && state.get(LIT)) {
+        if (hit.getPos().y - (double)cake.getCenterPosition().getY() > cake.getHeight() / 16.0f && stack.isEmpty() && state.get(LIT)) {
             extinguish(player, state, world, pos);
             return ItemActionResult.success(world.isClient());
         }
