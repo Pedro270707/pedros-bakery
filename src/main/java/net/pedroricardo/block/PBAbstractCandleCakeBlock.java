@@ -72,16 +72,17 @@ public abstract class PBAbstractCandleCakeBlock extends MultipartBlock<PBCakeBlo
                 BlockState partState = world.getBlockState(partPos);
                 if (!partState.contains(LIT)) continue;
                 setLit(world, partState, partPos, false);
+                world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, partPos);
             }
         }
         if (state.getBlock() instanceof PBAbstractCandleCakeBlock) {
             ((PBAbstractCandleCakeBlock)state.getBlock()).getParticleOffsets(state, world, pos).forEach(offset -> world.addParticle(ParticleTypes.SMOKE, (double)pos.getX() + offset.getX(), (double)pos.getY() + offset.getY(), (double)pos.getZ() + offset.getZ(), 0.0, 0.1f, 0.0));
         }
         world.playSound(null, pos, SoundEvents.BLOCK_CANDLE_EXTINGUISH, SoundCategory.BLOCKS, 1.0f, 1.0f);
-        world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
     }
 
     private static void setLit(WorldAccess world, BlockState state, BlockPos pos, boolean lit) {
+        world.setBlockState(pos, state.with(LIT, lit), Block.NOTIFY_ALL);
         world.setBlockState(pos, state.with(LIT, lit), Block.NOTIFY_ALL_AND_REDRAW);
     }
 
