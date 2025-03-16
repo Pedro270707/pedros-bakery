@@ -25,7 +25,7 @@ public class PBLootTableProvider extends FabricBlockLootTableProvider {
     public void generate() {
         this.addDrop(PBBlocks.CAKE, LootTable.builder());
         this.addDrop(PBBlocks.CANDLE_CAKE, Items.CANDLE);
-        this.addDrop(PBBlocks.WHITE_CANDLE_CAKE, Items.CANDLE);
+        this.addDrop(PBBlocks.WHITE_CANDLE_CAKE, Items.WHITE_CANDLE);
         this.addDrop(PBBlocks.ORANGE_CANDLE_CAKE, Items.ORANGE_CANDLE);
         this.addDrop(PBBlocks.MAGENTA_CANDLE_CAKE, Items.MAGENTA_CANDLE);
         this.addDrop(PBBlocks.LIGHT_BLUE_CANDLE_CAKE, Items.LIGHT_BLUE_CANDLE);
