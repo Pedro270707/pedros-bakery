@@ -139,7 +139,6 @@ public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> ex
         if (!this.hasWorld()) return;
         for (BlockPos partPos : this.getPartPositions()) {
             if (!removeMain && partPos.equals(this.getMainPartPosition())) continue;
-            if (!this.getCachedState().getBlock().equals(this.getWorld().getBlockState(partPos).getBlock())) continue;
             this.getWorld().removeBlock(partPos, false);
             this.getWorld().emitGameEvent(null, GameEvent.BLOCK_DESTROY, partPos);
         }
