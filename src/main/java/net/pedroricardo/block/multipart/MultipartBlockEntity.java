@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> extends BlockEntity {
-    private HashSet<BlockPos> partOffsets = new HashSet<>();
+    protected HashSet<BlockPos> partOffsets = new HashSet<>();
     private BlockPos mainOffset;
 
     public MultipartBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -97,8 +97,9 @@ public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> ex
     public void updateMainPartPosition(BlockPos pos) {
         T mainPart = this.getMainPart();
         NbtCompound compound = mainPart.createNbt();
+        List<T> parts = this.getParts();
         this.setMainPartPosition(pos);
-        for (T blockEntity : this.getParts()) {
+        for (T blockEntity : parts) {
             if (blockEntity == this) continue;
             blockEntity.setMainPartPosition(pos);
         }
@@ -112,16 +113,21 @@ public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> ex
 
     @SuppressWarnings("unchecked")
     public T getMainPart() {
-        try {
-            if (!this.hasWorld() || this.getMainPartPosition() == null || this.getMainPartPosition().equals(this.getPos())) return (T) this;
-            return (T) this.getWorld().getBlockEntity(this.getMainPartPosition());
-        } catch (ClassCastException ignored) {
+        if (!this.hasWorld() || this.getMainPartPosition() == null || this.getMainPartPosition().equals(this.getPos())) {
+            return (T) this;
+        }
+
+        BlockEntity entity = this.getWorld().getBlockEntity(this.getMainPartPosition());
+
+        if (entity instanceof MultipartBlockEntity<?>) {
             try {
+                return (T) entity;
+            } catch (ClassCastException e) {
                 return (T) this;
-            } catch (ClassCastException ignored2) {
-                return null;
             }
         }
+
+        return (T) this;
     }
 
     public boolean isMainPart() {
@@ -132,8 +138,11 @@ public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> ex
         if (!this.hasWorld()) return;
         for (BlockPos partPos : this.getPartPositions()) {
             if (!removeMain && partPos.equals(this.getMainPartPosition())) continue;
+            if (!this.getCachedState().getBlock().equals(this.getWorld().getBlockState(partPos).getBlock())) continue;
             this.getWorld().removeBlock(partPos, false);
             this.getWorld().emitGameEvent(null, GameEvent.BLOCK_DESTROY, partPos);
         }
+        this.getMainPart().partOffsets.clear();
+        this.getMainPart().partOffsets.add(BlockPos.ORIGIN);
     }
 }

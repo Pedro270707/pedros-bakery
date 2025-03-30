@@ -14,11 +14,11 @@ import net.minecraft.world.World;
 import net.pedroricardo.PBHelpers;
 import net.minecraft.util.Hand;
 import net.pedroricardo.PedrosBakery;
+import net.pedroricardo.block.BakingTrayBlock;
 import net.pedroricardo.block.entity.BakingTrayBlockEntity;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.CakeFlavor;
 import net.pedroricardo.block.extras.size.HeightOnlyBatterSizeContainer;
-import net.pedroricardo.block.multipart.MultipartBlock;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -69,13 +69,13 @@ public class BakingTrayItem extends BlockItem implements BatterContainerItem {
 
     @Override
     protected boolean canPlace(ItemPlacementContext context, BlockState state) {
-        if (!(state.getBlock() instanceof MultipartBlock<?> multipart)) return super.canPlace(context, state);
+        if (!(state.getBlock() instanceof BakingTrayBlock bakingTrayBlock)) return super.canPlace(context, state);
         BakingTrayBlockEntity blockEntity = new BakingTrayBlockEntity(context.getBlockPos(), state);
         blockEntity.readFrom(context.getStack());
         PlayerEntity player = context.getPlayer();
         ShapeContext shapeContext = player == null ? ShapeContext.absent() : ShapeContext.of(player);
-        if (!context.getWorld().doesNotIntersectEntities(null, multipart.getFullShape(state, context.getWorld(), context.getBlockPos(), blockEntity, shapeContext).offset(context.getBlockPos().getX(), context.getBlockPos().getY(), context.getBlockPos().getZ()))) return false;
-        List<BlockPos> list = multipart.getPartPositionsForPlacement(context.getWorld(), context.getBlockPos(), state, blockEntity);
+        if (!context.getWorld().doesNotIntersectEntities(null, bakingTrayBlock.getFullShape(state, context.getWorld(), context.getBlockPos(), blockEntity, shapeContext).offset(context.getBlockPos().getX(), context.getBlockPos().getY(), context.getBlockPos().getZ()))) return false;
+        List<BlockPos> list = bakingTrayBlock.getPartPositionsForPlacement(context.getWorld(), context.getBlockPos(), state, blockEntity);
         return list.stream().noneMatch(partPos -> {
             BlockState partState = context.getWorld().getBlockState(partPos);
             return !partState.isReplaceable() || partState.isSolidBlock(context.getWorld(), partPos);
