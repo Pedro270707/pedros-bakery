@@ -42,6 +42,7 @@ public class PBCakeBlockRenderer implements BlockEntityRenderer<PBCakeBlockEntit
         BlockState state = entity.hasWorld() ? entity.getCachedState() : PBBlocks.CAKE.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.SOUTH);
         if (state == null) return;
 
+        matrices.translate(entity.getCenterOffset().getX(), entity.getCenterOffset().getY(), entity.getCenterOffset().getZ());
         matrices.translate(0.5f, 0.5f, 0.5f);
         if (state.contains(Properties.HORIZONTAL_FACING)) {
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(state.get(Properties.HORIZONTAL_FACING).asRotation()));

@@ -102,18 +102,20 @@ public abstract class MultipartBlock<T extends MultipartBlockEntity<T>> extends 
     }
 
     @SuppressWarnings("unchecked")
-    public void createPart(World world, BlockPos pos, BlockPos partPos) {
+    public T createPart(World world, BlockPos pos, BlockPos partPos) {
         try {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity == null) {
-                return;
+                return null;
             }
             T part = (T) blockEntity;
             BlockState state = world.getBlockState(pos);
             world.setBlockState(partPos, state);
             part.addPartPosition(partPos);
+            return (T) world.getBlockEntity(partPos);
         } catch (ClassCastException ignored) {
         }
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -126,7 +128,7 @@ public abstract class MultipartBlock<T extends MultipartBlockEntity<T>> extends 
         return null;
     }
 
-    public List<BlockPos> getPartPositionsForPlacement(WorldView world, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+    public List<BlockPos> getPartPositionsForPlacement(WorldView world, BlockPos pos, BlockState state, T blockEntity) {
         List<BlockPos> list = new ArrayList<>();
         if (!(state.getBlock() instanceof MultipartBlock<?> block)) return list;
         VoxelShape shape = block.getFullShape(state, world, pos, blockEntity, ShapeContext.absent());
@@ -140,9 +142,7 @@ public abstract class MultipartBlock<T extends MultipartBlockEntity<T>> extends 
                     if (VoxelShapes.combineAndSimplify(shape.offset(pos.getX() - partPos.getX(), pos.getY() - partPos.getY(), pos.getZ() - partPos.getZ()), VoxelShapes.fullCube(), BooleanBiFunction.AND).isEmpty()) {
                         continue;
                     }
-                    if (!partPos.equals(pos)) {
-                        list.add(partPos);
-                    }
+                    list.add(partPos);
                 }
             }
         }
@@ -156,14 +156,19 @@ public abstract class MultipartBlock<T extends MultipartBlockEntity<T>> extends 
      * @param state: block state of the main block
      */
     public void placeParts(World world, BlockPos pos, BlockState state) {
-        if (!(state.getBlock() instanceof MultipartBlock<?> block)) return;
+        try {
+            MultipartBlock<T> block = (MultipartBlock<T>) state.getBlock();
+            T blockEntity = (T) world.getBlockEntity(pos);
 
-        List<BlockPos> partPositions = this.getPartPositionsForPlacement(world, pos, state, world.getBlockEntity(pos));
-        this.remove(world, pos, false);
-        for (BlockPos partPos : partPositions) {
-            if (!world.isInBuildLimit(partPos)) continue;
-            BlockState partState = world.getBlockState(partPos);
-            if (partState.isReplaceable() && !partState.isSolidBlock(world, partPos)) block.createPart(world, pos, partPos);
+            List<BlockPos> partPositions = this.getPartPositionsForPlacement(world, pos, state, blockEntity);
+            this.remove(world, pos, false);
+            for (BlockPos partPos : partPositions) {
+                if (!world.isInBuildLimit(partPos)) continue;
+                BlockState partState = world.getBlockState(partPos);
+                if (partState.isReplaceable() && !partState.isSolidBlock(world, partPos))
+                    block.createPart(world, pos, partPos);
+            }
+        } catch (ClassCastException ignored) {
         }
     }
 }

@@ -11,10 +11,10 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
+import net.pedroricardo.block.PBCakeBlock;
 import net.pedroricardo.block.entity.PBCakeBlockEntity;
 import net.pedroricardo.block.extras.CakeBatter;
 import net.pedroricardo.block.extras.size.FullBatterSizeContainer;
-import net.pedroricardo.block.multipart.MultipartBlock;
 
 import java.util.List;
 
@@ -40,13 +40,13 @@ public class PBCakeBlockItem extends BlockItem {
 
     @Override
     protected boolean canPlace(ItemPlacementContext context, BlockState state) {
-        if (!(state.getBlock() instanceof MultipartBlock<?> multipart)) return super.canPlace(context, state);
+        if (!(state.getBlock() instanceof PBCakeBlock cakeBlock)) return super.canPlace(context, state);
         PBCakeBlockEntity blockEntity = new PBCakeBlockEntity(context.getBlockPos(), state);
         blockEntity.readComponents(context.getStack());
         PlayerEntity player = context.getPlayer();
         ShapeContext shapeContext = player == null ? ShapeContext.absent() : ShapeContext.of(player);
-        if (!context.getWorld().doesNotIntersectEntities(null, multipart.getFullShape(state, context.getWorld(), context.getBlockPos(), blockEntity, shapeContext).offset(context.getBlockPos().getX(), context.getBlockPos().getY(), context.getBlockPos().getZ()))) return false;
-        List<BlockPos> list = multipart.getPartPositionsForPlacement(context.getWorld(), context.getBlockPos(), state, blockEntity);
+        if (!context.getWorld().doesNotIntersectEntities(null, cakeBlock.getFullShape(state, context.getWorld(), context.getBlockPos(), blockEntity, shapeContext).offset(context.getBlockPos().getX(), context.getBlockPos().getY(), context.getBlockPos().getZ()))) return false;
+        List<BlockPos> list = cakeBlock.getPartPositionsForPlacement(context.getWorld(), context.getBlockPos(), state, blockEntity);
         return list.stream().noneMatch(partPos -> {
             BlockState partState = context.getWorld().getBlockState(partPos);
             return !partState.isReplaceable() || partState.isSolidBlock(context.getWorld(), partPos);

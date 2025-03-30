@@ -19,6 +19,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -66,6 +67,17 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
             return Blocks.CAKE.getDefaultState().getOutlineShape(world, pos, context);
         }
         return cake.toShape();
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        BlockPos mainPartPos = this.getMainPartPosition(world, pos);
+        BlockPos centerPos = this.getCenterPosition(world, pos);
+        try {
+            return VoxelShapes.combineAndSimplify(this.getFullShape(state, world, mainPartPos, world.getBlockEntity(mainPartPos), context).offset(centerPos.getX() - pos.getX(), centerPos.getY() - pos.getY(), centerPos.getZ() - pos.getZ()), VoxelShapes.fullCube(), BooleanBiFunction.AND);
+        } catch (Exception e) {
+            return VoxelShapes.fullCube();
+        }
     }
 
     @Override
@@ -141,10 +153,11 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
             if (batter.isEmpty()) {
                 cake.getBatterList().remove(layerIndex);
             }
-            cake.updateParts();
-        }
-        if (cake.getBatterList().isEmpty()) {
-            cake.remove(true);
+            if (cake.getBatterList().isEmpty()) {
+                cake.remove(true);
+            } else {
+                cake.updateParts();
+            }
         }
         return result;
     }
@@ -364,5 +377,51 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.onPlaced(world, pos, state, placer, stack);
         this.placeParts(world, pos, state);
+    }
+
+    @SuppressWarnings("unchecked")
+    public BlockPos getCenterPosition(BlockView world, BlockPos pos) {
+        if (!(world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake)) return BlockPos.ORIGIN;
+        return cake.getCenterPosition();
+    }
+
+    @Override
+    public List<BlockPos> getPartPositionsForPlacement(WorldView world, BlockPos pos, BlockState state, PBCakeBlockEntity cake) {
+        return super.getPartPositionsForPlacement(world, pos.add(cake.getCenterOffset()), state, cake);
+    }
+
+    public void placeParts(World world, BlockPos pos, BlockState state) {
+        if (!(state.getBlock() instanceof PBCakeBlock cakeBlock)) {
+            return;
+        }
+        if (!(world.getBlockEntity(pos) instanceof PBCakeBlockEntity cake)) {
+            return;
+        }
+
+        List<BlockPos> partPositions = this.getPartPositionsForPlacement(world, pos, state, cake);
+        BlockPos originalMainPos = pos;
+        partPositions.removeIf(partPos -> {
+            if (!world.isInBuildLimit(partPos)) return true;
+            BlockState partState = world.getBlockState(partPos);
+            return (!partState.isReplaceable() || partState.isSolidBlock(world, partPos)) && !partPos.equals(originalMainPos);
+        });
+        if (partPositions.isEmpty()) {
+            return;
+        }
+        if (!partPositions.contains(pos)) {
+            BlockPos partPos = partPositions.get(0);
+            PBCakeBlockEntity newCake = cakeBlock.createPart(world, pos, partPos);
+            if (newCake != null) {
+                cake = newCake;
+                newCake.updateMainPartPosition(partPos);
+                world.removeBlock(pos, false);
+            }
+            pos = partPos;
+        }
+        cake.remove(false);
+        for (BlockPos partPos : partPositions) {
+            if (partPos.equals(pos)) continue;
+            cakeBlock.createPart(world, pos, partPos);
+        }
     }
 }
