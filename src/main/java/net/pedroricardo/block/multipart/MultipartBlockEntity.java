@@ -96,19 +96,22 @@ public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> ex
     }
 
     public void updateMainPartPosition(BlockPos pos) {
-        T mainPart = this.getMainPart();
-        NbtCompound compound = mainPart.createNbt(this.getWorld().getRegistryManager());
+        T oldMainPart = this.getMainPart();
+        NbtCompound compound = oldMainPart.createNbt(this.getWorld().getRegistryManager());
         List<T> parts = this.getParts();
         this.setMainPartPosition(pos);
         for (T blockEntity : parts) {
             if (blockEntity == this) continue;
             blockEntity.setMainPartPosition(pos);
         }
-        mainPart = this.getMainPart();
+        T mainPart = this.getMainPart();
         compound.putInt("x", pos.getX());
         compound.putInt("y", pos.getY());
         compound.putInt("z", pos.getZ());
         mainPart.readNbt(compound, this.getWorld().getRegistryManager());
+        Set<BlockPos> set = oldMainPart.partOffsets.stream().map(offset -> offset.add(oldMainPart.getPos()).subtract(pos)).collect(Collectors.toSet());
+        mainPart.partOffsets.clear();
+        mainPart.partOffsets.addAll(set);
         mainPart.addPartPosition(mainPart.getPos());
     }
 
@@ -139,6 +142,7 @@ public abstract class MultipartBlockEntity<T extends MultipartBlockEntity<T>> ex
         if (!this.hasWorld()) return;
         for (BlockPos partPos : this.getPartPositions()) {
             if (!removeMain && partPos.equals(this.getMainPartPosition())) continue;
+//            if (partPos.equals(new BlockPos(-31, 173, 16))) new Throwable().printStackTrace();
             this.getWorld().removeBlock(partPos, false);
             this.getWorld().emitGameEvent(null, GameEvent.BLOCK_DESTROY, partPos);
         }

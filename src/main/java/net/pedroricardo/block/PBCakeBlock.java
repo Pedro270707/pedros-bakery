@@ -390,6 +390,7 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
         return super.getPartPositionsForPlacement(world, pos.add(cake.getCenterOffset()), state, cake);
     }
 
+    @Override
     public void placeParts(World world, BlockPos pos, BlockState state) {
         if (!(state.getBlock() instanceof PBCakeBlock cakeBlock)) {
             return;
