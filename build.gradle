@@ -70,9 +70,6 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	modImplementation("me.fzzyhmstrs:fzzy_config:${project.fzzy_config_version}")
-
-	// Prism library
-	modImplementation "curse.maven:prism-fabric-665526:5625110"
 }
 
 processResources {
