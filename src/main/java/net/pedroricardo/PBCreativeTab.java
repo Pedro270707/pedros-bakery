@@ -40,6 +40,7 @@ public class PBCreativeTab {
                 entries.add(new ItemStack(PBBlocks.POLISHED_CHEESE_BRICK_WALL));
                 entries.add(new ItemStack(PBItems.TORTILLA));
                 entries.add(new ItemStack(PBItems.QUESADILLA));
+                entries.add(new ItemStack(PBItems.CROISSANT));
                 entries.add(new ItemStack(PBItems.DOUGH));
                 addButter(entries);
             }).build();

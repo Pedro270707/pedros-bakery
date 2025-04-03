@@ -56,6 +56,7 @@ public class PBItems {
     public static final Item HARD_CHEESE = register("hard_cheese", new Item(new Item.Settings().fireproof()));
     public static final Item TORTILLA = register("tortilla", new Item(new Item.Settings().food(new FoodComponent.Builder().nutrition(2).saturationModifier(0.1f).build())));
     public static final Item QUESADILLA = register("quesadilla", new Item(new Item.Settings().food(new FoodComponent.Builder().nutrition(5).saturationModifier(1.0f).build())));
+    public static final Item CROISSANT = register("croissant", new Item(new Item.Settings().food(new FoodComponent.Builder().nutrition(4).saturationModifier(0.6f).build())));
 
     public static Item register(String id, Item item) {
         return Registry.register(Registries.ITEM, Identifier.of(PedrosBakery.MOD_ID, id), item);
