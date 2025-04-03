@@ -28,6 +28,6 @@ public class PBItemTagProvider extends FabricTagProvider.ItemTagProvider {
         this.getOrCreateTagBuilder(PBTags.Items.CURDLES_CHEESE).add(Items.LEATHER, Items.RABBIT_HIDE);
         this.getOrCreateTagBuilder(PBTags.Items.UNLOCKS_CHEESE_RECIPES).addTag(PBTags.Items.CURDLES_CHEESE).add(Items.MILK_BUCKET, PBItems.CHEESE, PBItems.HARD_CHEESE);
 
-        this.getOrCreateTagBuilder(ConventionalItemTags.FOODS).add(PBItems.DONUT, PBItems.APPLE_COOKIE, PBItems.BUTTER, PBItems.SHAPED_COOKIE, PBItems.CHEESE, PBItems.TORTILLA, PBItems.QUESADILLA);
+        this.getOrCreateTagBuilder(ConventionalItemTags.FOODS).add(PBItems.DONUT, PBItems.APPLE_COOKIE, PBItems.BUTTER, PBItems.SHAPED_COOKIE, PBItems.CHEESE, PBItems.TORTILLA, PBItems.QUESADILLA, PBItems.CROISSANT);
     }
 }
