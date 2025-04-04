@@ -105,4 +105,13 @@ public class FullBatterSizeContainer extends BatterSizeContainer {
     public int hashCode() {
         return Objects.hash(this.getSize(), this.getHeight(), this.getBites());
     }
+
+    @Override
+    public String toString() {
+        return "FullBatterSizeContainer{" +
+                "size=" + size +
+                ", height=" + height +
+                ", bites=" + bites +
+                '}';
+    }
 }

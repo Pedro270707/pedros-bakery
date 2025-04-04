@@ -90,4 +90,14 @@ public record CupcakeTrayBatter(CakeBatter<FixedBatterSizeContainer> topLeft, Ca
     public int hashCode() {
         return Objects.hash(this.topLeft(), this.topRight(), this.bottomLeft(), this.bottomRight());
     }
+
+    @Override
+    public String toString() {
+        return "CupcakeTrayBatter{" +
+                "topLeft=" + topLeft +
+                ", topRight=" + topRight +
+                ", bottomLeft=" + bottomLeft +
+                ", bottomRight=" + bottomRight +
+                '}';
+    }
 }
