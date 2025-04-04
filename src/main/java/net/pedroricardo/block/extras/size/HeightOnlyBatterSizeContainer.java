@@ -72,4 +72,11 @@ public class HeightOnlyBatterSizeContainer extends BatterSizeContainer {
     public int hashCode() {
         return Objects.hashCode(this.getHeight());
     }
+
+    @Override
+    public String toString() {
+        return "HeightOnlyBatterSizeContainer{" +
+                "height=" + height +
+                '}';
+    }
 }

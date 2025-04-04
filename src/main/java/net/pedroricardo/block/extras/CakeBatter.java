@@ -278,4 +278,16 @@ public class CakeBatter<S extends BatterSizeContainer> {
     public <T extends BatterSizeContainer> CakeBatter<T> copy(T sizeContainer) {
         return new CakeBatter<>(this.getBakeTime(), sizeContainer, this.getFlavor(), this.getTop(), Maps.newHashMap(Maps.transformValues(this.getFeatureMap(), NbtCompound::copy)), this.isWaxed());
     }
+
+    @Override
+    public String toString() {
+        return "CakeBatter{" +
+                "bakeTime=" + bakeTime +
+                ", sizeContainer=" + sizeContainer +
+                ", flavor=" + flavor +
+                ", top=" + top +
+                ", features=" + features +
+                ", waxed=" + waxed +
+                '}';
+    }
 }

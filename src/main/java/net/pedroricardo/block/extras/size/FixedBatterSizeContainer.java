@@ -73,4 +73,11 @@ public class FixedBatterSizeContainer extends BatterSizeContainer {
     public int hashCode() {
         return Objects.hashCode(this.isEmpty());
     }
+
+    @Override
+    public String toString() {
+        return "FixedBatterSizeContainer{" +
+                "empty=" + empty +
+                '}';
+    }
 }
