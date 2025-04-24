@@ -172,6 +172,8 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
             return ItemActionResult.FAIL;
         }
 
+        BlockPos mainPos = cake.getMainPartPosition();
+
         if (stack.isOf(PBBlocks.CAKE.asItem())) {
             List<CakeBatter<FullBatterSizeContainer>> batterList = stack.getComponents().getOrDefault(PBComponentTypes.BATTER_LIST, List.<CakeBatter<FullBatterSizeContainer>>of()).stream().map(CakeBatter::copy).collect(Collectors.toCollection(ArrayList::new));
             if (batterList.isEmpty()) {
@@ -180,9 +182,9 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
 
             if (tryAddBatter(cake, batterList)) {
                 if (!world.isClient()) {
-                    PBHelpers.update(cake, (ServerWorld) world);
+                    PBHelpers.update(cake.getMainPart(), (ServerWorld) world);
                 }
-                world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+                world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, mainPos);
                 world.playSound(pos.getX(), pos.getY(), pos.getZ(), state.getSoundGroup().getPlaceSound(), SoundCategory.BLOCKS, (state.getSoundGroup().getVolume() + 1.0f) / 2.0f, state.getSoundGroup().getPitch() * 0.8f, true);
                 stack.decrementUnlessCreative(1, player);
                 return ItemActionResult.SUCCESS;
@@ -190,8 +192,6 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
                 return ItemActionResult.FAIL;
             }
         }
-
-        BlockPos mainPos = cake.getMainPartPosition();
 
         Item item = stack.getItem();
         Block block = Block.getBlockFromItem(item);
@@ -222,7 +222,7 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
             clickedBatter.withTop(top);
             player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, new ItemStack(Items.GLASS_BOTTLE)));
             if (!world.isClient()) {
-                PBHelpers.update(cake, (ServerWorld) world);
+                PBHelpers.update(cake.getMainPart(), (ServerWorld) world);
             }
 
             return ItemActionResult.SUCCESS;
@@ -237,7 +237,7 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
             stack.decrementUnlessCreative(1, player);
             world.syncWorldEvent(player, WorldEvents.BLOCK_WAXED, pos, 0);
             if (!world.isClient()) {
-                PBHelpers.update(cake, (ServerWorld) world);
+                PBHelpers.update(cake.getMainPart(), (ServerWorld) world);
             }
 
             return ItemActionResult.SUCCESS;
@@ -256,7 +256,7 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
             world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             world.playSound(player, pos, SoundEvents.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
             if (!world.isClient()) {
-                PBHelpers.update(cake, (ServerWorld) world);
+                PBHelpers.update(cake.getMainPart(), (ServerWorld) world);
             }
 
             return ItemActionResult.SUCCESS;
@@ -274,7 +274,7 @@ public class PBCakeBlock extends MultipartBlock<PBCakeBlockEntity> {
         if (appliedFeature) {
             stack.decrementUnlessCreative(1, player);
             if (!world.isClient()) {
-                PBHelpers.update(cake, (ServerWorld) world);
+                PBHelpers.update(cake.getMainPart(), (ServerWorld) world);
             }
             return ItemActionResult.SUCCESS;
         }
